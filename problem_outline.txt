@@ -1,0 +1,18 @@
+Jacob is a business to business broker. He finds private companies selling some kind of software product who are looking to sell their company, and matches them with companies that want to acquire them. Jacob's problem is finding the right small businesses that want to sell. Currently, he searches on apollo.io and zoom.info to find likely businesses, but those return him lists in the thousands. He then has to manually peruse their websites and their linkedin profiles to see if they are good fits. Ie if their owners are older than 50 (likely to want to sell), if their number of US-based employees are in the 5 to 45 range, etc. The full list of criteria is below. It is very time consuming for him to do all this research on the full list of thousands of businesses he gets from apollo/zoom. He wants an AI tool that will search the company website/linkedin profile and filter the list from several thousands to several hundred or fewer prime candidates, reducing the amount of manual work he has to do. So, to put it simply, he wants a tool that will filter his list of several thousand down to several hundred based on his criteria.
+
+
+David will give me CSV file with company information, website information, maybe some owner information
+This is the list of criteria that David wants to filter by, along with likely sources to find the information:
+1) The company is selling an actual software product, not software development services
+	-Source: company website
+2) Number of employees, ("People" on LinkedIn only in USA, minimum of five, maximum of 50), not revenue. List US or Canada. 
+	-Source: Company LinkedIn profile, company website
+3) Boring, stable "vertical market software", software that isn't going away anytime soon. Deeply embedded in an industry.
+	-Source: company website
+4) Bootstrapped (or friends and family), no Venture Capital
+	-Source: crunch base, company website (look for news/press release on website about "raising funding")
+5) Older owners (50+)
+	-Source: company website or company LinkedIn profile
+
+Testing the tool: 
+David will give me a CSV file of 20 hand-selected companies or so, and the tool should be able to search/scrape the relevant sources and determine which are a good fit and which or not.

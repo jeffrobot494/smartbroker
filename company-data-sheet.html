@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company Data</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    
+    .spreadsheet-container {
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      overflow: hidden;
+      max-width: 100%;
+    }
+    
+    .sheet-header {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      background-color: #f1f1f1;
+      border-bottom: 1px solid #ccc;
+    }
+    
+    .sheet-icon {
+      width: 24px;
+      height: 24px;
+      background-color: #0f9d58;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+    
+    .sheet-title {
+      font-weight: bold;
+      font-size: 18px;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th {
+      background-color: #f8f9fa;
+      font-weight: 500;
+      text-align: left;
+      color: #5f6368;
+      border: 1px solid #e0e0e0;
+      padding: 8px 12px;
+      position: sticky;
+      top: 0;
+    }
+    
+    td {
+      border: 1px solid #e0e0e0;
+      padding: 8px 12px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    
+    .sheet-tabs {
+      display: flex;
+      background-color: #f1f1f1;
+      border-top: 1px solid #ccc;
+    }
+    
+    .tab {
+      padding: 6px 16px;
+    }
+    
+    .active-tab {
+      background-color: white;
+      border-right: 1px solid #ccc;
+      border-top: 2px solid #0f9d58;
+      font-weight: 500;
+      color: #0f9d58;
+    }
+    
+    .inactive-tab {
+      color: #5f6368;
+    }
+  </style>
+</head>
+<body>
+  <div class="spreadsheet-container">
+    <!-- Google Sheets-like header -->
+    <div class="sheet-header">
+      <div class="sheet-icon"></div>
+      <div class="sheet-title">Company Data</div>
+    </div>
+    
+    <!-- Spreadsheet content -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Company name</th>
+            <th>Domain name</th>
+            <th>LinkedIn URL</th>
+            <th>Product vs service</th>
+            <th>Number of US employees</th>
+            <th>Vertical market software</th>
+            <th>Bootstrapped</th>
+            <th>Old owner</th>
+            <th>Compatibility score</th>
+            <th>URL to work log</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>TechSolutions Inc</td>
+            <td>techsolutions.com</td>
+            <td>linkedin.com/company/techsolutions-inc</td>
+            <td>Product</td>
+            <td>87</td>
+            <td>Yes</td>
+            <td>No</td>
+            <td>Jane Smith, 52</td>
+            <td>87</td>
+            <td>smartbroker.com/logs/5533</td>
+          </tr>
+          <tr>
+            <td>DataFlow Systems</td>
+            <td>dataflowsys.net</td>
+            <td>linkedin.com/company/dataflow-systems</td>
+            <td>Service</td>
+            <td>45</td>
+            <td>Yes</td>
+            <td>Yes</td>
+            <td>Robert Jones, 64</td>
+            <td>92</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>CloudNine Solutions</td>
+            <td>cloudninesol.io</td>
+            <td>linkedin.com/company/cloudnine-solutions</td>
+            <td>Product</td>
+            <td>21</td>
+            <td>No</td>
+            <td>Yes</td>
+            <td>Michael Chen, 47</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Quantum Analytics</td>
+            <td>quantumanalytics.com</td>
+            <td>linkedin.com/company/quantum-analytics</td>
+            <td>Service</td>
+            <td>78</td>
+            <td>Yes</td>
+            <td>No</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>FusionTech</td>
+            <td>fusiontech.co</td>
+            <td>linkedin.com/company/fusiontech</td>
+            <td>Product</td>
+            <td>12</td>
+            <td>Yes</td>
+            <td>No</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>NexGen Software</td>
+            <td>nexgensoftware.com</td>
+            <td>linkedin.com/company/nexgen-software</td>
+            <td>Product</td>
+            <td>67</td>
+            <td>Yes</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>BlueWave Technologies</td>
+            <td>bluewavetechnologies.net</td>
+            <td>linkedin.com/company/bluewave-technologies</td>
+            <td>Service</td>
+            <td>32</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Apex Solutions</td>
+            <td>apexsolutions.com</td>
+            <td>linkedin.com/company/apex-solutions</td>
+            <td>Product</td>
+            <td>95</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>CoreInnovate</td>
+            <td>coreinnovate.io</td>
+            <td>linkedin.com/company/coreinnovate</td>
+            <td>Service</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>PinnacleWare</td>
+            <td>pinnacleware.com</td>
+            <td>linkedin.com/company/pinnacleware</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>StellarSystems</td>
+            <td>stellarsystems.net</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>RedShift Data</td>
+            <td>redshiftdata.com</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>InnovateX</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Cyber Shield Inc</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>AlphaStream</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>VisionaryTech</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Pulse Software</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Horizon Systems</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Elevate Solutions</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Synapse Technologies</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Sheet tabs at bottom -->
+    <div class="sheet-tabs">
+      <div class="tab active-tab">Company Data</div>
+      <div class="tab inactive-tab">Sheet2</div>
+      <div class="tab inactive-tab">Sheet3</div>
+    </div>
+  </div>
+</body>
+</html>

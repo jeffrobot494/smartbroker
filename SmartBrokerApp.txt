@@ -1,0 +1,44 @@
+The SmartBroker app takes company names from Apollo.io and creates a compatibility metric. The compatibility metric is a weighted average of David's five compatibility criteria: Product vs service, Number of US based employees, Vertical Market software, Bootstrapped funding, and Owner age. 
+
+#The Frontend
+
+<insert smartbroker-dashboard.html>
+
+Each criterion is researched in a slightly different way, but common to all of them is search using Perplexity AI. Perplexity is an AI tool that rapidly searches the web, reads relevant pages including social media profiles, and returns concise summaries or answers to specific questions. It is the AI equivalent of a human performing a google search, scrolling through the results, clicking on several pages, reading a bit here and there. 
+
+The other tools we will use are LinkedIn profile searching and scraping with PhantomBuster, precise business data for select companies with People Data Labs (PDL), VC funding information via Crunchbase, custom website scraping tools, and Microsoft Azure Face API for estimating owner ages from photographs.
+
+#Primary Tools
+Sonar by Perplexity.AI - As stated previously, this is an AI specialized in performing web searches and analyzing search results. (paid)
+PhantomBuster - an AI agent platform that specializes in overcoming LinkedIn anti-scraping tools (paid)
+People Data Labs - a massive repository of data on businesses that covers exact criteria we are looking for, like "Number of US Employees". (paid)
+Crunchbase - offers some publicly available data related to VC funding. (free)
+Custom website scraping tools - we will use custom tools that can discover every page on a target company's domain and scrape them all for text. This will be our second-most used tool after Perplexity. (free)
+Microsoft Azure Face API - Microsoft's Face API can reliably estimate the age of a person on a photograph. This will be useful in the cases where we can find a picture of the owner.
+OpenAI GPT - We will use the OpenAI API to analyze website text for relevant information 
+In the course of development, some of these tools may prove not suited for our needs, and we may switch to others.
+
+#Preliminary Architecture
+The basic technique for each investigation will be to first use a perplexity search to try and answer as many of the criteria as possible. Depending on the results of the search, we will then use the other tools to fill in gaps in our investigation, relying heavily on our custom scraping tools to gather information from the company website, then PhantomBuster for LinkedIn information. 
+
+#Data Architecture
+The investigation process will revolve around a Google Sheet owned by David which he populates with company names (and LinkedIn profiles and company website domains if he has them). SmartBroker will read the company name then begin its investigation, filling in columns on the spreadsheet as it answers the compatibility questions.
+
+<insert company-data-sheet.html>
+
+Depending on the length and tool use of the investigation, it may take several minutes. It may be possible to perform multiple investigations asynchronously to reduce total investigation time. Either way, this is a process that will take several hours to several days depending on how many investigations are being run (this number will be user-defined). We will aim to have basic usage and cost tracking in the app. Otherwise, this information can only be looked up via each paid service's online dashboard.
+
+#How much does a single investigation cost? 
+The least expensive investigations will likely cost around $.10, but the most difficult investigations could cost up to $1. PhantomBuster is the most expensive of our services by far ($.10 to $.25 per call), and finding ways to minimize its use will keep average investigation costs low.
+
+In order to save time and usage with our paid services, we will prioritize free and low-cost tools first to eliminate incompatible candidates, only using more-expensive tools when necessary. In testing, we may find that we are able to satisfy all five criteria for many companies using only perplexity and web-scraping. We will also use heuristics to minimize the overall number of calls we make per investigation. For example, we would conclude an investigation as soon as we learn the company is VC-backed, whether we have information for the other criteria or not.
+
+#Bottom line for David
+Performing investigations on a thousand companies will likely cost between $100 and $500 depending on how we've set the tool use parameters. Important to note, all of this is totally up to David's discretion. After development begins and Bo and David have a better understanding of how each tool is performing, we should be able to find a satisfying balance between cost and precision.
+
+#The Compatibility Algorithm
+SmartBroker will use an algorithm to determine a final compatibility score out of 100. The exact values of that algorithm are not defined at this time. For example, what if the company passes all criteria except the owner is 35? Does that receive a compatibility score of 50 or 75? Does compatibility increase inversely with number of employees? Exactly how much do we value the product being a Vertical Market product? David and Bo will need to set initial parameters to start with, but it will inevitably require refinement after testing. 
+
+#Next Steps
+Awaiting David's feedback to proceed with next steps, which is talking about the timeline and costs of development.
+ 

@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBroker App Presentation</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #1abc9c;
+            --light-gray: #f5f7fa;
+            --medium-gray: #e5e9f0;
+            --dark-gray: #8395a7;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-gray);
+        }
+        
+        .presentation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5em;
+            margin-bottom: 1em;
+            text-align: center;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 15px;
+        }
+        
+        h2, h3 {
+            color: var(--primary-color);
+            margin-top: 1.5em;
+        }
+        
+        p {
+            margin-bottom: 1.2em;
+        }
+        
+        .section {
+            margin-bottom: 2em;
+        }
+        
+        .mockup-container {
+            margin: 30px 0;
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .mockup-title {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            font-weight: bold;
+        }
+        
+        .tools-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .tools-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .tools-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .tool-name {
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+        
+        /* Fix for SmartBroker h1 visibility in the dashboard mockup */
+        .dashboard-mockup .logo h1 {
+            color: white !important;
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+            text-align: left;
+        }
+        
+        /* Loading indicator styles */
+        #loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: var(--accent-color);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* File input styling */
+        .file-input-container {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .file-input-label {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .file-input-label:hover {
+            background-color: #16a085;
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .file-status {
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+        
+        /* Added for manual header insertion */
+        .header-section {
+            color: var(--primary-color);
+            font-size: 1.8em;
+            margin-top: 1.2em;
+            font-weight: bold;
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 5px;
+            margin-bottom: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container" id="presentation-content">
+        <div class="file-input-container">
+            <label for="file-input" class="file-input-label">Load SmartBrokerApp.txt</label>
+            <input type="file" id="file-input" accept=".txt">
+            <div class="file-status" id="file-status">Select the SmartBrokerApp.txt file to build the presentation</div>
+        </div>
+        
+        <div id="loading" style="display: none;">
+            <div class="spinner"></div>
+        </div>
+        
+        <div id="content-area"></div>
+    </div>
+
+    <!-- Template for smartbroker-dashboard.html -->
+    <template id="dashboard-template">
+        <div class="mockup-container">
+            <div class="mockup-title">Dashboard Mockup</div>
+            <div class="dashboard-mockup">
+                <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBroker Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #1abc9c;
+            --light-gray: #f5f7fa;
+            --medium-gray: #e5e9f0;
+            --dark-gray: #8395a7;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --pending-color: #3498db;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-gray);
+            color: var(--primary-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 16px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            font-size: 24px;
+            color: var(--accent-color);
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        .user-menu .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .user-menu .btn:hover {
+            background-color: #16a085;
+        }
+        
+        .dashboard {
+            padding: 32px 0;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .sheet-connector {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .sheet-input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 4px;
+            border: 1px solid var(--medium-gray);
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .sheet-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .connect-btn {
+            padding: 12px 24px;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .connect-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .connected-sheet {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: var(--light-gray);
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+        
+        .sheet-icon {
+            color: #16a085;
+            font-size: 18px;
+        }
+        
+        .sheet-name {
+            font-weight: 500;
+        }
+        
+        .disconnect-btn {
+            margin-left: auto;
+            color: var(--dark-gray);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .disconnect-btn:hover {
+            color: #e74c3c;
+        }
+        
+        .status-filter {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            background-color: var(--medium-gray);
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-btn.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .investigation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .investigation-item {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px;
+            border-radius: 6px;
+            background-color: var(--light-gray);
+            transition: all 0.2s ease;
+        }
+        
+        .investigation-item:hover {
+            background-color: #eef2f7;
+        }
+        
+        .investigation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .company-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .investigation-status {
+            font-size: 14px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+        
+        .status-complete {
+            background-color: rgba(46, 204, 113, 0.15);
+            color: #27ae60;
+        }
+        
+        .status-in-progress {
+            background-color: rgba(52, 152, 219, 0.15);
+            color: #2980b9;
+        }
+        
+        .status-queued {
+            background-color: rgba(241, 196, 15, 0.15);
+            color: #f39c12;
+        }
+        
+        .progress-container {
+            height: 8px;
+            width: 100%;
+            background-color: var(--medium-gray);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-complete {
+            background-color: var(--success-color);
+        }
+        
+        .progress-in-progress {
+            background-color: var(--pending-color);
+            background-image: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.15) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.15) 50%,
+                rgba(255, 255, 255, 0.15) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 16px 16px;
+            animation: progress-animation 1s linear infinite;
+        }
+        
+        @keyframes progress-animation {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 16px 0;
+            }
+        }
+        
+        .investigation-details {
+            display: flex;
+            gap: 24px;
+            margin-top: 8px;
+            font-size: 14px;
+            color: var(--dark-gray);
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .criteria-section {
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        
+        .criteria-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .criteria-label {
+            font-size: 12px;
+            color: var(--dark-gray);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .criteria-status {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .indicator-complete {
+            background-color: var(--success-color);
+        }
+        
+        .indicator-in-progress {
+            background-color: var(--pending-color);
+        }
+        
+        .indicator-queued {
+            background-color: var(--warning-color);
+        }
+        
+        .status-text {
+            font-size: 12px;
+        }
+        
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+        }
+        
+        .compatibility-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .score-label {
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+        
+        .score-value {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .high-score {
+            color: #27ae60;
+        }
+        
+        .medium-score {
+            color: #f39c12;
+        }
+        
+        .low-score {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <h1>SmartBroker</h1>
+            </div>
+            <div class="user-menu">
+                <a href="#" class="btn">Settings</a>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container dashboard">
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">Google Sheet Connection</h2>
+            </div>
+            
+            <div class="sheet-connector">
+                <input type="text" class="sheet-input" value="https://docs.google.com/spreadsheets/d/1A2B3C4D5E6F7G8H9I0J1K2L3M4N5O/edit#gid=0" placeholder="Enter Google Sheet URL or ID">
+                <button class="connect-btn">
+                    <span>✓</span>
+                    Connected
+                </button>
+            </div>
+            
+            <div class="connected-sheet">
+                <span class="sheet-icon">✓</span>
+                <span class="sheet-name">Acquisition Targets - April 2025</span>
+                <button class="disconnect-btn">Disconnect</button>
+            </div>
+        </section>
+        
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">Investigation Progress</h2>
+            </div>
+            
+            <div class="status-filter">
+                <button class="filter-btn active">All (12)</button>
+                <button class="filter-btn">Completed (5)</button>
+                <button class="filter-btn">In Progress (4)</button>
+                <button class="filter-btn">Queued (3)</button>
+            </div>
+            
+            <div class="investigation-list">
+                <!-- Completed Investigation -->
+                <div class="investigation-item">
+                    <div class="investigation-header">
+                        <h3 class="company-name">Acme Software Solutions</h3>
+                        <span class="investigation-status status-complete">Complete</span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar progress-complete" style="width: 100%"></div>
+                    </div>
+                    
+                    <div class="investigation-details">
+                        <div class="detail-item">
+                            <span>Started:</span>
+                            <span>Apr 24, 10:30 AM</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Duration:</span>
+                            <span>2m 47s</span>
+                        </div>
+                    </div>
+                    
+                    <div class="criteria-section">
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Product vs Service</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-complete"></div>
+                                    <span class="status-text">Product</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>US Employees</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-complete"></div>
+                                    <span class="status-text">27</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Vertical Market</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-complete"></div>
+                                    <span class="status-text">Yes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Bootstrapped</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-complete"></div>
+                                    <span class="status-text">Yes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Owner Age</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-complete"></div>
+                                    <span class="status-text">58</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary">
+                        <div class="compatibility-score">
+                            <span class="score-label">Compatibility</span>
+                            <span class="score-value high-score">92%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- In Progress Investigation (Almost Complete) -->
+                <div class="investigation-item">
+                    <div class="investigation-header">
+                        <h3 class="company-name">TechFlow Systems</h3>
+                        <span class="investigation-status status-in-progress">In Progress</span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar progress-in-progress" style="width: 80%"></div>
+                    </div>
+                    
+                    <div class="investigation-details">
+                        <div class="detail-item">
+                            <span>Started:</span>
+                            <span>Apr 24, 11:15 AM</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Time Elapsed:</span>
+                            <span>1m 58s</span>
+                        </div>
+                    </div>
+                    
+                    <div class="criteria-section">
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Product vs Service</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-complete"></div>
+                                    <span class="status-text">Product</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>US Employees</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-complete"></div>
+                                    <span class="status-text">42</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Vertical Market</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-complete"></div>
+                                    <span class="status-text">Yes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Bootstrapped</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-complete"></div>
+                                    <span class="status-text">Yes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Owner Age</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-in-progress"></div>
+                                    <span class="status-text">Searching...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- In Progress Investigation (Mid-way) -->
+                <div class="investigation-item">
+                    <div class="investigation-header">
+                        <h3 class="company-name">DataSync Analytics</h3>
+                        <span class="investigation-status status-in-progress">In Progress</span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar progress-in-progress" style="width: 40%"></div>
+                    </div>
+                    
+                    <div class="investigation-details">
+                        <div class="detail-item">
+                            <span>Started:</span>
+                            <span>Apr 24, 11:22 AM</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Time Elapsed:</span>
+                            <span>0m 51s</span>
+                        </div>
+                    </div>
+                    
+                    <div class="criteria-section">
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Product vs Service</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-complete"></div>
+                                    <span class="status-text">Hybrid</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>US Employees</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-complete"></div>
+                                    <span class="status-text">18</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Vertical Market</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-in-progress"></div>
+                                    <span class="status-text">Searching...</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Bootstrapped</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-queued"></div>
+                                    <span class="status-text">Queued</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Owner Age</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-queued"></div>
+                                    <span class="status-text">Queued</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Just Started Investigation -->
+                <div class="investigation-item">
+                    <div class="investigation-header">
+                        <h3 class="company-name">CloudServe Technologies</h3>
+                        <span class="investigation-status status-in-progress">In Progress</span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar progress-in-progress" style="width: 10%"></div>
+                    </div>
+                    
+                    <div class="investigation-details">
+                        <div class="detail-item">
+                            <span>Started:</span>
+                            <span>Apr 24, 11:30 AM</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Time Elapsed:</span>
+                            <span>0m 25s</span>
+                        </div>
+                    </div>
+                    
+                    <div class="criteria-section">
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Product vs Service</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-in-progress"></div>
+                                    <span class="status-text">Searching...</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>US Employees</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-queued"></div>
+                                    <span class="status-text">Queued</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Vertical Market</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-queued"></div>
+                                    <span class="status-text">Queued</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Bootstrapped</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-queued"></div>
+                                    <span class="status-text">Queued</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="criteria-item">
+                            <div class="criteria-label">
+                                <span>Owner Age</span>
+                                <div class="criteria-status">
+                                    <div class="status-indicator indicator-queued"></div>
+                                    <span class="status-text">Queued</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Queued Investigation -->
+                <div class="investigation-item">
+                    <div class="investigation-header">
+                        <h3 class="company-name">Precision Software Inc.</h3>
+                        <span class="investigation-status status-queued">Queued</span>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: 0%"></div>
+                    </div>
+                    
+                    <div class="investigation-details">
+                        <div class="detail-item">
+                            <span>Queued:</span>
+                            <span>Apr 24, 11:05 AM</span>
+                        </div>
+                        <div class="detail-item">
+                            <span>Position:</span>
+                            <span>1 of 3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
+            </div>
+        </div>
+    </template>
+
+    <!-- Template for company-data-sheet.html -->
+    <template id="datasheet-template">
+        <div class="mockup-container">
+            <div class="mockup-title">Company Data Sheet</div>
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company Data</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    
+    .spreadsheet-container {
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      overflow: hidden;
+      max-width: 100%;
+    }
+    
+    .sheet-header {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      background-color: #f1f1f1;
+      border-bottom: 1px solid #ccc;
+    }
+    
+    .sheet-icon {
+      width: 24px;
+      height: 24px;
+      background-color: #0f9d58;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+    
+    .sheet-title {
+      font-weight: bold;
+      font-size: 18px;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th {
+      background-color: #f8f9fa;
+      font-weight: 500;
+      text-align: left;
+      color: #5f6368;
+      border: 1px solid #e0e0e0;
+      padding: 8px 12px;
+      position: sticky;
+      top: 0;
+    }
+    
+    td {
+      border: 1px solid #e0e0e0;
+      padding: 8px 12px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    
+    .sheet-tabs {
+      display: flex;
+      background-color: #f1f1f1;
+      border-top: 1px solid #ccc;
+    }
+    
+    .tab {
+      padding: 6px 16px;
+    }
+    
+    .active-tab {
+      background-color: white;
+      border-right: 1px solid #ccc;
+      border-top: 2px solid #0f9d58;
+      font-weight: 500;
+      color: #0f9d58;
+    }
+    
+    .inactive-tab {
+      color: #5f6368;
+    }
+  </style>
+</head>
+<body>
+  <div class="spreadsheet-container">
+    <!-- Google Sheets-like header -->
+    <div class="sheet-header">
+      <div class="sheet-icon"></div>
+      <div class="sheet-title">Company Data</div>
+    </div>
+    
+    <!-- Spreadsheet content -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Company name</th>
+            <th>Domain name</th>
+            <th>LinkedIn URL</th>
+            <th>Product vs service</th>
+            <th>Number of US employees</th>
+            <th>Vertical market software</th>
+            <th>Bootstrapped</th>
+            <th>Old owner</th>
+            <th>Compatibility score</th>
+            <th>URL to work log</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>TechSolutions Inc</td>
+            <td>techsolutions.com</td>
+            <td>linkedin.com/company/techsolutions-inc</td>
+            <td>Product</td>
+            <td>87</td>
+            <td>Yes</td>
+            <td>No</td>
+            <td>Jane Smith, 52</td>
+            <td>87</td>
+            <td>smartbroker.com/logs/5533</td>
+          </tr>
+          <tr>
+            <td>DataFlow Systems</td>
+            <td>dataflowsys.net</td>
+            <td>linkedin.com/company/dataflow-systems</td>
+            <td>Service</td>
+            <td>45</td>
+            <td>Yes</td>
+            <td>Yes</td>
+            <td>Robert Jones, 64</td>
+            <td>92</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>CloudNine Solutions</td>
+            <td>cloudninesol.io</td>
+            <td>linkedin.com/company/cloudnine-solutions</td>
+            <td>Product</td>
+            <td>21</td>
+            <td>No</td>
+            <td>Yes</td>
+            <td>Michael Chen, 47</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Quantum Analytics</td>
+            <td>quantumanalytics.com</td>
+            <td>linkedin.com/company/quantum-analytics</td>
+            <td>Service</td>
+            <td>78</td>
+            <td>Yes</td>
+            <td>No</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>FusionTech</td>
+            <td>fusiontech.co</td>
+            <td>linkedin.com/company/fusiontech</td>
+            <td>Product</td>
+            <td>12</td>
+            <td>Yes</td>
+            <td>No</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>NexGen Software</td>
+            <td>nexgensoftware.com</td>
+            <td>linkedin.com/company/nexgen-software</td>
+            <td>Product</td>
+            <td>67</td>
+            <td>Yes</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>BlueWave Technologies</td>
+            <td>bluewavetechnologies.net</td>
+            <td>linkedin.com/company/bluewave-technologies</td>
+            <td>Service</td>
+            <td>32</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Apex Solutions</td>
+            <td>apexsolutions.com</td>
+            <td>linkedin.com/company/apex-solutions</td>
+            <td>Product</td>
+            <td>95</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>CoreInnovate</td>
+            <td>coreinnovate.io</td>
+            <td>linkedin.com/company/coreinnovate</td>
+            <td>Service</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>PinnacleWare</td>
+            <td>pinnacleware.com</td>
+            <td>linkedin.com/company/pinnacleware</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>StellarSystems</td>
+            <td>stellarsystems.net</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>RedShift Data</td>
+            <td>redshiftdata.com</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>InnovateX</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Cyber Shield Inc</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>AlphaStream</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>VisionaryTech</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Pulse Software</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Horizon Systems</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Elevate Solutions</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Synapse Technologies</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Sheet tabs at bottom -->
+    <div class="sheet-tabs">
+      <div class="tab active-tab">Company Data</div>
+      <div class="tab inactive-tab">Sheet2</div>
+      <div class="tab inactive-tab">Sheet3</div>
+    </div>
+  </div>
+</body>
+</html>
+        </div>
+    </template>
+
+    <script>
+        // Set up the file input to load the text content
+        document.getElementById('file-input').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Check if the file is a text file
+            if (file.type !== 'text/plain' && !file.name.endsWith('.txt')) {
+                document.getElementById('file-status').textContent = 'Please select a .txt file';
+                return;
+            }
+            
+            // Show loading spinner
+            document.getElementById('loading').style.display = 'flex';
+            document.getElementById('file-status').textContent = 'Loading...';
+            
+            // Read the file
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const textContent = e.target.result;
+                processContent(textContent);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('file-status').textContent = 'Content loaded successfully';
+                
+                // Hide the file input container after successful load
+                setTimeout(() => {
+                    document.querySelector('.file-input-container').style.display = 'none';
+                }, 1500);
+            };
+            
+            reader.onerror = function() {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('file-status').textContent = 'Error reading the file';
+            };
+            
+            reader.readAsText(file);
+        });
+        
+        // Function to process the text content and build the HTML structure
+        function processContent(textContent) {
+            const container = document.getElementById('content-area');
+            
+            // Split content by insert tags
+            const parts = textContent.split(/<insert ([^>]+)>/);
+            
+            let html = '<h1>SmartBroker App</h1>';
+            
+            for (let i = 0; i < parts.length; i++) {
+                if (i % 2 === 0) {
+                    // This is text content
+                    const textParts = processTextContent(parts[i]);
+                    html += textParts;
+                } else {
+                    // This is an insert directive
+                    const templateName = parts[i].trim();
+                    if (templateName === 'smartbroker-dashboard.html') {
+                        const template = document.getElementById('dashboard-template');
+                        html += template.innerHTML;
+                    } else if (templateName === 'company-data-sheet.html') {
+                        const template = document.getElementById('datasheet-template');
+                        html += template.innerHTML;
+                    }
+                }
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        // Function to process text content parts
+        function processTextContent(text) {
+            let content = '';
+            
+            // Split text into paragraphs and sections
+            const lines = text.split('\n');
+            let currentSection = '';
+            let inList = false;
+            let firstParagraph = true;
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                // Check if line starts with # for headers
+                const isHeader = line.startsWith('#');
+                
+                // Some lines might be section titles without any marker
+                // We'll hard-code the known section titles
+                const knownTitles = [
+                    'The Frontend',
+                    'Primary Tools',
+                    'Preliminary Architecture',
+                    'Data Architecture',
+                    'The Compatibility Algorithm',
+                    'Bottom line for David',
+                    'Next Steps'
+                ];
+                
+                const isKnownTitle = knownTitles.includes(line);
+                
+                if (line === '') {
+                    if (currentSection) {
+                        if (inList) {
+                            content += '</ul>\n';
+                            inList = false;
+                        }
+                        content += `<p>${currentSection}</p>\n`;
+                        currentSection = '';
+                    }
+                } else if (isHeader || isKnownTitle) {
+                    // This is a section header
+                    if (currentSection) {
+                        if (inList) {
+                            content += '</ul>\n';
+                            inList = false;
+                        }
+                        content += `<p>${currentSection}</p>\n`;
+                        currentSection = '';
+                    }
+                    
+                    const headerText = isHeader ? line.substring(1).trim() : line;
+                    content += `<h2 class="header-section">${headerText}</h2>\n`;
+                } else {
+                    if (line.match(/^[A-Za-z0-9].*\s-\s/)) {
+                        // This looks like a list item
+                        if (!inList) {
+                            if (currentSection) {
+                                content += `<p>${currentSection}</p>\n`;
+                                currentSection = '';
+                            }
+                            content += '<ul class="tools-list">\n';
+                            inList = true;
+                        }
+                        
+                        // Process the list item to enhance the tool name
+                        const parts = line.split(' - ');
+                        if (parts.length >= 2) {
+                            const toolName = parts[0].trim();
+                            const description = parts.slice(1).join(' - ').trim();
+                            content += `<li><span class="tool-name">${toolName}</span> - ${description}</li>\n`;
+                        } else {
+                            content += `<li>${line}</li>\n`;
+                        }
+                    } else {
+                        if (inList) {
+                            content += '</ul>\n';
+                            inList = false;
+                        }
+                        
+                        if (firstParagraph && !currentSection) {
+                            content += '<div class="section">\n';
+                            firstParagraph = false;
+                        }
+                        
+                        if (currentSection) {
+                            currentSection += ' ' + line;
+                        } else {
+                            currentSection = line;
+                        }
+                    }
+                }
+            }
+            
+            // Add any remaining content
+            if (currentSection) {
+                if (inList) {
+                    content += '</ul>\n';
+                }
+                content += `<p>${currentSection}</p>\n`;
+            }
+            
+            return '<div class="section">' + content + '</div>';
+        }
+    </script>
+</body>
+</html>
