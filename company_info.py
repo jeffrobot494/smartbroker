@@ -44,29 +44,103 @@ def get_company_website(company_name):
     You have access to a Perplexity search tool through an MCP server. 
     Your task is to find the official website/domain for the company specified.
     
-    Follow these steps:
-    1. Use the search_web tool to search for the company's official website
-    2. Extract just the primary domain (e.g., "apple.com" not "https://www.apple.com/iphone")
-    3. Verify it's the official site, not a social media page or third-party site
-    4. If multiple domains exist (international versions), prefer the main/global one
+    CRITICAL: You must provide your search results AND your analysis separately to help with debugging.
     
-    Return ONLY the domain as plain text (e.g., "company.com").
-    If you can't find the domain with high confidence, return "Unknown".
+    Follow these steps:
+    1. First, make a call to search_web with the company name and "official website" in your search query
+    2. Begin your response with "RAW_SEARCH_RESULTS:" followed by the exact response you received from Perplexity
+    3. Then include a section titled "CLAUDE_ANALYSIS:" where you detail your evaluation process:
+       - List all company names mentioned in the search results
+       - Indicate whether any of these EXACTLY match the provided company name (case-insensitive)
+       - Explain your reasoning in detail
+    4. Finally, after your analysis, include a blank line followed by your final determination:
+       - If the search found the EXACT company, return the primary domain (e.g., "company.com")
+       - If the search found a DIFFERENT company with a similar name, return "NOT_EXACT_MATCH"
+       - If you can't find a website with confidence, return "Unknown"
+    
+    IMPORTANT: We need to see the full raw search results to understand how you're making your determination.
     """
     
     user_message = f"Find the official website domain for: {company_name}"
     
-    response = client.messages.create(
-        model="claude-3-opus-20240229",
-        max_tokens=1000,
-        system=system_prompt,
-        messages=[
-            {"role": "user", "content": user_message}
-        ]
-    )
-    
-    website = response.content[0].text.strip()
-    return website
+    # We'll try up to 3 times to get an exact match
+    max_attempts = 3
+    for attempt in range(max_attempts):
+        if attempt > 0:
+            print(f"Attempt {attempt+1}: Retrying to find exact match for '{company_name}'...")
+            
+        clarification = ""
+        if attempt == 1:
+            clarification = f" Please search specifically for the EXACT company name '{company_name}' and verify it matches exactly."
+        elif attempt == 2:
+            clarification = f" This is your last attempt. It's critical to find information ONLY for the EXACT company '{company_name}', not any similar companies."
+            
+        full_message = user_message + clarification
+            
+        response = client.messages.create(
+            model="claude-3-opus-20240229",
+            max_tokens=2000,  # Increased to handle larger responses
+            system=system_prompt,
+            messages=[
+                {"role": "user", "content": full_message}
+            ]
+        )
+        
+        full_response = response.content[0].text.strip()
+        
+        # Print formatted search results and analysis
+        print("\n" + "="*70)
+        print(f"SEARCH ATTEMPT {attempt+1}: WEBSITE FOR '{company_name}'")
+        print("="*70 + "\n")
+        
+        # Extract and display raw search results and Claude's analysis
+        raw_results = ""
+        claude_analysis = ""
+        final_answer = ""
+        
+        if "RAW_SEARCH_RESULTS:" in full_response and "CLAUDE_ANALYSIS:" in full_response:
+            # Get raw search results
+            parts = full_response.split("CLAUDE_ANALYSIS:", 1)
+            raw_part = parts[0].replace("RAW_SEARCH_RESULTS:", "", 1).strip()
+            raw_results = raw_part
+            
+            # Get Claude's analysis and final answer
+            if "\n\n" in parts[1]:
+                analysis_parts = parts[1].split("\n\n", 1)
+                claude_analysis = analysis_parts[0].strip()
+                if len(analysis_parts) > 1:
+                    final_answer = analysis_parts[1].strip()
+                else:
+                    final_answer = "Unknown"
+            else:
+                claude_analysis = parts[1].strip()
+                final_answer = "Unknown"
+        else:
+            # Fallback if format isn't as expected
+            print("Response format not as expected. Showing full response:")
+            print(full_response)
+            final_answer = full_response.strip()
+            
+        # Display the parsed sections
+        print("RAW PERPLEXITY SEARCH RESULTS:")
+        print("-"*50)
+        print(raw_results)
+        print("\nCLAUDE'S ANALYSIS:")
+        print("-"*50)
+        print(claude_analysis)
+        print("\nFINAL DETERMINATION:")
+        print("-"*50)
+        print(final_answer)
+        print("\n" + "="*70 + "\n")
+        
+        website = final_answer.strip()
+        
+        if website != "NOT_EXACT_MATCH":
+            return website
+            
+    # If we've tried multiple times and still don't have an exact match
+    print(f"Warning: Could not find exact match for '{company_name}' after {max_attempts} attempts.")
+    return "Unknown"
 
 def get_company_owner(company_name, website):
     """Use Claude with Perplexity to find the company's owner/CEO."""
@@ -74,30 +148,104 @@ def get_company_owner(company_name, website):
     You have access to a Perplexity search tool through an MCP server. 
     Your task is to find the current owner, CEO, or founder of the specified company.
     
-    Follow these steps:
-    1. Use the search_web tool to search for the company's leadership information
-    2. Look for the current CEO, owner, or main founder
-    3. For private companies, focus on finding the owner
-    4. For public companies, identify the CEO and/or founder
+    CRITICAL: You must provide your search results AND your analysis separately to help with debugging.
     
-    Return ONLY the full name of the person as plain text (e.g., "John Smith").
-    If you can't find the information with high confidence, return "Unknown".
-    If the company has multiple owners/founders and one is clearly the main person, return only that name.
+    Follow these steps:
+    1. First, make a call to search_web with the company name and "CEO owner founder leadership" in your search query
+    2. Begin your response with "RAW_SEARCH_RESULTS:" followed by the exact response you received from Perplexity
+    3. Then include a section titled "CLAUDE_ANALYSIS:" where you detail your evaluation process:
+       - List all company names mentioned in the search results
+       - Indicate whether any of these EXACTLY match the provided company name (case-insensitive)
+       - List all potential leadership/ownership information found
+       - Explain your reasoning in detail
+    4. Finally, after your analysis, include a blank line followed by your final determination:
+       - If the search found leadership info for the EXACT company, return only the person's name (e.g., "John Smith")
+       - If the search found a DIFFERENT company with a similar name, return "NOT_EXACT_MATCH"
+       - If you can't find leadership info with confidence, return "Unknown"
+    
+    IMPORTANT: We need to see the full raw search results to understand how you're making your determination.
     """
     
     user_message = f"Who is the current owner, CEO, or main founder of {company_name}? Their website is {website}."
     
-    response = client.messages.create(
-        model="claude-3-opus-20240229",
-        max_tokens=1000,
-        system=system_prompt,
-        messages=[
-            {"role": "user", "content": user_message}
-        ]
-    )
-    
-    owner = response.content[0].text.strip()
-    return owner
+    # We'll try up to 3 times to get an exact match
+    max_attempts = 3
+    for attempt in range(max_attempts):
+        if attempt > 0:
+            print(f"Attempt {attempt+1}: Retrying to find exact match for owner of '{company_name}'...")
+            
+        clarification = ""
+        if attempt == 1:
+            clarification = f" Please search specifically for the EXACT company '{company_name}' and verify it matches exactly."
+        elif attempt == 2:
+            clarification = f" This is your last attempt. It's critical to find information ONLY for the EXACT company '{company_name}', not any similar companies."
+            
+        full_message = user_message + clarification
+            
+        response = client.messages.create(
+            model="claude-3-opus-20240229",
+            max_tokens=2000,  # Increased to handle larger responses
+            system=system_prompt,
+            messages=[
+                {"role": "user", "content": full_message}
+            ]
+        )
+        
+        full_response = response.content[0].text.strip()
+        
+        # Print formatted search results and analysis
+        print("\n" + "="*70)
+        print(f"SEARCH ATTEMPT {attempt+1}: OWNER/CEO FOR '{company_name}'")
+        print("="*70 + "\n")
+        
+        # Extract and display raw search results and Claude's analysis
+        raw_results = ""
+        claude_analysis = ""
+        final_answer = ""
+        
+        if "RAW_SEARCH_RESULTS:" in full_response and "CLAUDE_ANALYSIS:" in full_response:
+            # Get raw search results
+            parts = full_response.split("CLAUDE_ANALYSIS:", 1)
+            raw_part = parts[0].replace("RAW_SEARCH_RESULTS:", "", 1).strip()
+            raw_results = raw_part
+            
+            # Get Claude's analysis and final answer
+            if "\n\n" in parts[1]:
+                analysis_parts = parts[1].split("\n\n", 1)
+                claude_analysis = analysis_parts[0].strip()
+                if len(analysis_parts) > 1:
+                    final_answer = analysis_parts[1].strip()
+                else:
+                    final_answer = "Unknown"
+            else:
+                claude_analysis = parts[1].strip()
+                final_answer = "Unknown"
+        else:
+            # Fallback if format isn't as expected
+            print("Response format not as expected. Showing full response:")
+            print(full_response)
+            final_answer = full_response.strip()
+            
+        # Display the parsed sections
+        print("RAW PERPLEXITY SEARCH RESULTS:")
+        print("-"*50)
+        print(raw_results)
+        print("\nCLAUDE'S ANALYSIS:")
+        print("-"*50)
+        print(claude_analysis)
+        print("\nFINAL DETERMINATION:")
+        print("-"*50)
+        print(final_answer)
+        print("\n" + "="*70 + "\n")
+        
+        owner = final_answer.strip()
+        
+        if owner != "NOT_EXACT_MATCH":
+            return owner
+            
+    # If we've tried multiple times and still don't have an exact match
+    print(f"Warning: Could not find exact match for owner of '{company_name}' after {max_attempts} attempts.")
+    return "Unknown"
 
 def get_company_products(company_name, website):
     """Use Claude with Perplexity to determine what the company sells."""
@@ -105,29 +253,104 @@ def get_company_products(company_name, website):
     You have access to a Perplexity search tool through an MCP server. 
     Your task is to identify what products or services the specified company sells or provides.
     
-    Follow these steps:
-    1. Use the search_web tool to search for information about the company's offerings
-    2. Clearly distinguish between products (tangible goods) and services
-    3. Be specific about the main categories of offerings
-    4. Focus on their current core business, not minor offerings or historical products
+    CRITICAL: You must provide your search results AND your analysis separately to help with debugging.
     
-    Return a concise description (maximum 2-3 sentences) of what the company sells or provides.
-    If you can't find the information with high confidence, return "Unknown".
+    Follow these steps:
+    1. First, make a call to search_web with the company name and "products services offerings what they sell" in your search query
+    2. Begin your response with "RAW_SEARCH_RESULTS:" followed by the exact response you received from Perplexity
+    3. Then include a section titled "CLAUDE_ANALYSIS:" where you detail your evaluation process:
+       - List all company names mentioned in the search results
+       - Indicate whether any of these EXACTLY match the provided company name (case-insensitive)
+       - Identify all potential products/services mentioned
+       - Explain your reasoning in detail
+    4. Finally, after your analysis, include a blank line followed by your final determination:
+       - If the search found info for the EXACT company, provide a concise 2-3 sentence description of their products/services
+       - If the search found a DIFFERENT company with a similar name, return "NOT_EXACT_MATCH"
+       - If you can't find product/service info with confidence, return "Unknown"
+    
+    IMPORTANT: We need to see the full raw search results to understand how you're making your determination.
     """
     
     user_message = f"What products or services does {company_name} sell or provide? Their website is {website}."
     
-    response = client.messages.create(
-        model="claude-3-opus-20240229",
-        max_tokens=1000,
-        system=system_prompt,
-        messages=[
-            {"role": "user", "content": user_message}
-        ]
-    )
-    
-    products = response.content[0].text.strip()
-    return products
+    # We'll try up to 3 times to get an exact match
+    max_attempts = 3
+    for attempt in range(max_attempts):
+        if attempt > 0:
+            print(f"Attempt {attempt+1}: Retrying to find exact match for products of '{company_name}'...")
+            
+        clarification = ""
+        if attempt == 1:
+            clarification = f" Please search specifically for the EXACT company '{company_name}' and verify it matches exactly."
+        elif attempt == 2:
+            clarification = f" This is your last attempt. It's critical to find information ONLY for the EXACT company '{company_name}', not any similar companies."
+            
+        full_message = user_message + clarification
+            
+        response = client.messages.create(
+            model="claude-3-opus-20240229",
+            max_tokens=2000,  # Increased to handle larger responses
+            system=system_prompt,
+            messages=[
+                {"role": "user", "content": full_message}
+            ]
+        )
+        
+        full_response = response.content[0].text.strip()
+        
+        # Print formatted search results and analysis
+        print("\n" + "="*70)
+        print(f"SEARCH ATTEMPT {attempt+1}: PRODUCTS/SERVICES FOR '{company_name}'")
+        print("="*70 + "\n")
+        
+        # Extract and display raw search results and Claude's analysis
+        raw_results = ""
+        claude_analysis = ""
+        final_answer = ""
+        
+        if "RAW_SEARCH_RESULTS:" in full_response and "CLAUDE_ANALYSIS:" in full_response:
+            # Get raw search results
+            parts = full_response.split("CLAUDE_ANALYSIS:", 1)
+            raw_part = parts[0].replace("RAW_SEARCH_RESULTS:", "", 1).strip()
+            raw_results = raw_part
+            
+            # Get Claude's analysis and final answer
+            if "\n\n" in parts[1]:
+                analysis_parts = parts[1].split("\n\n", 1)
+                claude_analysis = analysis_parts[0].strip()
+                if len(analysis_parts) > 1:
+                    final_answer = analysis_parts[1].strip()
+                else:
+                    final_answer = "Unknown"
+            else:
+                claude_analysis = parts[1].strip()
+                final_answer = "Unknown"
+        else:
+            # Fallback if format isn't as expected
+            print("Response format not as expected. Showing full response:")
+            print(full_response)
+            final_answer = full_response.strip()
+            
+        # Display the parsed sections
+        print("RAW PERPLEXITY SEARCH RESULTS:")
+        print("-"*50)
+        print(raw_results)
+        print("\nCLAUDE'S ANALYSIS:")
+        print("-"*50)
+        print(claude_analysis)
+        print("\nFINAL DETERMINATION:")
+        print("-"*50)
+        print(final_answer)
+        print("\n" + "="*70 + "\n")
+        
+        products = final_answer.strip()
+        
+        if products != "NOT_EXACT_MATCH":
+            return products
+            
+    # If we've tried multiple times and still don't have an exact match
+    print(f"Warning: Could not find exact match for products of '{company_name}' after {max_attempts} attempts.")
+    return "Unknown"
 
 def main():
     """Main function to gather and display company information."""
@@ -141,29 +364,50 @@ def main():
     print("Finding company website...")
     website = get_company_website(company_name)
     
-    # Get company owner
-    print("Identifying company leadership...")
-    owner = get_company_owner(company_name, website)
-    
-    # Get company products/services
-    print("Determining company offerings...")
-    products = get_company_products(company_name, website)
-    
-    # Prepare results
-    results = {
-        "company_name": company_name,
-        "website": website,
-        "owner": owner,
-        "products_services": products
-    }
+    # Only proceed with additional searches if we found a website
+    if website == "Unknown":
+        print(f"\n⚠️ Could not find exact match for company: {company_name}")
+        print("Please verify the company name or try a more specific search.\n")
+        
+        # Prepare minimal results
+        results = {
+            "company_name": company_name,
+            "website": "Unknown",
+            "owner": "Unknown",
+            "products_services": "Unknown",
+            "exact_match": False
+        }
+    else:
+        # Get company owner
+        print("Identifying company leadership...")
+        owner = get_company_owner(company_name, website)
+        
+        # Get company products/services
+        print("Determining company offerings...")
+        products = get_company_products(company_name, website)
+        
+        # Prepare results
+        results = {
+            "company_name": company_name,
+            "website": website,
+            "owner": owner,
+            "products_services": products,
+            "exact_match": True
+        }
     
     # Display results
     print("\n" + "="*50)
     print(f"COMPANY INFORMATION: {company_name}")
     print("="*50)
-    print(f"Website: {website}")
-    print(f"Owner/CEO: {owner}")
-    print(f"Products/Services: {products}")
+    
+    if results["exact_match"]:
+        print(f"Website: {website}")
+        print(f"Owner/CEO: {owner}")
+        print(f"Products/Services: {products}")
+    else:
+        print("❌ No exact match found for this company name.")
+        print("Please verify the company name and try again.")
+    
     print("="*50 + "\n")
     
     # Save to file if requested
