@@ -2,10 +2,12 @@ import os
 import requests
 import json
 import time
+from dotenv import load_dotenv
 
-# API Keys (should be stored more securely in production)
-ANTHROPIC_API_KEY = "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"
-PERPLEXITY_API_KEY = "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"
+load_dotenv()
+
+PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 
 # Anthropic API endpoint
 ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
