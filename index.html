@@ -1378,6 +1378,46 @@
 <p>SmartBroker will use an algorithm to determine a final compatibility score out of 100. The exact values of that algorithm are not defined at this time. For example, what if the company passes all criteria except the owner is 35? Does that receive a compatibility score of 50 or 75? Does compatibility increase inversely with number of employees? Exactly how much do we value the product being a Vertical Market product? David and Bo will need to set initial parameters to start with, but it will inevitably require refinement after testing.</p>
 <h2 class="header-section">Next Steps</h2>
 <p>Awaiting David's feedback to proceed with next steps, which is talking about the timeline and costs of development.</p>
+<h2 class="header-section">MVP Outline</h2>
+<p>5/14/25</p>
+<p>I've changed the concept of the tool to use Claude (or maybe chatgpt if need be) to be the "brain" of the application. Rather than writing a complex system to determine what questions we've answered, which tools to use at what point in the investigation, we're going to offload most of that work to Claude. It will look like:</p>
+<p>"Claude, this is what we know about the company. These are the questions you need to answer. These are the tools you have to answer them, and these are the websites where you're likely to find answers to each question. Now do the research."</p>
+<p>This adds ten to twenty cents to the cost of each investigation, but it will be smarter, less error-prone, and make more efficient API calls.</p>
+<h2 class="header-section">What hasn't changed:</h2>
+<p>We provide the application with a list of company names. We want to provide it with as much additional information as we can before it starts the investigation, ideally we have a company website, a location, or a linkedin profile url. There are a lot of companies with similar names, and this helps Claude know which one we are talking about.</p>
+<p>Claude will work through the list of questions one by one, moving on to the next company when it's concluded its investigation. Each investigation will be given an overall confidence score, and we can order them by confidence score so that its easy for David to find the most likely targets.</p>
+<h2 class="header-section">Settings</h2>
+<p>We can make all of the search parameters editable by David. The fact that we are using Claude as the brain of the investigation helps with this. David can edit and add questions. When you add a new question, it will be helpful to give Claude some websites where it should start looking for answers to that question.</p>
+<p>We can save investigation templates, so that if David wants to switch to another sort of company entirely, he can do that. There could be a template for software company investigations, and another for laundromats, and you can switch between them with a couple of clicks in settings. Each will ahve its own unique set of questions for Claude to answer. Note, templates will not be part of the MVP.</p>
+<p>There will be a "debug" mode to be used when David is making changes to the settings/templates. When in debug mode, the app will give full readouts of what Claude is doing behind the scenes, so that David can see where it's having success and where it's failing, and make adjustments. For example, if Claude is having trouble finding information about the kind of detergent that the laundromats use, David will be able to see that. Then he can do some googling of his own to find a good website to find that information, then add that to the list of resources in the settings for Claude to use.</p>
+<h2 class="header-section">Keeping Costs Low</h2>
+<p>Claude will be aware of the approximate costs of each tool use, and it will be instructed to keep costs low. It will mainly do this by deciding which tool to use. In the settings, we can temporarily disable certain API calls (like the expensive ones), put caps on the number of calls to Perplexity Claude can make, etc. In the MVP, these settings will be minimal, but they can be expanded on. We should assume that the API costs for the MVP can be made lower through optimizations.</p>
+<h2 class="header-section">Verification</h2>
+<p>One of the main challenges we will have is Claude confusing the company we're investigating with one with a similar name. To minimize this, the first thing we do is what I mentioned before, giving Claude as much info as possible at the start so that it can cross reference things and make sure it's got the right company. There are other steps we will take to verify sources of information.</p>
+<h2 class="header-section">Output Format</h2>
+<p>Output will go to the google sheet where company names and information is provided.</p>
+<h2 class="header-section">Investigation Depth Settings</h2>
+<p>In the MVP, we'll introduce basic depth control settings, like which questions are automatic dealbreakers if they return a negative answer, and how many API calls can be made per investigation, and maximum token usage (overall cost). These can be expanded on later.</p>
+<h2 class="header-section">Error Handling</h2>
+<p>If an API call fails for some reason, usually because the service is temporarily down, that call will be flagged in the final output. In the MVP, we won't build functionality to address this further. If it ends up being a big issue (many investigations failing due to bad API calls), we can add functionality to handle that.</p>
+<h2 class="header-section">APIs in the MVP</h2>
+<p>For the MVP, I'm going to focus on Perplexity, google searches, and common websites like crunchbase, zoominfo, and radaris. If we end up needing additional API calls, like PhantomBuster for LinkedIn, we can add those later.</p>
+<h2 class="header-section">Cost</h2>
+<p>$750 for 15 hours of Bo's time. At the end of this, we'll have a working web app with a frontend that David can use. Bo needs an additional $50 to pay for API credits he will use while building and testing the app. In total, Bo needs a payment of $800 to build the MVP.</p>
+<h2 class="header-section">Testing and Feedback</h2>
+<p>Once it's ready, Bo will pass the web app to David and let him work with it for as long as he needs to. Then David can come back to Bo and tell him what still needs to be done. API costs incurred while David is testing the API will be paid for by David.</p>
+<h2 class="header-section">The Web App</h2>
+<p>I don't know exactly what the web app for the MVP will look like. The main things that will likely be missing will be the little additional touches, like the in-depth settings and customization, investigation templates, and API cost-reduction settings.</p>
+<h2 class="header-section">Maintenance Plan</h2>
+<p>After David has reviewed the MVP, Bo and David will come up with a plan for additional features to be added. Bo will throw in an hour of free bug fixing after the project is finished.</p>
+<h2 class="header-section">Success Metrics</h2>
+<p>How do we know if we are successful? We need David's input on this. What kind of results does he need from a thousand company names? 200 good matches? 500 decent matches? The fewer, the easier this is.</p>
+<h2 class="header-section">Checking Active Phone Lines</h2>
+<p>It's unlikely this feature will be implemented for the MVP. Based on some research by Bo, this feature can be added with a couple hours of work.</p>
+<h2 class="header-section">Industry Trends and Mergers and Acquisitions information</h2>
+<p>After the MVP is built, Bo will have a better idea how to implement these features if David wants them.</p>
+<h2 class="header-section">Timeline</h2>
+<p>Bo expects to be able to complete this work in four days, though it could take a little longer.</p>
 </div></div></div></div></div>
     </div>
 

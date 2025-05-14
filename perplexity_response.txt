@@ -1,0 +1,165 @@
+Good English Outline:
+I've changed the concept of the tool to use Claude (or maybe chatgpt if need be) to be the "brain" of the application. Rather than writing a complex system to determine what questions we've answered, which tools to use at what point in the investigation, we're going to offload most of that work to Claude. It will look like: 
+
+Claude, this is what we know about the company. These are the questions you need to answer. These are the tools you have to answer them, and these are the websites where you're likely to find answers to each question. Now do the research. 
+
+This adds to the cost of each investigation, but it will be much smarter and more efficient overall. 
+
+What hasn't changed:
+We provide the application with a list of company names. We want to provide it with as much additional information as we can before it starts the investigation, ideally we have a company website, a location, or a linkedin profile url. There are a lot of companies with similar names, and this helps Claude know which one we are talking about. 
+
+Claude will work through the list of questions one by one, moving on to the next company when it's concluded its investigation. Each investigation will be given an overall confidence score, and we can order them by confidence score so that its easy for David to find the most likely targets. 
+
+Settings
+We can make just about all of the search parameters editable by David. The fact that we are using Claude as the brain of the investigation helps with this. David can edit and add questions. When you add a new question, it will be helpful to give Claude some websites where it should start looking for answers to that question. 
+
+We can save investigation templates, so that if David wants to switch to another sort of company entirely, he can do that. There could be a template for software company investigations, and another for laundromats, and you can switch between them with a couple of clicks in settings. Each will ahve its own unique set of questions for Claude to answer. 
+
+There will be a "debug" mode to be used when David is making changes to the settings/templates. When in debug mode, the app will give full readouts of what Claude is doing behind the scenes, so that David can see where it's having success and where it's failing, and make adjustments. For example, if Claude is having trouble finding information about the kind of detergent that the laundromats, David will be able to see that. Then he can do some googling of his own to find a good website to find that information, then add that to the list of resources in the settings for Claude to use. 
+
+Keeping Costs Low
+Claude will be aware of the approximate costs of each tool use, and it will be instructed to keep costs low. It will mainly do this by deciding which tool to use. In the settings, we can temporarily disable certain API calls (like the expensive ones), put caps on the number of calls to Perplexity Claude can make, etc etc
+
+However, in the MVP, a lot of that customization will likely be missing. The API calls made in the MVP may be more expensive than we like. 
+
+Verification
+One of the main challenges we will have is Claude finding information for the wrong companies. When there are is a second company out there with a name very similar to the one we are investigating, Claude can easily confuse the two and give us results for the wrong company. To minimize this, the first thing we do is what I mentioned before, giving Claude as much info as possible at the start so that it can cross reference things and make sure it's got the right company. There are other steps we will take to verify sources of information.
+
+Output Format
+Output will go to the google sheet where company names and information is provided. 
+
+Investigation Depth Control Settings
+In the MVP, we'll introduce basic depth control settings, like which questions are automatic dealbreakers if they return a negative answer, and how many API calls can be made per investigation, and maximum token usage (overall cost).
+
+Error Handling
+If an API call fails, that call will be flagged in the final output. In the MVP, we won't build functionality to address this further. If it ends up being a big issue (many investigations failing due to bad API calls), we can add functionality to handle that.
+
+APIs in the MVP
+For the MVP, I'm going to focus on Perplexity, google searches, and common websites like crunchbase, zoominfo, and radaris. If we end up needing additional API calls, like PhantomBuster for LinkedIn, we can add those later. 
+
+Cost 
+$750 for 15 hours of Bo's time. At the end of this, we'll have a working web app with a frontend that David can use. Once it's ready, Bo will pass this off to David and let him work with it for as long as he needs to. Then David can come back to Bo and tell him what (if anything) still needs to be done. Bo needs an additional $50 to pay for API credits he will use while building and testing the app. Total of $800. API costs incurred while David is testing the API will be paid for by David.
+
+The Web App
+I don't know exactly what the web app for the MVP will look like. The main things that will likely be missing will be the little additional touches, like the indepth settings and customization, investigation templates, and API cost-reduction settings. 
+
+Maintenance Plan
+After David has reviewed the MVP, Bo and David will come up with a plan for additional features to be added. Bo will throw in an hour of free bug fixing after the project is finished.
+
+Success Metrics
+How do we know if we are successful? We need David's input on this. What kind of results does he want and then need from a thousand company names? 200 good matches? 500 decent matches? The fewer, the easier this is. 
+
+Checking Active Phone Lines
+It's unlikely this feature will be implemented for the MVP. Based on some research by Bo, this feature can be added with a couple hours of work. 
+
+Industry Trends and Mergers and Acquisitions information
+After the MVP is built, Bo will have a better idea how to implement these features if David wants them. 
+
+Timeline
+Bo expects to be able to complete this work in four days, though it could take a little longer.
+
+If this looks good, Bo will send over an invoice for the $800.
+
+Full outline:
+The brain is Claude (or another llm)
+It takes a list of company names and performs investigations one at a time
+There are x number of questions that we want answered (and a confidence level for each question)
+Settings: maximum cost, exclude certain API calls, maximum number of API calls for question/investigation, conclude investigation on negative answer for this question (check box)
+Customizable questions
+	David can easily change questions and add new questions. 
+	Adding a new question will require a little work on David's part to fill in likely sources, and perhaps other information.
+Create new spread sheet? option
+in settings, each question has a specific list of resources/websites that are likely to have the answer, we check those first. 
+When we are researching questions that are broadly applicable (to more than one company) we save that information to potentially use it for other companies in the same industry.
+Debug mode where each step requires approval/can be modified and results are printed
+Info for each company: exact company name is required, company website and location can both help a lot
+	-> We can prioritize searches that have as much pre-filled information as possible.
+Structure, it's basically just Claude doing this research for us, and we give it the various tools it needs, including various API calls.
+Claude is aware of the cost of each tool and does its bet to minimize overall spend.
+We always verify everything Claude decides is an answer.
+Whenever we find something concrete about the company, we add that to the other searches so that we don't switch companies mid investigation. 
+Once we think we're done, we look to verify all the information once again. 
+Once we're finishing an investigation, we give it an overall confidence score. 
+In the output document, our investigations are ranked by confidence. 
+
+What we aren't doing yet: batch messages and various other optimizations to reduce cost.
+
+For the MVP, we are just going to use Perplexity search, google searches, website scraping, known websites like crunchbase, zoominfo, and radaris. The main cost is going to be Claude's judgement on analyzing the searches and choosing which tools to use, etc. We will do everything we can to minimize tthose costs.
+
+
+
+
+
+Question: is it cheaper for Claude to do a google search than a Perplexity call? If so, we can prioritize those.
+
+Running smartbroker_script:
+perplexity is at $4.26
+anthropic: $3.80
+
+Script failings:
+1) Not adjusting search queries correctly
+2) Switched companies mid-search. We need to build safeguards against this.
+3) Even after it's confident in an answer, it performs another search.
+4) Swapped over to the wrong company again... this is a major problem.
+5) Perplexity web was able to find Richard Verseput's age while our app wasn't. It used radaris.com. Add that to resources.
+6) Once we have the location, or other identifying characteristics, include that in all searches so that we don't swap companies.
+7) If there's no evidence of vc funding, assume there's none?
+8) Finding info on the owner/founder of RepairShopr was very difficult. But it's also been bought and sold by PE. So maybe that's an indicator of PE/VC involvement.
+
+
+We searched for four questions, and found somewhat satisfactory answers for them all. 
+Perplexity is at $4.23 and Anthropic is at $3.79 = $.04
+
+Today:
+
+Goal for noon:
+Script that works through five questions and gets answers for them all - no, not that. Just a script that performs a bunch of calls and see how much it costs - DONE.
+
+First: 
+Finish our script so that it refines its search.
+Succulent Native
+1) Where is it located?
+Define functions for our script
+Get a loop going
+Print everything out
+We have a "context" variable which is everything that has been said thus far
+Add each search and each result to the context
+Send the context to Claude
+
+I'm about to perform some searches
+Anthropic is at: $3.96
+Perplexity is at: $4.59
+
+After about 10 searches:
+perplexity: $4.57
+anthropic: $3.87
+
+total cost = $.12
+
+Well, I'm not very worried about it. 
+
+So, we've determined that the perplexity API is indeed very cheap. 
+We didn't send very many tokens to claude, so we're not exactly sure how cheap that is. I wonder if our rate is cheaper right now because it's early morning?
+
+So, I think the difficult thing will be verifying the information, and making sure we have the correct information/the correct company.
+
+I just performed 5 perplexity searches at max 400 tokens. It was at $4.30.
+Now it's at: $4.26
+And claude cost $.08, for a total of $.12 again.
+
+I'd like to write a script that is a chat with Claude. 
+First, Claude asks for the name of the company, and any information we have about it. 
+Then, it's begins the investigation process. It first asks what question we want to learn about the company. 
+Then it uses its web search tool to find that information. 
+Using the web search tool is a multi-step process.
+First, it proposes a search term and gets my input/approval on that. (hit enter)
+Then it makes the search.
+The search results are printed out for me to see. (hit enter)
+Those search results are then sent to claude, and claude tells me what it learned about the question from those search results. (hit enter)
+If it found the answer to the question, it says so (hit enter), then asks for the next question. 
+If it didn't find the answer to the question, it then proposes its next query for my approval.
+If it thinks the answer to the question can't be found, it says so and waits for my approval.
+The web search tool is the perplexity.ai API. My perplexity api key is: 
+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
+My anthropic api key is:
+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
