@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test 90s Server</title>
+  <style>
+    body {
+      font-family: "Comic Sans MS", cursive;
+      background: #ccccff;
+      color: #000080;
+      margin: 30px;
+    }
+    button {
+      background: #ff00ff;
+      color: yellow;
+      border: 3px outset #c0c0c0;
+      padding: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 10px 0;
+    }
+    #result {
+      background: #ffffff;
+      border: 2px inset #c0c0c0;
+      padding: 10px;
+      height: 300px;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌐 Test Your 90s-Style Server! 🌐</h1>
+  
+  <button onclick="testGetEndpoint()">Test Modern GET</button>
+  <button onclick="testGetEndpointOldSchool()">Test 90s-Style GET</button>
+  
+  <h3>Response:</h3>
+  <div id="result">Results will appear here...</div>
+
+  <script>
+    // Modern approach using fetch API
+    function testGetEndpoint() {
+      document.getElementById('result').innerHTML = "Connecting to server...";
+      
+      fetch('http://localhost:3000/', {
+        method: 'GET'
+      })
+      .then(response => response.text())
+      .then(data => {
+        console.log('Success:', data);
+        document.getElementById('result').innerHTML = data;
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('result').innerHTML = "Error: " + error.message;
+      });
+    }
+    </script>
+</body>
+</html>

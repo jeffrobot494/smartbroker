@@ -1,0 +1,242 @@
+SmartBroker app
+
+This is a webapp with frontend and server written in javascript. The server uses node.js.
+
+The app takes as input a list of companies and a set of questions, ranked easiest to hardest. The app starts with the easist question and iterates through the list of companies, answering it for each, disqualifying those with negative answers.
+ Then it moves on to the next question, and answers it for the remaining companies, eliminating more, and so son. The output is a spreadsheet where each row is a different company, and each column is an answer to one of the questions. 
+
+The app is used to find privately-held software companies with owners who are likely to want to sell.
+
+The app uses anthropic's Claude AI (sonnet 3.7 model) to perform the research. The app gives Claude a set of tools to use to do the research. 
+
+The list of companies is located at "./data/company_info.csv". It includes company name, owner name, location, and website, among others.
+For each company, these four pieces of information should be extracted and added to the context for each search.
+
+Here are the questions ranked by how easy they are to answer:
+1) Does the company sell a software product (or products), or do they sell software development services?
+	Positive answer: sells a product or products
+	Note: check the company's website
+2) Are the company's products vertical market software?
+	Positive answer: yes
+	Note: check the company's website
+3) Is the owner of the company at least 50 years old?
+	Positive answer: yes
+	Note: check radaris
+4) Does the company number between 5 and 40 employees?
+	Positive answer: yes
+5) Is the company bootstrapped (including friends and family) or does it have venture capital or private equity funding?
+	Positive answer: bootstrapped/yes
+	Note: if there's no indication of VC/PE funding, assume the company is bootstrapped
+6) Are the majority of the employees based in the USA?
+	Positive answer: yes
+	Note: check zoominfo
+
+These are the tools Claude has access to:
+
+1) perplexity_search
+Takes a query as input, and performs that search using the perplexity.ai API. This is like performing multiple google searches, skimming a few pages, and collating the results. It also returns a list of sources used. This is the main tool Claude will use. 
+
+2) radaris_search
+This tool takes a name s input. Radaris sometimes has information on individuals in the US. This is a good tool to use for finding an owner's age.
+
+3) website_search
+This tool takes a web page as input and uses FireCrawl to scrape it for information and links. This is good for finding information about the company's products for questions 1 and 4.
+
+One of the primary concerns of the application architecture is keeping API costs, namely Perplexity and Claude, low. For this reason, we want to eliminate bad matches as soon as possible. Once we receive a negative answer to a question, we eliminate that company and perform no more searches on it.
+
+We identify the question which is cheapest to answer, then find the answer to that question for each company, eliminating as many as possible. Then we do the same thing for the next-cheapest answer, etc.
+
+One big challenge is choosing the right company from among several with similar names. When we find an answer to a question, we verify that it's for the right company by cross-checking another piece of information, like headquarters location, size, revenue, etc.
+
+Every time Claude performs a search, it's possible that it will find information for the wrong company, but one with a similar name. When researching a company:
+1. First store identifiers from our data sheet, including Company Name, Owner name, Location, and domain name.
+2. For subsequent searches: use appropriate search terms for the specific question
+3. After each search: verify results match our target company by comparing at least one identifier
+4. If verification fails: note the discrepancy and try a more specific search that includes location
+
+Example verification: "I've confirmed these results are about our target AlphaX Software because they mention the CEO John Smith and Phoenix headquarters, matching our identification data."
+
+When Claude gets an answer to a question, we have to verify that 1) the answer is correct, and 2) it's talking about the right company.
+
+Output
+In version 2, Claude will record answers to questions into a spreadsheet. However, for version one, the answers will not be recorded. Claude will print them out to the screen then move on.
+
+#THIS FEATURE WILL BE ADDED IN VERSION 2
+In order to reduce the number of overall searches and API calls, we can associate tools with questions, telling Claude that he should use those tools first to try and find the answer before falling back to others.
+
+Each company search (hereafter referred to as an "investigation" gets its own context). This context is stored between calls to Claude. It is separated into categories, such as "what we have already learned", "tools we've already used", "search parameters we've already used". Relevant pieces of context are fed to Claude when necessary.
+
+Error Handling
+If Claude can't find an answer to a question after three queries/tool uses, move on.
+
+The GUI
+There's a text area where EVERYTHING is printed, all of claude's thoughts, the responses from tools - everything. This is so that the user can see what is happening and troubleshoot problems. 
+
+When Claude wants to use a tool, he waits for the user to hit enter before the tool use is done. This is so that the user can keep the application moving at whatever pace he desires and can follow what's happening. 
+
+The company information is stored in a file in the front-end directory. 
+
+There is an .env file with API keys.
+
+The flow of the program should look like this:
+
+1) "Hello, I'm claude I'm going to help you research companies. The first company to research is Al's Automotive. May I proceed?
+2) User hits enter
+3) "I'll try to learn if Al's Automative sells a software product or software development services. tool use: perplexity_search: Al's Automotive products"
+4) User hits enter
+5) "These are the results from the search:
+//results from search shown here
+"Based on the search results, Al's Automotive sells a automotive bookkeeping software, so the answer to the question is 'yes'." May I proceed to the next company?"
+6) User hits enter
+etc.
+
+For the first phase of development, exclude the firecrawl api. Just use a basic web search tool.
+
+Our anthropic API key is: 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
+Out perplexity/openai API key is: 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
+
+Expanded information on context:
+For storing context in the SmartBroker application, I recommend a structured approach that balances comprehensiveness with clarity. Here's how I suggest implementing it:
+Recommended Context Storage Structure
+1. Use a JSON Object with Clearly Defined Sections
+let investigationContext = {
+  // Basic company identifiers (established early and used for verification)
+  companyIdentifiers: {
+    name: "AlphaX Software",
+    location: "Phoenix, AZ",
+    industry: "Financial Software",
+    foundingYear: "2005",
+    keyPeople: ["Jane Smith (CEO)", "John Doe (Founder)"],
+    website: "alphaxsoftware.com"
+  },
+  
+  // Question results with evidence and confidence
+  questionResults: {
+    q1_product: {
+      answer: "YES",
+      confidence: "HIGH",
+      evidence: "Company sells financial reporting software for SMBs",
+      sources: ["https://alphaxsoftware.com/products", "Perplexity search on 05/15/2025"]
+    },
+    q2_employeeCount: {
+      answer: "YES", // 5-40 employees
+      confidence: "MEDIUM",
+      evidence: "LinkedIn profile shows 27 employees",
+      sources: ["Perplexity search on 05/15/2025"]
+    },
+    // Other questions...
+  },
+  
+  // Search history to avoid duplication and track progress
+  searchHistory: [
+    {
+      tool: "perplexity_search",
+      query: "AlphaX Software products",
+      timestamp: "2025-05-15T10:30:45Z",
+      summary: "Found evidence of financial software products"
+    },
+    // More searches...
+  ],
+  
+  // Raw evidence storage (can be referenced later)
+  evidenceStore: [
+    {
+      id: "ev001",
+      content: "AlphaX Software offers three financial reporting products: CashFlow Pro, Tax Tracker, and Expense Manager.",
+      source: "https://alphaxsoftware.com/products",
+      retrievedVia: "perplexity_search",
+      timestamp: "2025-05-15T10:30:45Z"
+    },
+    // More evidence...
+  ],
+  
+  // Overall investigation status
+  investigationStatus: {
+    currentStage: "researching_q3",
+    startTime: "2025-05-15T10:25:30Z",
+    lastUpdateTime: "2025-05-15T10:35:12Z",
+    eliminationStatus: false, // false = still in consideration
+    completedQuestions: ["q1", "q2"],
+    pendingQuestions: ["q3", "q4", "q5", "q6"]
+  }
+}
+2. Context Management in the Application Flow
+// When starting a new company investigation
+function initializeInvestigation(companyName) {
+  // Reset context for new company
+  investigationContext = {
+    companyIdentifiers: { name: companyName },
+    questionResults: {},
+    searchHistory: [],
+    evidenceStore: [],
+    investigationStatus: {
+      currentStage: "identification",
+      startTime: new Date().toISOString(),
+      lastUpdateTime: new Date().toISOString(),
+      eliminationStatus: false,
+      completedQuestions: [],
+      pendingQuestions: ["q1", "q2", "q3", "q4", "q5", "q6"]
+    }
+  };
+  
+  // Provide this to Claude for initial company identification
+  return formatContextForClaude("identification");
+}
+
+// Format relevant portions of context for Claude based on current stage
+function formatContextForClaude(stage) {
+  let promptContext = "";
+  
+  // Always include company identifiers
+  promptContext += "COMPANY INFORMATION:\n";
+  Object.entries(investigationContext.companyIdentifiers).forEach(([key, value]) => {
+    if (value) promptContext += `${key}: ${value}\n`;
+  });
+  
+  // Include question results so far
+  promptContext += "\nFINDINGS SO FAR:\n";
+  Object.entries(investigationContext.questionResults).forEach(([key, data]) => {
+    promptContext += `${key}: ${data.answer} (Confidence: ${data.confidence})\n`;
+  });
+  
+  // Add recent search history if relevant
+  if (stage !== "identification") {
+    promptContext += "\nRECENT SEARCHES:\n";
+    investigationContext.searchHistory.slice(-3).forEach(search => {
+      promptContext += `- ${search.tool}: "${search.query}"\n`;
+    });
+  }
+  
+  // Add investigation status
+  promptContext += "\nINVESTIGATION STATUS:\n";
+  promptContext += `Current stage: ${investigationContext.investigationStatus.currentStage}\n`;
+  promptContext += `Completed questions: ${investigationContext.investigationStatus.completedQuestions.join(", ")}\n`;
+  promptContext += `Next questions: ${investigationContext.investigationStatus.pendingQuestions.slice(0, 2).join(", ")}\n`;
+  
+  return promptContext;
+}
+
+3. Selectively Including Context in Claude Prompts
+Instead of sending all context to Claude every time, selectively provide what's relevant:
+async function askClaude(question, stage) {
+  // Get formatted context relevant to this stage
+  const context = formatContextForClaude(stage);
+  
+  const prompt = `
+  You are researching companies for SmartBroker.
+  
+  CONTEXT:
+  ${context}
+  
+  CURRENT TASK:
+  ${question}
+  
+  Remember to:
+  1. Verify information is about the correct company
+  2. Provide confidence levels for your findings
+  3. Keep track of your sources
+  `;
+  
+  // Call Claude API with this prompt
+  // ...
+}
