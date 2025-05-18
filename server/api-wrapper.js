@@ -134,24 +134,53 @@ function generateResearchPrompt(company, question, previousFindings = null) {
         for (const [key, value] of Object.entries(previousFindings)) {
             prompt += `${key}: ${value}\n`;
         }
+        
+        // Special handling for Owner Age question if we already have the owner name
+        if (question.text.includes("owner of the company at least 50 years old") && 
+            previousFindings['Owner Name']) {
+            prompt += `\nIMPORTANT: We've already identified that the owner/president is "${previousFindings['Owner Name']}". `;
+            prompt += `Please specifically focus your research on finding the age of this person.\n`;
+            prompt += `If you find information about the age of "${previousFindings['Owner Name']}", explicitly state it in your answer.\n`;
+        }
     }
     
     // Main question
     prompt += `\nI need to answer this specific question: "${question.text}"\n`;
-    prompt += `A positive answer would be: "${question.positiveAnswer}"\n`;
+    
+    // Special handling for owner name question
+    if (question.text === "Who is the president or owner of the company?") {
+        prompt += `For this question, I need you to find the specific name of the president, owner, CEO, or founder.\n`;
+        prompt += `If you find a name, provide it in your answer. If you can't find a name, indicate "unknown".\n`;
+        prompt += `VERY IMPORTANT: When you provide your final answer, it must ONLY contain the name - no additional words or phrases.\n`;
+        prompt += `Example of a correct answer: "Final Answer: John Smith" or "Final Answer: unknown"\n`;
+        prompt += `Example of an incorrect answer: "Final Answer: The founder is John Smith" or "Final Answer: I found that John Smith is the CEO"\n`;
+    } else {
+        prompt += `A positive answer would be: "${question.positiveAnswer}"\n`;
+    }
     
     if (question.note) {
         prompt += `Note: ${question.note}\n`;
     }
     
     // Instructions for verification and response format
-    prompt += `\nIMPORTANT INSTRUCTIONS:
+    if (question.text === "Who is the president or owner of the company?") {
+        prompt += `\nIMPORTANT INSTRUCTIONS:
+1. Make sure you're researching the correct company by verifying against the company identifiers
+2. If you find information about a different company with a similar name, note this and try to refocus on the target company
+3. If you find a name, state it clearly like "The owner/president is [Name]"
+4. If you cannot find a name, state "I could not find the owner or president's name"
+5. Include your confidence level (HIGH, MEDIUM, LOW)
+6. Include brief evidence or reasoning for your answer
+7. List any sources or websites you used for reference`;
+    } else {
+        prompt += `\nIMPORTANT INSTRUCTIONS:
 1. Make sure you're researching the correct company by verifying against the company identifiers
 2. If you find information about a different company with a similar name, note this and try to refocus on the target company
 3. Provide a direct YES or NO answer to the question if possible
 4. Include your confidence level (HIGH, MEDIUM, LOW)
 5. Include brief evidence or reasoning for your answer
 6. List any sources or websites you used for reference`;
+    }
 
     return prompt;
 }
@@ -171,19 +200,84 @@ Follow these guidelines:
 
 // Determine if Claude's response is a positive match for the question
 function interpretClaudeResponse(response, question) {
-    const content = response.content.toLowerCase();
+    const content = response.content;
+    const contentLower = content.toLowerCase();
     let isPositive = false;
     let confidence = 'LOW';
+    let answer = 'NO';
     
-    // Check for direct yes/no answers
-    if (content.includes('yes') || content.includes('positive') || content.includes('affirmative')) {
-        isPositive = true;
+    // Special handling for the owner name question (question #3)
+    if (question.text === "Who is the president or owner of the company?") {
+        // First check if there's a direct answer format with a final answer line
+        const finalAnswerMatch = content.match(/final answer:?\s*([^\n.]+)/i);
+        if (finalAnswerMatch && finalAnswerMatch[1]) {
+            const potentialName = finalAnswerMatch[1].trim();
+            
+            // Make sure it's not just a YES/NO/Unknown response
+            if (!/^(yes|no|unknown|not found|couldn't find|could not find)$/i.test(potentialName)) {
+                // Check if it's a proper name format (starts with capital letter)
+                if (/^[A-Z][a-z]/.test(potentialName)) {
+                    isPositive = true;
+                    answer = potentialName;
+                    // Skip the other pattern matching
+                    return {
+                        question: question.text,
+                        answer: answer,
+                        confidence,
+                        evidence: '',
+                        sources: ''
+                    };
+                }
+            }
+        }
+        
+        // If no direct final answer, try to extract a name from the response
+        // Look for patterns like "The owner is [Name]" or "The president is [Name]"
+        const namePatterns = [
+            /(?:owner|president|ceo|founder|chief executive|leader) (?:is|appears to be) ([A-Z][a-z]+(?: [A-Z][a-z]+){1,4})/i,
+            /([A-Z][a-z]+(?: [A-Z][a-z]+){1,4}) (?:is|appears to be)(?: the)? (?:owner|president|ceo|founder|chief executive|leader)/i,
+            /name:? ([A-Z][a-z]+(?: [A-Z][a-z]+){1,4})/i,
+            /found:? ([A-Z][a-z]+(?: [A-Z][a-z]+){1,4})/i
+        ];
+        
+        let ownerName = null;
+        
+        // Try each pattern until we find a match
+        for (const pattern of namePatterns) {
+            const match = content.match(pattern);
+            if (match && match[1]) {
+                ownerName = match[1].trim();
+                // Clean up the name - remove any trailing punctuation or phrases
+                ownerName = ownerName.replace(/\.$/, '').trim();
+                ownerName = ownerName.replace(/\s+(?:is|as|who|appears|seems).*$/, '').trim();
+                break;
+            }
+        }
+        
+        // If a name was found, use it as the answer
+        if (ownerName) {
+            isPositive = true;
+            answer = ownerName;
+        } else if (contentLower.includes("could not find") || 
+                  contentLower.includes("no information") || 
+                  contentLower.includes("unclear") ||
+                  contentLower.includes("not identified") ||
+                  contentLower.includes("unknown")) {
+            answer = "unknown";
+        }
+    } else {
+        // Standard yes/no handling for other questions
+        if (contentLower.includes('yes') || contentLower.includes('positive') || contentLower.includes('affirmative')) {
+            isPositive = true;
+        }
+        
+        answer = isPositive ? question.positiveAnswer : 'NO';
     }
     
     // Check for confidence level
-    if (content.includes('high confidence') || content.includes('confidence: high')) {
+    if (contentLower.includes('high confidence') || contentLower.includes('confidence: high')) {
         confidence = 'HIGH';
-    } else if (content.includes('medium confidence') || content.includes('confidence: medium')) {
+    } else if (contentLower.includes('medium confidence') || contentLower.includes('confidence: medium')) {
         confidence = 'MEDIUM';
     }
     
@@ -197,7 +291,7 @@ function interpretClaudeResponse(response, question) {
     
     return {
         question: question.text,
-        answer: isPositive ? question.positiveAnswer : 'NO',
+        answer: answer,
         confidence,
         evidence,
         sources

@@ -20,6 +20,7 @@ app.use(express.static(path.join(__dirname, '../development')));
 const questions = [
     { text: "Does the company sell a software product or software development services?", positiveAnswer: "YES", note: "Check the company's website" },
     { text: "Are the company's products vertical market software?", positiveAnswer: "YES", note: "Check the company's website" },
+    { text: "Who is the president or owner of the company?", positiveAnswer: "NAME", note: "Look for leadership information" },
     { text: "Is the owner of the company at least 50 years old?", positiveAnswer: "YES", note: "Check radaris" },
     { text: "Does the company number between 5 and 40 employees?", positiveAnswer: "YES", note: "" },
     { text: "Is the company bootstrapped?", positiveAnswer: "YES", note: "If there's no indication of VC/PE funding, assume the company is bootstrapped" },
@@ -32,23 +33,32 @@ let companies = [];
 // Load company data from CSV
 function loadCompanyData() {
     const results = [];
+    let count = 0;
+    const LIMIT = 100; // Limit to 100 records
+    
     return new Promise((resolve, reject) => {
         fs.createReadStream(path.join(__dirname, '../data/company_info.csv'))
             .pipe(csv())
             .on('data', (data) => {
-                // Extract relevant company info
-                const company = {
-                    companyName: data['Company'] || '',
-                    owner: data['First Name'] && data['Last Name'] ? `${data['First Name']} ${data['Last Name']}` : '',
-                    title: data['Title'] || '',
-                    location: data['City'] && data['State'] ? `${data['City']}, ${data['State']}` : '',
-                    website: data['Website'] ? data['Website'].replace('http://', '').replace('https://', '') : '',
-                    employeeCount: data['Annual Revenue'] ? Math.floor(parseInt(data['Annual Revenue'].replace(/\D/g, '')) / 120000) : null,
-                    linkedinUrl: data['Company Linkedin Url'] || ''
-                };
-                results.push(company);
+                // Only process up to LIMIT records
+                if (count < LIMIT) {
+                    // Extract only company name and website for now
+                    const company = {
+                        companyName: data['Company'] || '',
+                        website: data['Website'] ? data['Website'].replace('http://', '').replace('https://', '') : '',
+                        // Keep these fields in the structure but leave them empty
+                        owner: '',
+                        title: '',
+                        location: '',
+                        employeeCount: null,
+                        linkedinUrl: ''
+                    };
+                    results.push(company);
+                    count++;
+                }
             })
             .on('end', () => {
+                console.log(`Loaded ${results.length} companies (limited to ${LIMIT})`);
                 companies = results;
                 resolve(results);
             })
@@ -104,7 +114,7 @@ app.post('/api/perplexity', async (req, res) => {
 // Endpoint to research a specific company for a specific question
 app.post('/api/research', async (req, res) => {
     try {
-        const { companyIndex, questionIndex } = req.body;
+        const { companyIndex, questionIndex, ownerName } = req.body;
         
         // Validate parameters
         if (companyIndex === undefined || questionIndex === undefined) {
@@ -112,10 +122,10 @@ app.post('/api/research', async (req, res) => {
         }
         
         // Get company and question
-        const company = companies[companyIndex];
+        let companyData = companies[companyIndex];
         const question = questions[questionIndex];
         
-        if (!company) {
+        if (!companyData) {
             return res.status(404).json({ error: 'Company not found' });
         }
         
@@ -123,15 +133,26 @@ app.post('/api/research', async (req, res) => {
             return res.status(404).json({ error: 'Question not found' });
         }
         
-        // For now we don't track previous findings since client manages state
+        // Initialize previous findings
         const previousFindings = {};
         
+        // If this is the Owner Age question and we have the owner name from previous research
+        if (questionIndex === 3 && ownerName) {
+            previousFindings['Owner Name'] = ownerName;
+            console.log(`Using previously found owner name: ${ownerName} for age research`);
+            
+            // Clone the company object to avoid modifying the original
+            companyData = {...companyData};
+            // Always override the owner field with our research result
+            companyData.owner = ownerName;
+        }
+        
         // Generate the research prompt
-        const prompt = apiWrapper.generateResearchPrompt(company, question, previousFindings);
+        const prompt = apiWrapper.generateResearchPrompt(companyData, question, previousFindings);
         const systemPrompt = apiWrapper.createSystemPrompt();
         
         // Call Claude to perform the research
-        console.log(`Researching company ${company.companyName} for question: ${question.text}`);
+        console.log(`Researching company ${companyData.companyName} for question: ${question.text}`);
         const claudeResponse = await apiWrapper.askClaude(prompt, systemPrompt, 2000);
         
         // Interpret Claude's response
@@ -139,7 +160,7 @@ app.post('/api/research', async (req, res) => {
         
         // Return the research result without storing server-side state
         res.json({
-            company: company.companyName,
+            company: companyData.companyName,
             question: question.text,
             result: result,
             claudeResponse: claudeResponse.content,
