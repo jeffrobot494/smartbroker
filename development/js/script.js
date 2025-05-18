@@ -166,13 +166,20 @@ async function performResearch(companyIndex, questionIndex) {
         }
         
         const answer = result.result.answer;
-        investigationState.results[companyIndex].answers[questionIndex] = answer;
+        const confidence = result.result.confidence || 'MEDIUM';
+        
+        // Store both answer and confidence
+        investigationState.results[companyIndex].answers[questionIndex] = {
+            text: answer,
+            confidence: confidence
+        };
+        
         investigationState.results[companyIndex].status = answer !== question.positiveAnswer ? 
             'Disqualified' : 
             (questionIndex === investigationState.questions.length - 1 ? 'Qualified' : 'In Progress');
         
-        // INTEGRATION POINT: Update the table cell with the result
-        updateCellWithResult(companyIndex, questionIndex, answer);
+        // INTEGRATION POINT: Update the table cell with the result and confidence
+        updateCellWithResult(companyIndex, questionIndex, answer, confidence);
         
         return result;
     } catch (error) {
@@ -277,7 +284,13 @@ function updateCompanyTableWithResults() {
         if (result && result.answers) {
             result.answers.forEach((answer, questionIndex) => {
                 if (answer) {
-                    updateCellWithResult(companyIndex, questionIndex, answer);
+                    // Check if answer is an object with text and confidence
+                    if (typeof answer === 'object' && answer.text) {
+                        updateCellWithResult(companyIndex, questionIndex, answer.text, answer.confidence);
+                    } else {
+                        // For backward compatibility with old format
+                        updateCellWithResult(companyIndex, questionIndex, answer);
+                    }
                 }
             });
         }
@@ -287,13 +300,20 @@ function updateCompanyTableWithResults() {
 /**
  * Update a specific cell with research result
  */
-function updateCellWithResult(companyIndex, questionIndex, answer) {
+function updateCellWithResult(companyIndex, questionIndex, answer, confidence) {
     const rows = companyDataTable.querySelectorAll('tbody tr');
     if (rows.length > companyIndex) {
         const row = rows[companyIndex];
         const cells = row.querySelectorAll('.question-cell');
         if (cells.length > questionIndex) {
             const cell = cells[questionIndex];
+            
+            // Set confidence as a data attribute for styling
+            if (confidence) {
+                cell.dataset.confidence = confidence.toLowerCase();
+            } else {
+                cell.dataset.confidence = '';
+            }
             
             // Handle Owner Name question differently (questionIndex 2)
             if (questionIndex === 2) {

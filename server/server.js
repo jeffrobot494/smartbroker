@@ -16,15 +16,92 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../development')));
 
-// Define the questions for company assessment
+// Define the questions for company assessment with enhanced details
 const questions = [
-    { text: "Does the company sell a software product or products?", positiveAnswer: "YES", note: "Check the company's website first. The company selling software development services doesn't count as a product." },
-    { text: "Are the company's products vertical market software?", positiveAnswer: "YES", note: "Check the company's website" },
-    { text: "Who is the president or owner of the company?", positiveAnswer: "NAME", note: "Look for leadership information" },
-    { text: "Is the owner of the company at least 50 years old?", positiveAnswer: "YES", note: "Check radaris" },
-    { text: "Does the company number between 5 and 40 employees?", positiveAnswer: "YES", note: "" },
-    { text: "Is the company bootstrapped?", positiveAnswer: "YES", note: "If there's no indication of VC/PE funding, assume the company is bootstrapped" },
-    { text: "Are the majority of the employees based in the USA?", positiveAnswer: "YES", note: "Check zoominfo" }
+    { 
+        text: "Does the company sell a software product or products?", 
+        positiveAnswer: "YES", 
+        detailedDescription: "We're looking for companies that develop and sell their own software products, as opposed to companies that primarily offer software development services or consulting. A software product is a packaged application or platform that clients can purchase, license, or subscribe to use.",
+        searchGuidance: "Examine the company website, especially 'Products', 'Solutions', or 'Services' pages. Look for specific named software offerings, pricing pages, demo requests, or product screenshots. Software products typically have specific names, features lists, and may mention licensing models.",
+        disqualificationCriteria: "The company should be disqualified if it primarily offers custom software development, IT consulting, implementation services, or integration of third-party software without having its own products. Companies describing themselves as 'software development shops' or 'dev agencies' are typically not what we're looking for.",
+        usefulSources: ["Company website", "LinkedIn company page", "G2.com", "Capterra.com", "Crunchbase"],
+        examples: {
+            positive: "Acme Corp offers TimeTracker Pro, a time management software for professional services firms with pricing tiers and a free trial.",
+            negative: "XYZ Solutions provides custom software development services tailored to each client's unique business requirements."
+        }
+    },
+    { 
+        text: "Are the company's products vertical market software?", 
+        positiveAnswer: "YES", 
+        detailedDescription: "Vertical market software is designed to address the needs of a specific industry or business type, rather than being general-purpose software. We're looking for software that specializes in a particular industry vertical like healthcare, legal, construction, manufacturing, etc.",
+        searchGuidance: "Look at how the company describes its target market. Check if they mention specific industries they serve. Examine customer testimonials and case studies for industry focus. Look for industry-specific terminology or features in their product descriptions.",
+        disqualificationCriteria: "The company should be disqualified if their products are horizontal (designed for all businesses regardless of industry) like general accounting software, generalized CRM, or productivity tools that aren't industry-specific.",
+        usefulSources: ["Company website - particularly 'About Us' and 'Industries' pages", "Case studies", "Customer testimonials"],
+        examples: {
+            positive: "MedTech Solutions offers PatientFlow, a practice management system specifically designed for small to medium-sized medical practices.",
+            negative: "BusinessSoft offers a general-purpose accounting package that can be used by any type of business."
+        }
+    },
+    { 
+        text: "Who is the president or owner of the company?", 
+        positiveAnswer: "NAME", 
+        detailedDescription: "We need to identify the primary decision-maker at the company - typically the founder, CEO, president, or majority owner. For small businesses, this is often one person who holds a title like Owner, President, CEO, or Founder.",
+        searchGuidance: "Check the company website's 'About Us', 'Team', or 'Leadership' pages. LinkedIn company page often lists key executives. For smaller companies, also look at LinkedIn profiles connected to the company with founder/owner/CEO titles. State business registrations sometimes list owners/officers.",
+        disqualificationCriteria: "This question doesn't disqualify a company, but is used to gather information for subsequent questions. If no clear owner can be identified, note this but continue with other questions.",
+        usefulSources: ["Company website", "LinkedIn", "Bloomberg company profiles", "OpenCorporates", "State business registries"],
+        examples: {
+            positive: "Based on the LinkedIn profile and company website, John Smith is the Founder and CEO of Acme Software.",
+            negative: "The company appears to be a subsidiary of a larger corporation and doesn't have a single identifiable owner."
+        }
+    },
+    { 
+        text: "Is the owner of the company at least 50 years old?", 
+        positiveAnswer: "YES", 
+        detailedDescription: "We need to verify if the identified owner/president is at least 50 years of age. This helps identify established business owners rather than younger entrepreneurs.",
+        searchGuidance: "Use public records services like Radaris, WhitePages, or Spokeo to search for age information. Look for graduation dates on LinkedIn that might indicate approximate age (e.g., college graduation in 1995 or earlier would suggest they're likely 50+). Search for news articles or interviews that might mention age or career length.",
+        disqualificationCriteria: "If you find concrete evidence that the owner is under 50 years old, the company should be disqualified.",
+        usefulSources: ["Radaris.com", "Spokeo.com", "WhitePages.com", "LinkedIn (check education dates)", "News articles or interviews"],
+        examples: {
+            positive: "According to Radaris, John Smith was born in 1965, making him 58 years old.",
+            negative: "Based on her LinkedIn profile showing college graduation in 2005, Jane Doe appears to be approximately 40 years old."
+        }
+    },
+    { 
+        text: "Does the company number between 5 and 40 employees?", 
+        positiveAnswer: "YES", 
+        detailedDescription: "We're looking for small businesses with enough employees to be established (at least 5) but not so large that they're beyond our target size (no more than 40).",
+        searchGuidance: "Check LinkedIn company page which often shows employee count. Look at the company website's team or about page to count visible employees. ZoomInfo, Crunchbase, and D&B often provide employee counts. If exact counts aren't available, you might estimate based on company size descriptions (small, medium) and annual revenue (roughly $100k-$250k per employee for software companies).",
+        disqualificationCriteria: "Companies with fewer than 5 employees may be too small or too new. Companies with more than 40 employees are too large for our criteria.",
+        usefulSources: ["LinkedIn company page", "ZoomInfo", "Crunchbase", "Company website team page", "D&B business directories"],
+        examples: {
+            positive: "According to LinkedIn, the company has 22 employees, which falls within our 5-40 range.",
+            negative: "The company's website states they have over 100 employees across 3 offices."
+        }
+    },
+    { 
+        text: "Is the company bootstrapped?", 
+        positiveAnswer: "YES", 
+        detailedDescription: "We're looking for companies that are self-funded (bootstrapped) rather than venture-backed or private equity owned. Bootstrapped companies are typically funded by the founders, their revenue, or small personal investments rather than institutional investors.",
+        searchGuidance: "Look for funding information on Crunchbase, which typically lists investment rounds. Check company press releases or news for mentions of funding. Review the company's 'About Us' page which might mention their funding approach. Absence of VC funding information often suggests bootstrapping.",
+        disqualificationCriteria: "Evidence of venture capital funding, private equity ownership, or being acquired by a larger company would disqualify the business. If there's no indication of external funding, assume the company is bootstrapped.",
+        usefulSources: ["Crunchbase", "Company website", "Press releases", "Business news articles"],
+        examples: {
+            positive: "The company has been operating for 15 years with no record of external funding on Crunchbase or in press releases, suggesting it is bootstrapped.",
+            negative: "According to Crunchbase, the company raised a $5M Series A round from Acme Ventures in 2021."
+        }
+    },
+    { 
+        text: "Are the majority of the employees based in the USA?", 
+        positiveAnswer: "YES", 
+        detailedDescription: "We want to identify companies with most of their workforce in the United States rather than primarily offshore operations.",
+        searchGuidance: "Check the company website for office locations. Look at employee LinkedIn profiles to see where they're located. Check job postings to see where they're hiring. ZoomInfo sometimes provides employee location breakdowns.",
+        disqualificationCriteria: "If most employees appear to be located outside the USA, or if the company primarily advertises its offshore development capabilities, it should be disqualified.",
+        usefulSources: ["ZoomInfo", "LinkedIn company page", "Company website 'Careers' or 'Contact Us' pages", "Job postings"],
+        examples: {
+            positive: "Based on LinkedIn data, approximately 80% of the company's 25 employees are located in the United States.",
+            negative: "The company's website highlights their development centers in Eastern Europe and India, with only sales and marketing in the US."
+        }
+    }
 ];
 
 // Company data storage

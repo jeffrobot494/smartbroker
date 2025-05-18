@@ -28,7 +28,7 @@
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1440px; /* Increased by 20% from 1200px */
             margin: 0 auto;
             padding: 20px;
         }
@@ -70,8 +70,8 @@
             background-color: white;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            padding: 24px;
-            margin-bottom: 24px;
+            padding: 28px; /* Increased by ~20% from 24px */
+            margin-bottom: 28px; /* Increased by ~20% from 24px */
         }
         
         .card-header {
@@ -151,7 +151,7 @@
             padding: 20px;
             border-radius: 8px;
             font-family: monospace;
-            height: 400px;
+            height: 480px; /* Increased by 20% from 400px */
             overflow-y: auto;
             margin-top: 20px;
             white-space: pre-wrap;
@@ -228,7 +228,7 @@
         
         /* Company data table styles */
         .company-data-table-container {
-            max-height: 400px;
+            max-height: 480px; /* Increased by 20% from 400px */
             overflow-y: auto;
             overflow-x: auto;
             margin-top: 20px;
@@ -241,7 +241,7 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 14px;
-            min-width: 1200px; /* Force horizontal scroll */
+            min-width: 1440px; /* Force horizontal scroll - Increased by 20% from 1200px */
         }
         
         .company-data-table th {
@@ -256,7 +256,7 @@
             cursor: pointer;
             user-select: none;
             transition: background-color 0.2s;
-            min-width: 100px;
+            min-width: 120px; /* Increased by 20% from 100px */
         }
         
         .company-data-table th:hover {
@@ -302,6 +302,21 @@
         
         .no-value {
             color: #e74c3c;
+        }
+        
+        /* Confidence level styling */
+        .question-cell {
+            position: relative;
+        }
+        
+        .question-cell::after {
+            content: attr(data-confidence);
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            font-size: 10px;
+            opacity: 0.7;
+            font-style: italic;
         }
         
         /* Settings Styles */

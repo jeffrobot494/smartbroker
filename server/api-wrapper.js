@@ -145,42 +145,72 @@ function generateResearchPrompt(company, question, previousFindings = null) {
     }
     
     // Main question
-    prompt += `\nI need to answer this specific question: "${question.text}"\n`;
+    prompt += `\nQUESTION: ${question.text}\n`;
     
-    // Special handling for owner name question
+    // Add detailed description for all questions
+    if (question.detailedDescription) {
+        prompt += `\nDETAILED DESCRIPTION:\n${question.detailedDescription}\n`;
+    }
+    
+    // Add search guidance for all questions
+    if (question.searchGuidance) {
+        prompt += `\nSEARCH GUIDANCE:\n${question.searchGuidance}\n`;
+    }
+    
+    // Add disqualification criteria for all questions
+    if (question.disqualificationCriteria) {
+        prompt += `\nDISQUALIFICATION CRITERIA:\n${question.disqualificationCriteria}\n`;
+    }
+    
+    // Add useful sources
+    if (question.usefulSources && question.usefulSources.length > 0) {
+        prompt += `\nUSEFUL SOURCES:\n`;
+        question.usefulSources.forEach(source => {
+            prompt += `- ${source}\n`;
+        });
+    }
+    
+    // Add examples
+    if (question.examples) {
+        prompt += `\nEXAMPLES:\n`;
+        if (question.examples.positive) {
+            prompt += `Positive example: ${question.examples.positive}\n`;
+        }
+        if (question.examples.negative) {
+            prompt += `Negative example: ${question.examples.negative}\n`;
+        }
+    }
+    
+    // Special handling for expected answer format
     if (question.text === "Who is the president or owner of the company?") {
+        prompt += `\nANSWER FORMAT:\n`;
         prompt += `For this question, I need you to find the specific name of the president, owner, CEO, or founder.\n`;
         prompt += `If you find a name, provide it in your answer. If you can't find a name, indicate "unknown".\n`;
         prompt += `VERY IMPORTANT: When you provide your final answer, it must ONLY contain the name - no additional words or phrases.\n`;
         prompt += `Example of a correct answer: "Final Answer: John Smith" or "Final Answer: unknown"\n`;
         prompt += `Example of an incorrect answer: "Final Answer: The founder is John Smith" or "Final Answer: I found that John Smith is the CEO"\n`;
     } else {
+        prompt += `\nANSWER FORMAT:\n`;
         prompt += `A positive answer would be: "${question.positiveAnswer}"\n`;
     }
     
-    if (question.note) {
-        prompt += `Note: ${question.note}\n`;
+    // Instructions for verification and response format
+    prompt += `\nIMPORTANT INSTRUCTIONS:\n`;
+    prompt += `1. Make sure you're researching the correct company by verifying against the company identifiers\n`;
+    prompt += `2. If you find information about a different company with a similar name, note this and try to refocus on the target company\n`;
+    
+    // Special handling for the owner name question
+    if (question.text === "Who is the president or owner of the company?") {
+        prompt += `3. If you find a name, state it clearly like "The owner/president is [Name]"\n`;
+        prompt += `4. If you cannot find a name, state "I could not find the owner or president's name"\n`;
+    } else {
+        prompt += `3. Provide a direct ${question.positiveAnswer} or NO answer to the question\n`;
     }
     
-    // Instructions for verification and response format
-    if (question.text === "Who is the president or owner of the company?") {
-        prompt += `\nIMPORTANT INSTRUCTIONS:
-1. Make sure you're researching the correct company by verifying against the company identifiers
-2. If you find information about a different company with a similar name, note this and try to refocus on the target company
-3. If you find a name, state it clearly like "The owner/president is [Name]"
-4. If you cannot find a name, state "I could not find the owner or president's name"
-5. Include your confidence level (HIGH, MEDIUM, LOW)
-6. Include brief evidence or reasoning for your answer
-7. List any sources or websites you used for reference`;
-    } else {
-        prompt += `\nIMPORTANT INSTRUCTIONS:
-1. Make sure you're researching the correct company by verifying against the company identifiers
-2. If you find information about a different company with a similar name, note this and try to refocus on the target company
-3. Provide a direct YES or NO answer to the question if possible
-4. Include your confidence level (HIGH, MEDIUM, LOW)
-5. Include brief evidence or reasoning for your answer
-6. List any sources or websites you used for reference`;
-    }
+    prompt += `4. Include your confidence level (HIGH, MEDIUM, LOW)\n`;
+    prompt += `5. Include brief evidence or reasoning for your answer\n`;
+    prompt += `6. List any sources or websites you used for reference\n`;
+    prompt += `7. End with a "Final Answer: " line that provides just the answer\n`;
 
     return prompt;
 }
