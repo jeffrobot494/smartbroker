@@ -16,21 +16,18 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../development')));
 
-// Store investigation state
-const investigationState = {
-    currentCompanyIndex: 0,
-    currentQuestionIndex: 0,
-    results: [],
-    companies: [],
-    questions: [
-        { text: "Does the company sell a software product or software development services?", positiveAnswer: "YES", note: "Check the company's website" },
-        { text: "Are the company's products vertical market software?", positiveAnswer: "YES", note: "Check the company's website" },
-        { text: "Is the owner of the company at least 50 years old?", positiveAnswer: "YES", note: "Check radaris" },
-        { text: "Does the company number between 5 and 40 employees?", positiveAnswer: "YES", note: "" },
-        { text: "Is the company bootstrapped?", positiveAnswer: "YES", note: "If there's no indication of VC/PE funding, assume the company is bootstrapped" },
-        { text: "Are the majority of the employees based in the USA?", positiveAnswer: "YES", note: "Check zoominfo" }
-    ]
-};
+// Define the questions for company assessment
+const questions = [
+    { text: "Does the company sell a software product or software development services?", positiveAnswer: "YES", note: "Check the company's website" },
+    { text: "Are the company's products vertical market software?", positiveAnswer: "YES", note: "Check the company's website" },
+    { text: "Is the owner of the company at least 50 years old?", positiveAnswer: "YES", note: "Check radaris" },
+    { text: "Does the company number between 5 and 40 employees?", positiveAnswer: "YES", note: "" },
+    { text: "Is the company bootstrapped?", positiveAnswer: "YES", note: "If there's no indication of VC/PE funding, assume the company is bootstrapped" },
+    { text: "Are the majority of the employees based in the USA?", positiveAnswer: "YES", note: "Check zoominfo" }
+];
+
+// Company data storage
+let companies = [];
 
 // Load company data from CSV
 function loadCompanyData() {
@@ -52,7 +49,7 @@ function loadCompanyData() {
                 results.push(company);
             })
             .on('end', () => {
-                investigationState.companies = results;
+                companies = results;
                 resolve(results);
             })
             .on('error', (error) => {
@@ -115,8 +112,8 @@ app.post('/api/research', async (req, res) => {
         }
         
         // Get company and question
-        const company = investigationState.companies[companyIndex];
-        const question = investigationState.questions[questionIndex];
+        const company = companies[companyIndex];
+        const question = questions[questionIndex];
         
         if (!company) {
             return res.status(404).json({ error: 'Company not found' });
@@ -126,16 +123,8 @@ app.post('/api/research', async (req, res) => {
             return res.status(404).json({ error: 'Question not found' });
         }
         
-        // Get previous findings for this company
+        // For now we don't track previous findings since client manages state
         const previousFindings = {};
-        if (investigationState.results[companyIndex]) {
-            const answers = investigationState.results[companyIndex].answers;
-            for (let i = 0; i < answers.length; i++) {
-                if (answers[i] && i !== questionIndex) {
-                    previousFindings[`Question ${i+1}`] = answers[i];
-                }
-            }
-        }
         
         // Generate the research prompt
         const prompt = apiWrapper.generateResearchPrompt(company, question, previousFindings);
@@ -148,27 +137,7 @@ app.post('/api/research', async (req, res) => {
         // Interpret Claude's response
         const result = apiWrapper.interpretClaudeResponse(claudeResponse, question);
         
-        // Save the result to investigation state
-        if (!investigationState.results[companyIndex]) {
-            investigationState.results[companyIndex] = {
-                companyName: company.companyName,
-                answers: Array(investigationState.questions.length).fill(null),
-                status: 'In Progress'
-            };
-        }
-        
-        investigationState.results[companyIndex].answers[questionIndex] = result.answer;
-        
-        // If negative, mark as disqualified
-        if (result.answer !== question.positiveAnswer) {
-            investigationState.results[companyIndex].status = 'Disqualified';
-        }
-        // If we're on the last question and answer is positive, mark as qualified
-        else if (questionIndex === investigationState.questions.length - 1) {
-            investigationState.results[companyIndex].status = 'Qualified';
-        }
-        
-        // Return the research result
+        // Return the research result without storing server-side state
         res.json({
             company: company.companyName,
             question: question.text,
@@ -185,97 +154,27 @@ app.post('/api/research', async (req, res) => {
 
 // Endpoint to get companies
 app.get('/api/companies', (req, res) => {
-    if (investigationState.companies.length === 0) {
+    if (companies.length === 0) {
         loadCompanyData()
-            .then(companies => {
-                res.json(companies);
+            .then(data => {
+                res.json(data);
             })
             .catch(err => {
                 console.error('Error loading company data:', err);
                 res.status(500).json({ error: 'Failed to load company data' });
             });
     } else {
-        res.json(investigationState.companies);
+        res.json(companies);
     }
 });
 
 // Get questions
 app.get('/api/questions', (req, res) => {
-    res.json(investigationState.questions);
+    res.json(questions);
 });
 
-// Get current investigation state
-app.get('/api/investigation/state', (req, res) => {
-    res.json({
-        currentCompanyIndex: investigationState.currentCompanyIndex,
-        currentQuestionIndex: investigationState.currentQuestionIndex,
-        results: investigationState.results
-    });
-});
-
-// Start or reset investigation
-app.post('/api/investigation/start', (req, res) => {
-    investigationState.currentCompanyIndex = 0;
-    investigationState.currentQuestionIndex = 0;
-    investigationState.results = [];
-    
-    res.json({ message: 'Investigation started/reset successfully' });
-});
-
-// Save answer to current company/question
-app.post('/api/investigation/answer', (req, res) => {
-    const { companyIndex, questionIndex, answer } = req.body;
-    
-    if (!investigationState.results[companyIndex]) {
-        investigationState.results[companyIndex] = {
-            companyName: investigationState.companies[companyIndex].companyName,
-            answers: Array(investigationState.questions.length).fill(null),
-            status: 'In Progress'
-        };
-    }
-    
-    investigationState.results[companyIndex].answers[questionIndex] = answer;
-    
-    // If negative answer, mark as disqualified
-    if (answer !== investigationState.questions[questionIndex].positiveAnswer) {
-        investigationState.results[companyIndex].status = 'Disqualified';
-    } 
-    // If we're on the last question and answer is positive, mark as qualified
-    else if (questionIndex === investigationState.questions.length - 1) {
-        investigationState.results[companyIndex].status = 'Qualified';
-    }
-    
-    res.json({ message: 'Answer saved successfully' });
-});
-
-// Move to next step in investigation
-app.post('/api/investigation/next', (req, res) => {
-    // Current company and question
-    let nextCompanyIndex = investigationState.currentCompanyIndex;
-    let nextQuestionIndex = investigationState.currentQuestionIndex;
-    
-    // Move to next company
-    nextCompanyIndex++;
-    
-    // If we've gone through all companies for this question
-    if (nextCompanyIndex >= investigationState.companies.length) {
-        nextCompanyIndex = 0;
-        nextQuestionIndex++;
-    }
-    
-    // Update state
-    investigationState.currentCompanyIndex = nextCompanyIndex;
-    investigationState.currentQuestionIndex = nextQuestionIndex;
-    
-    // Check if we're done with all questions
-    const isDone = nextQuestionIndex >= investigationState.questions.length;
-    
-    res.json({ 
-        nextCompanyIndex,
-        nextQuestionIndex,
-        isDone
-    });
-});
+// Since our application now uses client-side state management,
+// we've removed the server-side state management endpoints.
 
 // Simple test route
 app.get('/', (req, res) => {

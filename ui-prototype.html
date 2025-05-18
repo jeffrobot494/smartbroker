@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBroker UI Prototype</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #1abc9c;
+            --light-gray: #f5f7fa;
+            --medium-gray: #e5e9f0;
+            --dark-gray: #8395a7;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: var(--light-gray);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            font-size: 24px;
+            color: var(--accent-color);
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        main {
+            padding: 30px 0;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .csv-info {
+            margin-bottom: 20px;
+            padding: 12px;
+            background-color: var(--light-gray);
+            border-radius: 4px;
+        }
+        
+        .question-list {
+            list-style: none;
+        }
+        
+        .question-item {
+            padding: 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        .question-item:hover {
+            background-color: var(--light-gray);
+            border-color: var(--accent-color);
+        }
+        
+        .question-item.selected {
+            background-color: rgba(26, 188, 156, 0.1);
+            border-color: var(--accent-color);
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .question-item h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+        
+        .question-info {
+            font-size: 14px;
+            color: var(--dark-gray);
+            margin-bottom: 5px;
+        }
+        
+        .button {
+            padding: 10px 15px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-weight: 500;
+        }
+        
+        .button:hover {
+            background-color: #16a085;
+        }
+        
+        .terminal {
+            background-color: #2d3436;
+            color: #f1f2f6;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .terminal-title {
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
+        .terminal-input {
+            background-color: #2d3436;
+            color: #f1f2f6;
+            font-family: monospace;
+            border: 1px solid #636e72;
+            border-radius: 4px;
+            padding: 8px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .result-container {
+            margin-top: 15px;
+        }
+        
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .result-table th, .result-table td {
+            border: 1px solid var(--medium-gray);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        .result-table th {
+            background-color: var(--light-gray);
+            font-weight: 500;
+        }
+        
+        .result-table tr:nth-child(even) {
+            background-color: var(--light-gray);
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: var(--accent-color);
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Company data table styles */
+        .company-data-table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: auto;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+        }
+        
+        .company-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 1200px; /* Force horizontal scroll */
+        }
+        
+        .company-data-table th {
+            position: sticky;
+            top: 0;
+            background-color: var(--light-gray);
+            padding: 10px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--medium-gray);
+            z-index: 10;
+            cursor: grab;
+            user-select: none;
+            transition: background-color 0.2s;
+            min-width: 100px; /* Ensure minimum width for headers */
+        }
+        
+        .company-data-table th::before {
+            content: "⠿";
+            margin-right: 8px;
+            color: var(--dark-gray);
+            font-size: 12px;
+            display: inline-block;
+        }
+        
+        .company-data-table th:hover {
+            background-color: rgba(26, 188, 156, 0.1);
+        }
+        
+        .company-data-table th.dragging {
+            cursor: grabbing;
+            opacity: 0.8;
+            background-color: rgba(26, 188, 156, 0.2);
+        }
+        
+        .company-data-table th.drop-target {
+            border-left: 2px solid var(--accent-color);
+            border-right: 2px solid var(--accent-color);
+        }
+        
+        .company-data-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--medium-gray);
+            white-space: nowrap;
+        }
+        
+        .company-data-table th.selected-question {
+            background-color: rgba(26, 188, 156, 0.2);
+            border-bottom: 3px solid var(--accent-color);
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .company-data-table td.selected-question {
+            background-color: rgba(26, 188, 156, 0.1);
+        }
+        
+        .company-data-table td.selected-cell {
+            background-color: rgba(26, 188, 156, 0.3) !important;
+            border: 2px solid var(--accent-color);
+            font-weight: 600;
+            position: relative;
+        }
+        
+        .company-data-table td.selected-cell::after {
+            content: "→";
+            position: absolute;
+            right: 5px;
+            color: var(--accent-color);
+            font-size: 16px;
+        }
+        
+        .company-data-table tr:nth-child(even) {
+            background-color: var(--light-gray);
+        }
+        
+        .company-data-table tr:hover {
+            background-color: rgba(26, 188, 156, 0.1);
+        }
+        
+        .yes-value {
+            color: #27ae60;
+            font-weight: 500;
+        }
+        
+        .no-value {
+            color: #e74c3c;
+        }
+        
+        /* Settings Styles */
+        .settings-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: var(--light-gray);
+            border-radius: 8px;
+        }
+        
+        .settings-section h3 {
+            margin-bottom: 12px;
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+        
+        .setting-item {
+            margin-bottom: 10px;
+        }
+        
+        .setting-label {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .setting-label input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        
+        .tooltip-icon {
+            margin-left: 8px;
+            color: var(--dark-gray);
+            cursor: help;
+            font-size: 16px;
+            border-radius: 50%;
+            position: relative;
+        }
+        
+        .tooltip-icon:hover::after {
+            content: attr(title);
+            position: absolute;
+            left: 24px;
+            top: -5px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            width: 250px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <h1>SmartBroker UI Prototype</h1>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">SmartBroker Investigation Setup</h2>
+            </div>
+            
+            <div class="csv-info">
+                <p>Using company data from: <strong>./data/company_info.csv</strong></p>
+            </div>
+            
+            <div class="settings-section">
+                <h3>Investigation Settings</h3>
+                <div class="setting-item">
+                    <label for="pause-setting" class="setting-label">
+                        <input type="checkbox" id="pause-setting" checked>
+                        <span>Pause Between Searches</span>
+                        <span class="tooltip-icon" title="When checked, Claude will wait for you to hit Enter before making tool calls or starting the next investigation. When unchecked, investigations will run automatically.">ⓘ</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Questions section hidden -->
+            <div class="hidden">
+                <h3>Questions (click to select which to research):</h3>
+                <ul class="question-list" id="question-list">
+                    <li class="question-item" data-question-index="0">
+                        <h3>1. Does the company sell a software product or software development services?</h3>
+                        <p class="question-info">Positive answer: Sells a product or products</p>
+                        <p class="question-info">Note: Check the company's website</p>
+                    </li>
+                    <li class="question-item" data-question-index="1">
+                        <h3>2. Are the company's products vertical market software?</h3>
+                        <p class="question-info">Positive answer: Yes</p>
+                        <p class="question-info">Note: Check the company's website</p>
+                    </li>
+                    <li class="question-item" data-question-index="2">
+                        <h3>3. Is the owner of the company at least 50 years old?</h3>
+                        <p class="question-info">Positive answer: Yes</p>
+                        <p class="question-info">Note: Check radaris</p>
+                    </li>
+                    <li class="question-item" data-question-index="3">
+                        <h3>4. Does the company number between 5 and 40 employees?</h3>
+                        <p class="question-info">Positive answer: Yes</p>
+                    </li>
+                    <li class="question-item" data-question-index="4">
+                        <h3>5. Is the company bootstrapped?</h3>
+                        <p class="question-info">Positive answer: Bootstrapped/Yes</p>
+                        <p class="question-info">Note: If there's no indication of VC/PE funding, assume the company is bootstrapped</p>
+                    </li>
+                    <li class="question-item" data-question-index="5">
+                        <h3>6. Are the majority of the employees based in the USA?</h3>
+                        <p class="question-info">Positive answer: Yes</p>
+                        <p class="question-info">Note: Check zoominfo</p>
+                    </li>
+                </ul>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button id="start-btn" class="button">Start Investigation</button>
+            </div>
+        </section>
+        
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">Company Data</h2>
+                <div style="font-size: 14px; color: var(--dark-gray);">
+                    <i>Tip: Drag column headers to reorder</i>
+                </div>
+            </div>
+            
+            <div class="company-data-table-container">
+                <table class="company-data-table" id="company-data-table">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Q1: Product</th>
+                            <th>Q2: Vertical Market</th>
+                            <th>Q3: Owner Age</th>
+                            <th>Q4: Employee Count</th>
+                            <th>Q5: US Employees</th>
+                            <th>Q6: Bootstrapped</th>
+                            <th>Domain</th>
+                            <th>LinkedIn</th>
+                            <th>Contact</th>
+                            <th>Contact Position</th>
+                        </tr>
+                    </thead>
+                    <tbody id="company-data-tbody">
+                        <!-- Company data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">Investigation Progress</h2>
+            </div>
+            
+            <div class="spinner" id="loading-spinner"></div>
+            
+            <div class="terminal">
+                <div class="terminal-header">
+                    <span class="terminal-title">Claude's Research Console</span>
+                </div>
+                <div id="terminal-output">Welcome to SmartBroker! Click "Start Investigation" above to begin researching companies.
+
+When Claude wants to use a tool, press Enter to approve the action.</div>
+                <input type="text" id="terminal-input" class="terminal-input" placeholder="Press Enter to continue..." style="display: none;">
+            </div>
+        </section>
+        
+        <section id="results-section" class="card hidden">
+            <div class="card-header">
+                <h2 class="card-title">Investigation Results</h2>
+            </div>
+            
+            <div class="result-container">
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th>Company Name</th>
+                            <th>Q1: Product</th>
+                            <th>Q2: Vertical Market</th>
+                            <th>Q3: Owner Age</th>
+                            <th>Q4: Employee Count</th>
+                            <th>Q5: Bootstrapped</th>
+                            <th>Q6: US Employees</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body">
+                        <!-- Results will be added here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/mock-company-data.js"></script>
+    <script src="js/ui-prototype.js"></script>
+</body>
+</html>

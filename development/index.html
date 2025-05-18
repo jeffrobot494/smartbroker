@@ -103,6 +103,19 @@
             border: 1px solid var(--medium-gray);
             border-radius: 4px;
             margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        .question-item:hover {
+            background-color: var(--light-gray);
+            border-color: var(--accent-color);
+        }
+        
+        .question-item.selected {
+            background-color: rgba(26, 188, 156, 0.1);
+            border-color: var(--accent-color);
+            border-left: 4px solid var(--accent-color);
         }
         
         .question-item h3 {
@@ -234,33 +247,33 @@
                 <p>Using company data from: <strong>./data/company_info.csv</strong></p>
             </div>
             
-            <h3>Questions (in order of processing):</h3>
-            <ul class="question-list">
-                <li class="question-item">
+            <h3>Questions (click to select which to research):</h3>
+            <ul class="question-list" id="question-list">
+                <li class="question-item" data-question-index="0">
                     <h3>1. Does the company sell a software product or software development services?</h3>
                     <p class="question-info">Positive answer: Sells a product or products</p>
                     <p class="question-info">Note: Check the company's website</p>
                 </li>
-                <li class="question-item">
+                <li class="question-item" data-question-index="1">
                     <h3>2. Are the company's products vertical market software?</h3>
                     <p class="question-info">Positive answer: Yes</p>
                     <p class="question-info">Note: Check the company's website</p>
                 </li>
-                <li class="question-item">
+                <li class="question-item" data-question-index="2">
                     <h3>3. Is the owner of the company at least 50 years old?</h3>
                     <p class="question-info">Positive answer: Yes</p>
                     <p class="question-info">Note: Check radaris</p>
                 </li>
-                <li class="question-item">
+                <li class="question-item" data-question-index="3">
                     <h3>4. Does the company number between 5 and 40 employees?</h3>
                     <p class="question-info">Positive answer: Yes</p>
                 </li>
-                <li class="question-item">
+                <li class="question-item" data-question-index="4">
                     <h3>5. Is the company bootstrapped?</h3>
                     <p class="question-info">Positive answer: Bootstrapped/Yes</p>
                     <p class="question-info">Note: If there's no indication of VC/PE funding, assume the company is bootstrapped</p>
                 </li>
-                <li class="question-item">
+                <li class="question-item" data-question-index="5">
                     <h3>6. Are the majority of the employees based in the USA?</h3>
                     <p class="question-info">Positive answer: Yes</p>
                     <p class="question-info">Note: Check zoominfo</p>
@@ -316,382 +329,7 @@ When Claude wants to use a tool, press Enter to approve the action.</div>
             </div>
         </section>
     </main>
-
-    <script>
-        // DOM elements
-        const startBtn = document.getElementById('start-btn');
-        const terminalOutput = document.getElementById('terminal-output');
-        const terminalInput = document.getElementById('terminal-input');
-        const loadingSpinner = document.getElementById('loading-spinner');
-        const resultsSection = document.getElementById('results-section');
-        const resultsBody = document.getElementById('results-body');
-        
-        // Company data and questions will be loaded from server
-        let companyData = [];
-        let questions = [];
-        
-        // Current state of the investigation
-        let currentCompanyIndex = 0;
-        let currentQuestionIndex = 0;
-        let waitingForUserInput = false;
-        let investigationResults = [];
-        
-        // API functions
-        
-        // Fetch company data from server
-        async function fetchCompanyData() {
-            try {
-                appendToTerminal("Loading company data...");
-                loadingSpinner.style.display = 'block';
-                
-                const response = await fetch('/api/companies');
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    companyData = data;
-                    appendToTerminal(`Loaded ${companyData.length} companies from data file.`);
-                    return data;
-                } else {
-                    const errorText = await response.text();
-                    throw new Error(errorText);
-                }
-            } catch (error) {
-                appendToTerminal(`Error loading company data: ${error.message}`);
-                console.error("Failed to load company data:", error);
-                return [];
-            } finally {
-                loadingSpinner.style.display = 'none';
-            }
-        }
-        
-        // Fetch questions from server
-        async function fetchQuestions() {
-            try {
-                appendToTerminal("Loading questions...");
-                loadingSpinner.style.display = 'block';
-                
-                const response = await fetch('/api/questions');
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    questions = data;
-                    appendToTerminal(`Loaded ${questions.length} questions.`);
-                    return data;
-                } else {
-                    const errorText = await response.text();
-                    throw new Error(errorText);
-                }
-            } catch (error) {
-                appendToTerminal(`Error loading questions: ${error.message}`);
-                console.error("Failed to load questions:", error);
-                return [];
-            } finally {
-                loadingSpinner.style.display = 'none';
-            }
-        }
-        
-        // Reset investigation state on server
-        async function resetInvestigation() {
-            try {
-                const response = await fetch('/api/investigation/start', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(errorText);
-                }
-                
-                return await response.json();
-            } catch (error) {
-                console.error("Failed to reset investigation:", error);
-                throw error;
-            }
-        }
-        
-        // Perform research for a specific company and question
-        async function performResearch(companyIndex, questionIndex) {
-            try {
-                appendToTerminal(`\nResearching company: ${companyData[companyIndex].companyName}`);
-                appendToTerminal(`Question: ${questions[questionIndex].text}`);
-                loadingSpinner.style.display = 'block';
-                
-                const response = await fetch('/api/research', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        companyIndex,
-                        questionIndex
-                    })
-                });
-                
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(errorText);
-                }
-                
-                const result = await response.json();
-                
-                // Update the investigation results
-                if (!investigationResults[companyIndex]) {
-                    investigationResults[companyIndex] = {
-                        companyName: companyData[companyIndex].companyName,
-                        answers: Array(questions.length).fill(null),
-                        status: 'In Progress'
-                    };
-                }
-                
-                investigationResults[companyIndex].answers[questionIndex] = result.result.answer;
-                investigationResults[companyIndex].status = result.result.answer !== questions[questionIndex].positiveAnswer ? 
-                    'Disqualified' : 
-                    (questionIndex === questions.length - 1 ? 'Qualified' : 'In Progress');
-                
-                return result;
-            } catch (error) {
-                console.error("Research failed:", error);
-                throw error;
-            } finally {
-                loadingSpinner.style.display = 'none';
-            }
-        }
-        
-        // Move to next step in the investigation
-        async function moveToNextStep() {
-            try {
-                const response = await fetch('/api/investigation/next', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(errorText);
-                }
-                
-                const result = await response.json();
-                currentCompanyIndex = result.nextCompanyIndex;
-                currentQuestionIndex = result.nextQuestionIndex;
-                
-                return result;
-            } catch (error) {
-                console.error("Failed to move to next step:", error);
-                throw error;
-            }
-        }
-        
-        // Add text to the terminal output
-        function appendToTerminal(text) {
-            terminalOutput.innerHTML += "\n\n" + text;
-            terminalOutput.scrollTop = terminalOutput.scrollHeight;
-        }
-        
-        // Handle user input (Enter key to continue)
-        terminalInput.addEventListener('keydown', async function(event) {
-            if (event.key === 'Enter') {
-                if (waitingForUserInput) {
-                    waitingForUserInput = false;
-                    terminalInput.style.display = 'none';
-                    
-                    // Process the next step in the investigation
-                    if (terminalInput.dataset.action === 'research') {
-                        try {
-                            appendToTerminal("\nProcessing research request...");
-                            
-                            // Call the research API
-                            const result = await performResearch(
-                                parseInt(terminalInput.dataset.companyIndex),
-                                parseInt(terminalInput.dataset.questionIndex)
-                            );
-                            
-                            // Display the results
-                            appendToTerminal(`\nResearch Results:\n${result.claudeResponse}`);
-                            appendToTerminal(`\nFinal Answer: ${result.result.answer}`);
-                            appendToTerminal(`Confidence: ${result.result.confidence}`);
-                            
-                            if (result.result.evidence) {
-                                appendToTerminal(`Evidence: ${result.result.evidence}`);
-                            }
-                            
-                            // Display token usage
-                            appendToTerminal(`\nToken Usage: ${result.usage.input_tokens} input, ${result.usage.output_tokens} output`);
-                            
-                            // If negative answer, indicate disqualification
-                            if (result.result.answer !== questions[currentQuestionIndex].positiveAnswer) {
-                                appendToTerminal(`\n${result.company} has been disqualified due to a negative answer.`);
-                            }
-                            
-                            // Move to the next step
-                            const nextStep = await moveToNextStep();
-                            
-                            // If we're done with all questions, finish the investigation
-                            if (nextStep.isDone) {
-                                finishInvestigation();
-                                return;
-                            }
-                            
-                            // If we're moving to a new question, indicate that
-                            if (nextStep.nextQuestionIndex !== currentQuestionIndex) {
-                                appendToTerminal(`\nMoving to the next question: ${questions[nextStep.nextQuestionIndex].text}`);
-                            }
-                            
-                            // Continue the investigation
-                            currentCompanyIndex = nextStep.nextCompanyIndex;
-                            currentQuestionIndex = nextStep.nextQuestionIndex;
-                            
-                            // Slight delay before continuing
-                            setTimeout(() => {
-                                continueInvestigation();
-                            }, 1000);
-                            
-                        } catch (error) {
-                            appendToTerminal(`\nError during research: ${error.message}`);
-                            appendToTerminal("\nPlease try again or restart the investigation.");
-                            
-                            // Re-enable input
-                            waitingForUserInput = true;
-                            terminalInput.style.display = 'block';
-                            terminalInput.focus();
-                        }
-                    }
-                }
-            }
-        });
-        
-        // Finish the investigation
-        function finishInvestigation() {
-            appendToTerminal("\n\nInvestigation complete! See the results table below.");
-            
-            // Show the results section
-            resultsSection.classList.remove('hidden');
-            
-            // Populate the results table
-            investigationResults.forEach(result => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${result.companyName}</td>
-                    <td>${result.answers[0] || '-'}</td>
-                    <td>${result.answers[1] || '-'}</td>
-                    <td>${result.answers[2] || '-'}</td>
-                    <td>${result.answers[3] || '-'}</td>
-                    <td>${result.answers[4] || '-'}</td>
-                    <td>${result.answers[5] || '-'}</td>
-                    <td>${result.status}</td>
-                `;
-                
-                resultsBody.appendChild(row);
-            });
-            
-            // Reset the state for a new investigation
-            currentCompanyIndex = 0;
-            currentQuestionIndex = 0;
-            waitingForUserInput = false;
-            
-            // Enable the start button
-            startBtn.disabled = false;
-            startBtn.textContent = "Start New Investigation";
-        }
-        
-        // Continue the investigation
-        function continueInvestigation() {
-            // Skip disqualified companies
-            if (
-                currentCompanyIndex < companyData.length && 
-                investigationResults[currentCompanyIndex] && 
-                investigationResults[currentCompanyIndex].status === "Disqualified"
-            ) {
-                // Skip this company
-                moveToNextStep()
-                    .then(nextStep => {
-                        if (nextStep.isDone) {
-                            finishInvestigation();
-                            return;
-                        }
-                        
-                        currentCompanyIndex = nextStep.nextCompanyIndex;
-                        currentQuestionIndex = nextStep.nextQuestionIndex;
-                        
-                        // If we're moving to a new question, indicate that
-                        if (nextStep.nextQuestionIndex !== currentQuestionIndex) {
-                            appendToTerminal(`\nMoving to the next question: ${questions[nextStep.nextQuestionIndex].text}`);
-                        }
-                        
-                        continueInvestigation();
-                    })
-                    .catch(error => {
-                        appendToTerminal(`\nError: ${error.message}`);
-                    });
-                
-                return;
-            }
-            
-            // If we've gone through all companies or questions, we're done
-            if (currentCompanyIndex >= companyData.length || currentQuestionIndex >= questions.length) {
-                finishInvestigation();
-                return;
-            }
-            
-            const company = companyData[currentCompanyIndex];
-            const question = questions[currentQuestionIndex];
-            
-            appendToTerminal(`\n\nI'm going to research ${company.companyName} to answer: ${question.text}`);
-            appendToTerminal("\nI'll need to use Claude to perform the research. May I proceed?");
-            
-            // Wait for user input to continue
-            waitingForUserInput = true;
-            terminalInput.style.display = 'block';
-            terminalInput.value = '';
-            terminalInput.focus();
-            terminalInput.dataset.action = 'research';
-            terminalInput.dataset.companyIndex = currentCompanyIndex;
-            terminalInput.dataset.questionIndex = currentQuestionIndex;
-        }
-        
-        // Start the investigation process
-        startBtn.addEventListener('click', async function() {
-            try {
-                // Reset for a new investigation
-                investigationResults = [];
-                currentCompanyIndex = 0;
-                currentQuestionIndex = 0;
-                terminalOutput.innerHTML = "Starting investigation process...";
-                resultsBody.innerHTML = '';
-                resultsSection.classList.add('hidden');
-                
-                // Disable the start button
-                startBtn.disabled = true;
-                
-                // Reset the investigation state on the server
-                await resetInvestigation();
-                
-                // Load company data and questions
-                companyData = await fetchCompanyData();
-                questions = await fetchQuestions();
-                
-                if (companyData.length === 0 || questions.length === 0) {
-                    appendToTerminal("Failed to load required data. Please check the server logs.");
-                    startBtn.disabled = false;
-                    return;
-                }
-                
-                appendToTerminal("\nHello, I'm Claude! I'm going to help you research companies based on the criteria you've specified.");
-                appendToTerminal(`\nI'll be analyzing ${companyData.length} companies against ${questions.length} criteria questions.`);
-                appendToTerminal("\nPress Enter when prompted to proceed with each step of the investigation.");
-                
-                // Start the investigation
-                continueInvestigation();
-            } catch (error) {
-                appendToTerminal(`Error starting investigation: ${error.message}`);
-                startBtn.disabled = false;
-            }
-        });
-    </script>
 </body>
+<script src="js/script.js"></script>
+
 </html>
