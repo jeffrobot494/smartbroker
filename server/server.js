@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, '../development')));
 
 // Define the questions for company assessment
 const questions = [
-    { text: "Does the company sell a software product or software development services?", positiveAnswer: "YES", note: "Check the company's website" },
+    { text: "Does the company sell a software product or products?", positiveAnswer: "YES", note: "Check the company's website first. The company selling software development services doesn't count as a product." },
     { text: "Are the company's products vertical market software?", positiveAnswer: "YES", note: "Check the company's website" },
     { text: "Who is the president or owner of the company?", positiveAnswer: "NAME", note: "Look for leadership information" },
     { text: "Is the owner of the company at least 50 years old?", positiveAnswer: "YES", note: "Check radaris" },
