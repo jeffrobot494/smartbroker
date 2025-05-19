@@ -1,0 +1,174 @@
+/* Company data table styles */
+.company-data-table-container {
+    max-height: 480px;
+    overflow-y: auto;
+    overflow-x: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--medium-gray);
+    border-radius: 4px;
+}
+
+.company-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 1440px;
+}
+
+.company-data-table th {
+    position: sticky;
+    top: 0;
+    background-color: var(--light-gray);
+    padding: 10px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid var(--medium-gray);
+    z-index: 10;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+    min-width: 120px;
+}
+
+.company-data-table th:hover {
+    background-color: rgba(26, 188, 156, 0.1);
+}
+
+.company-data-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--medium-gray);
+    white-space: nowrap;
+}
+
+.company-data-table th.selected-question {
+    background-color: rgba(26, 188, 156, 0.2);
+    border-bottom: 3px solid var(--accent-color);
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.company-data-table td.selected-question {
+    background-color: rgba(26, 188, 156, 0.1);
+}
+
+.company-data-table td.selected-cell {
+    background-color: rgba(26, 188, 156, 0.3) !important;
+    border: 2px solid var(--accent-color);
+    font-weight: 600;
+    position: relative;
+}
+
+.company-data-table td.selected-cell::after {
+    content: "→";
+    position: absolute;
+    right: 5px;
+    color: var(--accent-color);
+    font-size: 16px;
+}
+
+.yes-value {
+    color: #27ae60;
+    font-weight: 500;
+}
+
+.no-value {
+    color: #e74c3c;
+}
+
+/* Confidence level styling */
+.question-cell {
+    position: relative;
+}
+
+.question-cell::after {
+    content: attr(data-confidence);
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: 10px;
+    opacity: 0.7;
+    font-style: italic;
+}
+
+/* Company name link styles */
+.company-name-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    position: relative;
+    display: inline-block;
+}
+
+.company-name-link:hover {
+    color: var(--accent-color);
+    text-decoration: underline;
+}
+
+.company-name-link:after {
+    content: "📊";
+    font-size: 12px;
+    opacity: 0.6;
+    margin-left: 5px;
+    vertical-align: text-top;
+}
+
+/* Result table */
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.result-table th, .result-table td {
+    border: 1px solid var(--medium-gray);
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.result-table th {
+    background-color: var(--light-gray);
+    font-weight: 500;
+}
+
+.result-table tr:nth-child(even) {
+    background-color: var(--light-gray);
+}
+
+/* Additional styles for sorting, filtering, etc. */
+.table-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.filter-container {
+    margin-bottom: 10px;
+}
+
+.filter-input {
+    padding: 5px;
+    border: 1px solid var(--medium-gray);
+    border-radius: 4px;
+}
+
+.sortable-header {
+    position: relative;
+}
+
+.sortable-header:after {
+    content: "⯅";
+    font-size: 10px;
+    opacity: 0.5;
+    margin-left: 5px;
+}
+
+.sortable-header.sorted-asc:after {
+    content: "⯅";
+    opacity: 1;
+}
+
+.sortable-header.sorted-desc:after {
+    content: "⯆";
+    opacity: 1;
+}

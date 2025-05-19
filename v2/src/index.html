@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBroker v2</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/terminal.css">
+    <link rel="stylesheet" href="css/table.css">
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <h1>SmartBroker v2</h1>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">SmartBroker Investigation Setup</h2>
+            </div>
+            
+            <div class="csv-info">
+                <p>Using company data from: <strong id="data-source-display">No file selected</strong></p>
+                <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
+                <button id="csv-upload-btn" class="button">Upload CSV</button>
+            </div>
+            
+            <div class="settings-section">
+                <h3>Investigation Settings</h3>
+                <div class="setting-item">
+                    <label for="pause-setting" class="setting-label">
+                        <input type="checkbox" id="pause-setting" checked>
+                        <span>Pause Between Searches</span>
+                        <span class="tooltip-icon" title="When checked, Claude will wait for you to hit Enter before making tool calls or starting the next investigation. When unchecked, investigations will run automatically.">ⓘ</span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label for="verification-setting" class="setting-label">
+                        <input type="checkbox" id="verification-setting" checked>
+                        <span>Verify Results</span>
+                        <span class="tooltip-icon" title="When checked, the system will attempt to verify uncertain results with additional searches.">ⓘ</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="api-key-section">
+                <h3>API Configuration</h3>
+                <div class="setting-item">
+                    <p>API keys are configured on the server side.</p>
+                </div>
+                <div class="api-usage-display" id="api-usage-display">
+                    API Usage: 0 requests
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button id="start-btn" class="button" disabled>Start Investigation</button>
+                <button id="stop-btn" class="button" style="margin-left: 10px; background-color: #e74c3c;" disabled onclick="console.log('Stop button clicked via inline handler'); if(window.app && typeof window.app.handleStopInvestigation === 'function') { window.app.handleStopInvestigation(); }">Stop Investigation</button>
+                <button id="reset-btn" class="button" style="margin-left: 10px; background-color: var(--dark-gray);" disabled>Reset</button>
+                <button id="export-btn" class="button" style="margin-left: 10px; background-color: var(--secondary-color);" disabled>Export Results</button>
+            </div>
+        </section>
+        
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">Company Data</h2>
+                <div class="filter-container">
+                    <input type="text" id="company-filter" class="filter-input" placeholder="Filter companies...">
+                </div>
+            </div>
+            
+            <div class="company-data-table-container">
+                <table class="company-data-table" id="company-data-table">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Q1: Product</th>
+                            <th>Q2: Vertical Market</th>
+                            <th>Q3: Owner Name</th>
+                            <th>Q4: Owner Age</th>
+                            <th>Q5: Employee Count</th>
+                            <th>Q6: Bootstrapped</th>
+                            <th>Q7: US Employees</th>
+                            <th>Domain</th>
+                            <th>LinkedIn</th>
+                            <th>Contact</th>
+                            <th>Contact Position</th>
+                        </tr>
+                    </thead>
+                    <tbody id="company-data-tbody">
+                        <!-- Company data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">Investigation Progress</h2>
+                <div class="terminal-controls">
+                    <button id="clear-terminal-btn" class="terminal-clear-button" style="cursor: pointer; padding: 5px 10px; background-color: #444; color: white; border: none; border-radius: 4px;" onclick="document.getElementById('terminal-output').innerHTML = 'Terminal cleared.'; console.log('Clear terminal clicked - inline handler');">Clear Terminal</button>
+                </div>
+            </div>
+            
+            <div class="spinner" id="loading-spinner"></div>
+            
+            <div class="terminal">
+                <div class="terminal-header">
+                    <span class="terminal-title">Claude's Research Console</span>
+                </div>
+                <div id="terminal-output">Welcome to SmartBroker v2! 
+
+1. Upload a CSV file using the "Upload CSV" button
+2. Click "Start Investigation" to begin researching companies
+
+When Claude wants to use a tool, press Enter to approve the action.</div>
+                <input type="text" id="terminal-input" class="terminal-input" placeholder="Press Enter to continue..." style="display: none;">
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,252 @@
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --accent-color: #1abc9c;
+    --light-gray: #f5f7fa;
+    --medium-gray: #e5e9f0;
+    --dark-gray: #8395a7;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: var(--light-gray);
+}
+
+.container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 20px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    font-size: 24px;
+    color: var(--accent-color);
+}
+
+.logo h1 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+main {
+    padding: 30px 0;
+}
+
+.card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 28px;
+    margin-bottom: 28px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.csv-info {
+    margin-bottom: 20px;
+    padding: 12px;
+    background-color: var(--light-gray);
+    border-radius: 4px;
+}
+
+.question-list {
+    list-style: none;
+}
+
+.question-item {
+    padding: 15px;
+    border: 1px solid var(--medium-gray);
+    border-radius: 4px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.question-item:hover {
+    background-color: var(--light-gray);
+    border-color: var(--accent-color);
+}
+
+.question-item.selected {
+    background-color: rgba(26, 188, 156, 0.1);
+    border-color: var(--accent-color);
+    border-left: 4px solid var(--accent-color);
+}
+
+.question-item h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: var(--primary-color);
+}
+
+.question-info {
+    font-size: 14px;
+    color: var(--dark-gray);
+    margin-bottom: 5px;
+}
+
+.button {
+    padding: 10px 15px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: 500;
+}
+
+.button:hover {
+    background-color: #16a085;
+}
+
+.button:disabled {
+    background-color: var(--medium-gray);
+    cursor: not-allowed;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border-left-color: var(--accent-color);
+    animation: spin 1s linear infinite;
+    display: none;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.hidden {
+    display: none;
+}
+
+/* Settings Styles */
+.settings-section {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: var(--light-gray);
+    border-radius: 8px;
+}
+
+.settings-section h3 {
+    margin-bottom: 12px;
+    color: var(--primary-color);
+    font-size: 16px;
+}
+
+.setting-item {
+    margin-bottom: 10px;
+}
+
+.setting-label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.setting-label input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.tooltip-icon {
+    margin-left: 8px;
+    color: var(--dark-gray);
+    cursor: help;
+    font-size: 16px;
+    border-radius: 50%;
+    position: relative;
+}
+
+.tooltip-icon:hover::after {
+    content: attr(title);
+    position: absolute;
+    left: 24px;
+    top: -5px;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    width: 250px;
+    z-index: 100;
+}
+
+/* API key form */
+.api-key-section {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: var(--light-gray);
+    border-radius: 8px;
+}
+
+.api-key-section h3 {
+    margin-bottom: 12px;
+    color: var(--primary-color);
+    font-size: 16px;
+}
+
+.api-key-input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid var(--medium-gray);
+    border-radius: 4px;
+}
+
+.api-usage-display {
+    font-size: 14px;
+    margin-top: 10px;
+    color: var(--dark-gray);
+}
+
+/* Export controls */
+.export-section {
+    margin-top: 15px;
+}
+
+/* API styles removed - assume APIs are configured */
