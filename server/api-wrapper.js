@@ -91,20 +91,19 @@ async function perplexitySearch(query, useCache = true) {
     }
 }
 
-// Website search (simplified version without FireCrawl)
+// DEPRECATED - Now using only perplexitySearch
+// These function wrappers are kept for compatibility but will be removed in future
 async function websiteSearch(url) {
-    // In a real implementation, this would use a website scraping tool
-    // For now, we'll use perplexity to get information about the website
-    return perplexitySearch(`Please analyze the company website at ${url}. What products or services do they offer? How many employees do they have? What markets or industries do they serve?`);
+    return perplexitySearch(`Please analyze the company website at ${url}. What products or services do they offer? Who leads the company (CEO, owner, president)? How many employees do they have? What markets or industries do they serve?`);
 }
 
-// Radaris search for owner's age
+// DEPRECATED - Now using only perplexitySearch
 async function radarisSearch(name, location = null) {
-    let query = `Search for information about ${name}`;
+    let query = `Find information about ${name}`;
     if (location) {
         query += ` in ${location}`;
     }
-    query += ` on Radaris or similar people search services. What is their approximate age?`;
+    query += `. What is their role at the company? What is their approximate age?`;
     
     return perplexitySearch(query);
 }
@@ -225,7 +224,46 @@ Follow these guidelines:
 3. Focus specifically on answering the given question accurately
 4. If you can't find a definitive answer, state your uncertainty and what additional information would be helpful
 5. Use a clear format with a direct answer and supporting evidence
-6. Cost-efficiency is important - try to provide definitive answers with minimal API usage`;
+6. Cost-efficiency is important - try to provide definitive answers with minimal API usage
+
+You have access to one powerful research tool:
+- PERPLEXITY_SEARCH - Search the web for any information you need
+
+CRITICAL INSTRUCTIONS FOR TOOL USE:
+You MUST use this EXACT format when you want to search:
+
+<<PERPLEXITY_SEARCH>>
+your detailed search query here
+<</PERPLEXITY_SEARCH>>
+
+Example usage:
+
+<<PERPLEXITY_SEARCH>>
+Who is the CEO, founder or owner of XYZ Company?
+<</PERPLEXITY_SEARCH>>
+
+The search query MUST be specific and focused. For different types of research:
+
+- For company websites: 
+<<PERPLEXITY_SEARCH>>
+analyze company website at example.com for leadership team information
+<</PERPLEXITY_SEARCH>>
+
+- For people information: 
+<<PERPLEXITY_SEARCH>>
+find information about John Smith CEO of Example Corp including age and background
+<</PERPLEXITY_SEARCH>>
+
+- For product research: 
+<<PERPLEXITY_SEARCH>>
+Does ABC Software sell commercial software products or only services?
+<</PERPLEXITY_SEARCH>>
+
+When using the search tool:
+1. Request ONE search at a time with a specific query
+2. After receiving results, either request another search or provide your final answer
+3. You can use a maximum of 3 searches per question
+4. Always end with "Final Answer: YES", "Final Answer: NO", or "Final Answer: [Name]" depending on the question`;
 }
 
 // Determine if Claude's response is a positive match for the question
@@ -328,6 +366,93 @@ function interpretClaudeResponse(response, question) {
     };
 }
 
+// Extract tool request from Claude's response
+function extractToolRequest(response) {
+    // Check if finished with research
+    if (response.toLowerCase().includes('final answer:')) {
+        return { finished: true };
+    }
+    
+    // Extract PERPLEXITY_SEARCH using the exact delimiters
+    const perplexityPattern = /<<PERPLEXITY_SEARCH>>([\s\S]*?)<\/PERPLEXITY_SEARCH>/;
+    const match = response.match(perplexityPattern);
+    
+    if (match && match[1]) {
+        const query = match[1].trim();
+        console.log('Extracted search query:', query);
+        return {
+            tool: 'perplexitySearch',
+            params: { query: query }
+        };
+    }
+    
+    // Handle legacy patterns as fallbacks
+    
+    // Legacy perplexitySearch format
+    if (response.includes('perplexitySearch:')) {
+        console.log('WARNING: Using legacy perplexitySearch: format');
+        const queryMatch = response.match(/perplexitySearch:\s*([^\n]+)/i);
+        return queryMatch ? { 
+            tool: 'perplexitySearch', 
+            params: { query: queryMatch[1].trim() } 
+        } : null;
+    }
+    
+    // Legacy websiteSearch format
+    if (response.includes('websiteSearch:')) {
+        console.log('WARNING: Using legacy websiteSearch: format');
+        const urlMatch = response.match(/websiteSearch:\s*(https?:\/\/[^\s\n]+)/);
+        if (urlMatch) {
+            return { 
+                tool: 'perplexitySearch', 
+                params: { query: `Analyze the company website at ${urlMatch[1]}. What products or services do they offer? Who leads the company? How many employees do they have?` } 
+            };
+        }
+    }
+    
+    // Legacy radarisSearch format
+    if (response.includes('radarisSearch:')) {
+        console.log('WARNING: Using legacy radarisSearch: format');
+        const nameMatch = response.match(/radarisSearch:\s*([^\n]+)/i);
+        if (nameMatch) {
+            return { 
+                tool: 'perplexitySearch', 
+                params: { query: `Find information about ${nameMatch[1].trim()}. What is their role and approximate age?` } 
+            };
+        }
+    }
+    
+    return null;
+}
+
+// Handle tool requests
+async function handleToolRequest(toolRequest) {
+    if (!toolRequest) return null;
+    
+    try {
+        // All tool requests go through perplexitySearch
+        if (toolRequest.tool === 'perplexitySearch') {
+            return await perplexitySearch(toolRequest.params.query);
+        }
+        
+        // Legacy tools - should never reach here due to extractToolRequest conversion
+        // but kept for safety
+        if (toolRequest.tool === 'websiteSearch') {
+            console.log('WARNING: Legacy websiteSearch called directly, converting to perplexitySearch');
+            return await perplexitySearch(`Analyze the company website at ${toolRequest.params.url}. What products or services do they offer? Who leads the company? How many employees do they have?`);
+        }
+        if (toolRequest.tool === 'radarisSearch') {
+            console.log('WARNING: Legacy radarisSearch called directly, converting to perplexitySearch');
+            return await perplexitySearch(`Find information about ${toolRequest.params.name}. What is their role and approximate age?`);
+        }
+    } catch (error) {
+        console.error('Tool error:', error);
+        return { error: error.message };
+    }
+    
+    return null;
+}
+
 module.exports = {
     askClaude,
     perplexitySearch,
@@ -335,5 +460,7 @@ module.exports = {
     radarisSearch,
     generateResearchPrompt,
     createSystemPrompt,
-    interpretClaudeResponse
+    interpretClaudeResponse,
+    extractToolRequest,
+    handleToolRequest
 };

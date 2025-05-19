@@ -371,6 +371,28 @@
             width: 250px;
             z-index: 100;
         }
+        
+        /* Company name link styles */
+        .company-name-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .company-name-link:hover {
+            color: var(--accent-color);
+            text-decoration: underline;
+        }
+        
+        .company-name-link:after {
+            content: "📊";
+            font-size: 12px;
+            opacity: 0.6;
+            margin-left: 5px;
+            vertical-align: text-top;
+        }
     </style>
 </head>
 <body>

@@ -225,22 +225,128 @@ app.post('/api/research', async (req, res) => {
         }
         
         // Generate the research prompt
-        const prompt = apiWrapper.generateResearchPrompt(companyData, question, previousFindings);
-        const systemPrompt = apiWrapper.createSystemPrompt();
+        let prompt = apiWrapper.generateResearchPrompt(companyData, question, previousFindings);
+        let systemPrompt = apiWrapper.createSystemPrompt();
         
-        // Call Claude to perform the research
+        // Add special instructions for the owner name question 
+        if (questionIndex === 2) { // Owner Name question
+            prompt += `\nSPECIAL INSTRUCTIONS FOR OWNER NAME RESEARCH:
+For this specific question about finding the owner or president, please follow these steps:
+
+1. First, perform an initial search using this exact format:
+
+<<PERPLEXITY_SEARCH>>
+Who is the CEO, founder, president or owner of ${companyData.companyName}?
+<</PERPLEXITY_SEARCH>>
+
+2. If you find a potential name, verify it with a second search:
+
+<<PERPLEXITY_SEARCH>>
+Verify if [Name] is the current CEO/owner of ${companyData.companyName}. Find additional sources.
+<</PERPLEXITY_SEARCH>>
+
+3. Do not guess or provide a name without clear evidence
+4. If you can't find reliable information, answer "unknown"
+5. Be wary of outdated information - verify recent sources when possible\n`;
+        }
+        
         console.log(`Researching company ${companyData.companyName} for question: ${question.text}`);
-        const claudeResponse = await apiWrapper.askClaude(prompt, systemPrompt, 2000);
         
-        // Interpret Claude's response
+        // Start conversation with Claude
+        let claudeResponse = await apiWrapper.askClaude(prompt, systemPrompt, 2000);
+        let iterations = 0;
+        const MAX_ITERATIONS = 3;
+        let conversation = prompt;
+        let toolsUsed = [];
+        
+        // Research loop - continue until we get a final answer or hit max iterations
+        while (iterations < MAX_ITERATIONS) {
+            console.log(`Research iteration ${iterations + 1}/${MAX_ITERATIONS}`);
+            
+            // Extract tool request
+            const toolRequest = apiWrapper.extractToolRequest(claudeResponse.content);
+            
+            // If no tool request or research is complete, break the loop
+            if (!toolRequest || toolRequest.finished) {
+                // Check if Claude has provided a final answer
+                if (toolRequest && toolRequest.finished) {
+                    console.log('Research complete with final answer');
+                    break;
+                }
+                
+                // Check if Claude's response seems to be attempting a search but not using the right format
+                if (claudeResponse.content.toLowerCase().includes('search') && 
+                    !claudeResponse.content.includes('<<PERPLEXITY_SEARCH>>')) {
+                    
+                    console.log('Claude tried to search without using the correct format. Sending reminder.');
+                    
+                    // Add a reminder about the correct format
+                    conversation += `\n\nREMINDER: To perform a search, use this exact format:
+<<PERPLEXITY_SEARCH>>
+your search query
+<</PERPLEXITY_SEARCH>>`;
+                    
+                    // Continue conversation with the reminder
+                    claudeResponse = await apiWrapper.askClaude(conversation, systemPrompt, 2000);
+                    continue;
+                }
+                
+                console.log('No tool request found and no search attempted');
+                break;
+            }
+            
+            // Execute the requested tool
+            console.log(`Executing tool: ${toolRequest.tool}`, toolRequest.params);
+            const toolResult = await apiWrapper.handleToolRequest(toolRequest);
+            
+            // Track which tools were used
+            toolsUsed.push({
+                tool: toolRequest.tool,
+                params: toolRequest.params
+            });
+            
+            // Format tool result in a standardized way
+            const formattedToolResult = `
+<<PERPLEXITY_RESULT>>
+${JSON.stringify(toolResult, null, 2)}
+<</PERPLEXITY_RESULT>>
+`;
+            // Update conversation with the formatted tool result
+            conversation += `\n\n${formattedToolResult}`;
+            
+            // Continue conversation with Claude
+            claudeResponse = await apiWrapper.askClaude(conversation, systemPrompt, 2000);
+            
+            iterations++;
+        }
+        
+        // Interpret final response
         const result = apiWrapper.interpretClaudeResponse(claudeResponse, question);
         
-        // Return the research result without storing server-side state
+        // Store research data in company object
+        if (!companyData.research) {
+            companyData.research = {};
+        }
+        
+        // Store research data by question
+        companyData.research[question.text] = {
+            result: result,
+            claudeResponse: claudeResponse.content,
+            prompt: prompt,
+            systemPrompt: systemPrompt,
+            toolsUsed: toolsUsed,
+            iterations: iterations,
+            timestamp: new Date().toISOString()
+        };
+        
+        // Return the research result
         res.json({
             company: companyData.companyName,
             question: question.text,
             result: result,
             claudeResponse: claudeResponse.content,
+            toolsUsed: toolsUsed,
+            iterations: iterations,
             usage: claudeResponse.usage
         });
         
@@ -269,6 +375,22 @@ app.get('/api/companies', (req, res) => {
 // Get questions
 app.get('/api/questions', (req, res) => {
     res.json(questions);
+});
+
+// Get company research history
+app.get('/api/company-research/:index', (req, res) => {
+    const index = parseInt(req.params.index);
+    
+    if (isNaN(index) || index < 0 || index >= companies.length) {
+        return res.status(400).json({ error: 'Invalid company index' });
+    }
+    
+    const company = companies[index];
+    
+    res.json({
+        company: company.companyName,
+        research: company.research || {}
+    });
 });
 
 // Since our application now uses client-side state management,

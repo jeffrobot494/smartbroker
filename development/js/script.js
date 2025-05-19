@@ -249,7 +249,7 @@ function populateCompanyDataTable() {
         const linkedIn = company.linkedinUrl || '-';
         
         row.innerHTML = `
-            <td>${company.companyName}</td>
+            <td><a href="#" class="company-name-link" data-company-index="${index}">${company.companyName}</a></td>
             <td class="question-cell" data-question-index="0" data-company-index="${index}">-</td>
             <td class="question-cell" data-question-index="1" data-company-index="${index}">-</td>
             <td class="question-cell" data-question-index="2" data-company-index="${index}">-</td>
@@ -387,6 +387,19 @@ function addClickHandlers() {
                 
                 appendToTerminal(`Selected to research: ${company.companyName}`, true);
                 appendToTerminal(`For question: ${question.text}`);
+            }
+        });
+    });
+    
+    // Add click handlers to company name links
+    const companyNameLinks = document.querySelectorAll('.company-name-link');
+    companyNameLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            const companyIndex = parseInt(link.dataset.companyIndex);
+            
+            if (!isNaN(companyIndex)) {
+                displayCompanyResearchHistory(companyIndex);
             }
         });
     });
@@ -790,6 +803,103 @@ startBtn.addEventListener('click', async function() {
         startBtn.disabled = false;
     }
 });
+
+/**
+ * Display research history for a specific company
+ */
+async function displayCompanyResearchHistory(companyIndex) {
+    try {
+        // Clear terminal first
+        terminalOutput.innerHTML = '';
+        
+        // Show loading spinner
+        loadingSpinner.style.display = 'block';
+        
+        // Get the company
+        const company = investigationState.companies[companyIndex];
+        
+        // Fetch the company research history
+        const response = await fetch(`/api/company-research/${companyIndex}`);
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch research history: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // Display the company name as a header
+        appendToTerminal(`Research History for ${company.companyName}`, true);
+        appendToTerminal(`Website: ${company.website || 'Not available'}`);
+        
+        // Check if there's any research data
+        if (!data.research || Object.keys(data.research).length === 0) {
+            appendToTerminal("\nNo research history available for this company.");
+            return;
+        }
+        
+        // Display each question's research data
+        Object.entries(data.research).forEach(([questionText, researchData]) => {
+            appendToTerminal(`\n--- ${questionText} ---`, true);
+            
+            // Display final answer
+            appendToTerminal(`Answer: ${researchData.result.answer}`);
+            appendToTerminal(`Confidence: ${researchData.result.confidence}`);
+            
+            // Display tool usage if available
+            if (researchData.toolsUsed && researchData.toolsUsed.length > 0) {
+                appendToTerminal(`\nTools Used (${researchData.toolsUsed.length}):`);
+                researchData.toolsUsed.forEach((tool, i) => {
+                    appendToTerminal(`${i + 1}. ${tool.tool}: ${JSON.stringify(tool.params)}`);
+                });
+            }
+            
+            // Show evidence if available
+            if (researchData.result.evidence) {
+                appendToTerminal(`\nEvidence: ${researchData.result.evidence}`);
+            }
+            
+            // Show sources if available
+            if (researchData.result.sources) {
+                appendToTerminal(`\nSources: ${researchData.result.sources}`);
+            }
+            
+            // Show the prompt sent to Claude
+            if (researchData.prompt) {
+                appendToTerminal(`\nPrompt Sent to Claude:`, true);
+                appendToTerminal(`======== PROMPT START ========`);
+                appendToTerminal(researchData.prompt);
+                appendToTerminal(`======== PROMPT END ========`);
+            }
+            
+            // Show the system prompt
+            if (researchData.systemPrompt) {
+                appendToTerminal(`\nSystem Prompt:`, true);
+                appendToTerminal(`======== SYSTEM PROMPT START ========`);
+                appendToTerminal(researchData.systemPrompt);
+                appendToTerminal(`======== SYSTEM PROMPT END ========`);
+            }
+            
+            // Show full Claude response
+            if (researchData.claudeResponse) {
+                appendToTerminal(`\nFull Research Response:`, true);
+                appendToTerminal(`======== CLAUDE RESPONSE START ========`);
+                appendToTerminal(researchData.claudeResponse);
+                appendToTerminal(`======== CLAUDE RESPONSE END ========`);
+            }
+            
+            // Show timestamp
+            if (researchData.timestamp) {
+                appendToTerminal(`\nResearched: ${new Date(researchData.timestamp).toLocaleString()}`);
+            }
+        });
+        
+    } catch (error) {
+        appendToTerminal(`Error retrieving research history: ${error.message}`);
+        console.error("Failed to display research history:", error);
+    } finally {
+        loadingSpinner.style.display = 'none';
+    }
+}
 
 // Initialize data when the page loads
 document.addEventListener('DOMContentLoaded', initializeData);
