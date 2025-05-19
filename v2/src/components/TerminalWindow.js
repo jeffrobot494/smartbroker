@@ -117,8 +117,9 @@ export default class TerminalWindow {
      * Append Claude prompt to the terminal
      * @param {string} prompt - Claude prompt
      * @param {string} systemPrompt - System prompt (optional)
+     * @param {Object} settings - Settings object with display preferences
      */
-    appendClaudePrompt(prompt, systemPrompt = null) {
+    appendClaudePrompt(prompt, systemPrompt = null, settings = {}) {
         if (!this.terminal) return;
         
         // Add to history
@@ -133,13 +134,17 @@ export default class TerminalWindow {
         html += `<span class="terminal-timestamp">[${this.formatTime(new Date())}]</span> `;
         html += `<span class="terminal-info">Sending to Claude:</span>\n`;
         
-        if (systemPrompt) {
+        // Only display system prompt if setting is enabled
+        if (systemPrompt && settings.showSystemPrompt) {
             html += `  <span class="terminal-command">System Prompt:</span>\n`;
             html += `  <pre class="terminal-system-prompt">${this.escapeHtml(systemPrompt)}</pre>\n`;
         }
         
-        html += `  <span class="terminal-command">User Prompt:</span>\n`;
-        html += `  <pre class="terminal-user-prompt">${this.escapeHtml(prompt)}</pre>\n`;
+        // Only display user prompt if setting is enabled
+        if (settings.showQuestionPrompt) {
+            html += `  <span class="terminal-command">User Prompt:</span>\n`;
+            html += `  <pre class="terminal-user-prompt">${this.escapeHtml(prompt)}</pre>\n`;
+        }
         
         html += `</div>`;
         

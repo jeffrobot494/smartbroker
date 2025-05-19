@@ -18,6 +18,8 @@ export default class Settings {
         this.elements = {
             pauseSetting: document.getElementById('pause-setting'),
             verificationSetting: document.getElementById('verification-setting'),
+            showSystemPrompt: document.getElementById('show-system-prompt'),
+            showQuestionPrompt: document.getElementById('show-question-prompt'),
             anthropicKey: document.getElementById('anthropic-key'),
             perplexityKey: document.getElementById('perplexity-key')
         };
@@ -45,6 +47,22 @@ export default class Settings {
             
             this.elements.verificationSetting.addEventListener('change', () => {
                 this.updateSetting('verifyResults', this.elements.verificationSetting.checked);
+            });
+        }
+        
+        if (this.elements.showSystemPrompt) {
+            this.elements.showSystemPrompt.checked = this.settings.showSystemPrompt || false;
+            
+            this.elements.showSystemPrompt.addEventListener('change', () => {
+                this.updateSetting('showSystemPrompt', this.elements.showSystemPrompt.checked);
+            });
+        }
+        
+        if (this.elements.showQuestionPrompt) {
+            this.elements.showQuestionPrompt.checked = this.settings.showQuestionPrompt || false;
+            
+            this.elements.showQuestionPrompt.addEventListener('change', () => {
+                this.updateSetting('showQuestionPrompt', this.elements.showQuestionPrompt.checked);
             });
         }
         
@@ -79,7 +97,9 @@ export default class Settings {
             anthropicKey: '',
             perplexityKey: '',
             maxTools: 3,
-            autoSave: true
+            autoSave: true,
+            showSystemPrompt: false,
+            showQuestionPrompt: false
         };
     }
 
@@ -143,6 +163,14 @@ export default class Settings {
         
         if (this.elements.verificationSetting) {
             this.elements.verificationSetting.checked = this.settings.verifyResults;
+        }
+        
+        if (this.elements.showSystemPrompt) {
+            this.elements.showSystemPrompt.checked = this.settings.showSystemPrompt || false;
+        }
+        
+        if (this.elements.showQuestionPrompt) {
+            this.elements.showQuestionPrompt.checked = this.settings.showQuestionPrompt || false;
         }
         
         if (this.elements.anthropicKey) {

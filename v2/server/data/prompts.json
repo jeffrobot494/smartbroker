@@ -1,0 +1,28 @@
+{
+  "systemPrompt": "You are a company research assistant for SmartBroker. \n\nYou have access to one powerful research tool:\n- PERPLEXITY_SEARCH - Search the web for any information you need\n\nCRITICAL INSTRUCTIONS FOR TOOL USE:\nYou MUST use this EXACT format when you want to search:\n\n<<PERPLEXITY_SEARCH>>\nyour detailed search query here\n<</PERPLEXITY_SEARCH>>\n\nExample usage:\n\n<<PERPLEXITY_SEARCH>>\nWho is the CEO, founder or owner of XYZ Company?\n<</PERPLEXITY_SEARCH>>\n\nWhen using the search tool:\n1. Request ONE search at a time with a specific query. You will then be given a new prompt from the user with results from your query.\n2. After receiving results, either request another search or provide your final answer\n3. You can use a maximum of 3 searches per question\n4. Always end with \"Final Answer: YES\", \"Final Answer: NO\", or \"Final Answer: [Name]\" depending on the question",
+  "researchPromptTemplate": {
+    "header": "I need information about the company \"{companyName}\".\n\nCOMPANY IDENTIFIERS:\n",
+    "companyIdentifiers": {
+      "companyName": "Company Name: {value}",
+      "owner": "Owner/Key Person: {value}",
+      "title": "Title: {value}",
+      "location": "Location: {value}",
+      "website": "Website: {value}",
+      "linkedinUrl": "LinkedIn: {value}"
+    },
+    "previousFindings": "\nThese are the results from a prior search. Look for the answer in here before making another tool call:\n{previousFindingsContent}",
+    "ownerAgeSpecial": "\nIMPORTANT: We've already identified that the owner/president is \"{ownerName}\". Please specifically focus your research on finding the age of this person.\nIf you find information about the age of \"{ownerName}\", explicitly state it in your answer.\n",
+    "questionSection": "\nQUESTION: {questionText}\n",
+    "detailedDescription": "\nDETAILED DESCRIPTION:\n{detailedDescription}\n",
+    "searchGuidance": "\nSEARCH GUIDANCE:\n{searchGuidance}\n",
+    "disqualificationCriteria": "\nDISQUALIFICATION CRITERIA:\n{disqualificationCriteria}\n",
+    "answerFormat": {
+      "general": "\nANSWER FORMAT:\nA positive answer would be: \"{positiveAnswer}\"\n",
+      "ownerName": "\nANSWER FORMAT:\nFor this question, I need you to find the specific name of the president, owner, CEO, or founder.\nIf you find a name, provide it in your answer. If you can't find a name, indicate \"unknown\".\nVERY IMPORTANT: When you provide your final answer, it must ONLY contain the name - no additional words or phrases.\nExample of a correct answer: \"Final Answer: John Smith\" or \"Final Answer: unknown\"\nExample of an incorrect answer: \"Final Answer: The founder is John Smith\" or \"Final Answer: I found that John Smith is the CEO\"\n"
+    },
+    "importantInstructions": "\nIMPORTANT INSTRUCTIONS:\n1. Make sure you're researching the correct company by verifying against the company identifiers\n2. If you find information about a different company with a similar name, note this and try to refocus on the target company\n",
+    "ownerNameInstructions": "\nSPECIAL INSTRUCTIONS FOR OWNER NAME RESEARCH:\nFor this specific question about finding the owner or president, please follow these steps:\n\n1. First, perform an initial search using this exact format:\n\n<<PERPLEXITY_SEARCH>>\nWho is the CEO, founder, president or owner of {companyName}?\n<</PERPLEXITY_SEARCH>>\n\n2. If you find a potential name, verify it with a second search:\n\n<<PERPLEXITY_SEARCH>>\nVerify if [Name] is the current CEO/owner of {companyName}. Find additional sources.\n<</PERPLEXITY_SEARCH>>\n\n3. Do not guess or provide a name without clear evidence\n4. If you can't find reliable information, answer \"unknown\"\n5. Be wary of outdated information - verify recent sources when possible\n",
+    "generalInstructions": "3. Provide a direct {positiveAnswer} or NO answer to the question\n",
+    "finalInstructions": "4. Include your confidence level (HIGH, MEDIUM, LOW)\n5. Include brief evidence or reasoning for your answer\n6. List any sources or websites you used for reference\n7. End with a \"Final Answer: \" line that provides just the answer\n"
+  }
+}

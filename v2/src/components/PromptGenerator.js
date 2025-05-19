@@ -5,7 +5,62 @@
 export default class PromptGenerator {
     constructor() {
         // Default templates
-        this.systemPromptTemplate = this.getDefaultSystemPrompt();
+        this.promptTemplates = {};
+        this.systemPromptTemplate = '';
+        
+        // Load prompt templates
+        this.loadPrompts();
+    }
+    
+    /**
+     * Load prompts from the server
+     */
+    async loadPrompts() {
+        try {
+            const response = await fetch('/api/prompts');
+            if (!response.ok) {
+                throw new Error(`Failed to load prompts: ${response.statusText}`);
+            }
+            
+            const prompts = await response.json();
+            this.promptTemplates = prompts.researchPromptTemplate || {};
+            this.systemPromptTemplate = prompts.systemPrompt || this.getDefaultSystemPrompt();
+            
+            console.log('Loaded prompts from server');
+            return prompts;
+        } catch (error) {
+            console.error('Error loading prompts:', error);
+            // Fall back to default prompts
+            this.systemPromptTemplate = this.getDefaultSystemPrompt();
+            return null;
+        }
+    }
+    
+    /**
+     * Update prompts on the server
+     * @param {Object} updatedPrompts - Updated prompts object
+     */
+    async updatePrompts(updatedPrompts) {
+        try {
+            const response = await fetch('/api/prompts', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedPrompts)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to update prompts: ${response.statusText}`);
+            }
+            
+            // Reload prompts
+            await this.loadPrompts();
+            return true;
+        } catch (error) {
+            console.error('Error updating prompts:', error);
+            return false;
+        }
     }
 
     /**
@@ -16,6 +71,118 @@ export default class PromptGenerator {
      * @returns {string} Formatted prompt text
      */
     generateResearchPrompt(company, question, previousFindings = null) {
+        // If prompts haven't loaded yet, use the fallback method
+        if (!this.promptTemplates.header) {
+            return this.generateFallbackResearchPrompt(company, question, previousFindings);
+        }
+        
+        let prompt = '';
+        
+        // Header with company name
+        prompt += this.promptTemplates.header.replace('{companyName}', company.companyName);
+        
+        // Company identifiers
+        const identifiers = this.promptTemplates.companyIdentifiers;
+        if (company.companyName && identifiers.companyName) 
+            prompt += identifiers.companyName.replace('{value}', company.companyName);
+        if (company.owner && identifiers.owner) 
+            prompt += identifiers.owner.replace('{value}', company.owner);
+        if (company.title && identifiers.title) 
+            prompt += identifiers.title.replace('{value}', company.title);
+        if (company.location && identifiers.location) 
+            prompt += identifiers.location.replace('{value}', company.location);
+        if (company.website && identifiers.website) 
+            prompt += identifiers.website.replace('{value}', company.website);
+        if (company.linkedinUrl && identifiers.linkedinUrl) 
+            prompt += identifiers.linkedinUrl.replace('{value}', company.linkedinUrl);
+        
+        // Include previous findings if available
+        if (previousFindings && Object.keys(previousFindings).length > 0) {
+            let previousFindingsContent = '';
+            for (const [key, value] of Object.entries(previousFindings)) {
+                previousFindingsContent += `${key}: ${value}\n`;
+            }
+            
+            prompt += this.promptTemplates.previousFindings.replace(
+                '{previousFindingsContent}', 
+                previousFindingsContent
+            );
+            
+            // Special handling for Owner Age question if we have owner name
+            if (question.text.includes("owner of the company at least 50 years old") && 
+                previousFindings['Owner Name']) {
+                prompt += this.promptTemplates.ownerAgeSpecial
+                    .replace(/\{ownerName\}/g, previousFindings['Owner Name']);
+            }
+        }
+        
+        // Main question
+        prompt += this.promptTemplates.questionSection.replace('{questionText}', question.text);
+        
+        // Add detailed description
+        if (question.detailedDescription) {
+            prompt += this.promptTemplates.detailedDescription.replace(
+                '{detailedDescription}', 
+                question.detailedDescription
+            );
+        }
+        
+        // Add search guidance
+        if (question.searchGuidance) {
+            prompt += this.promptTemplates.searchGuidance.replace(
+                '{searchGuidance}', 
+                question.searchGuidance
+            );
+        }
+        
+        // Add disqualification criteria
+        if (question.disqualificationCriteria) {
+            prompt += this.promptTemplates.disqualificationCriteria.replace(
+                '{disqualificationCriteria}', 
+                question.disqualificationCriteria
+            );
+        }
+        
+        // Handle answer format
+        if (question.text === "Who is the president or owner of the company?") {
+            prompt += this.promptTemplates.answerFormat.ownerName;
+        } else {
+            prompt += this.promptTemplates.answerFormat.general.replace(
+                '{positiveAnswer}', 
+                question.positiveAnswer
+            );
+        }
+        
+        // Instructions for verification and response format
+        prompt += this.promptTemplates.importantInstructions;
+        
+        // Special handling for the owner name question
+        if (question.text === "Who is the president or owner of the company?") {
+            prompt += this.promptTemplates.ownerNameInstructions.replace(
+                /\{companyName\}/g, 
+                company.companyName
+            );
+        } else {
+            prompt += this.promptTemplates.generalInstructions.replace(
+                '{positiveAnswer}', 
+                question.positiveAnswer
+            );
+        }
+        
+        // Final instructions
+        prompt += this.promptTemplates.finalInstructions;
+    
+        return prompt;
+    }
+    
+    /**
+     * Fallback method for generating research prompt if templates fail to load
+     * @param {Object} company - Company object with details
+     * @param {Object} question - Question object with criteria
+     * @param {Object} previousFindings - Previous research findings (optional)
+     * @returns {string} Formatted prompt text
+     */
+    generateFallbackResearchPrompt(company, question, previousFindings = null) {
         let prompt = `I need information about the company "${company.companyName}".\n\n`;
         
         // Company identifiers
@@ -183,5 +350,16 @@ When using the search tool:
         }
         
         return systemPrompt;
+    }
+    
+    /**
+     * Get all prompt templates
+     * @returns {Object} All prompt templates
+     */
+    getPromptTemplates() {
+        return {
+            systemPrompt: this.systemPromptTemplate,
+            researchPromptTemplate: this.promptTemplates
+        };
     }
 }

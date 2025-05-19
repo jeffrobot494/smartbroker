@@ -29,10 +29,12 @@
     user-select: none;
     transition: background-color 0.2s;
     min-width: 120px;
+    /* Ensure opaque background and clear separation */
+    box-shadow: 0 2px 3px rgba(0,0,0,0.1);
 }
 
 .company-data-table th:hover {
-    background-color: rgba(26, 188, 156, 0.1);
+    background-color: rgba(26, 188, 156, 0.2);
 }
 
 .company-data-table td {
@@ -42,7 +44,7 @@
 }
 
 .company-data-table th.selected-question {
-    background-color: rgba(26, 188, 156, 0.2);
+    background-color: rgba(26, 188, 156, 0.8);
     border-bottom: 3px solid var(--accent-color);
     color: var(--primary-color);
     font-weight: 700;

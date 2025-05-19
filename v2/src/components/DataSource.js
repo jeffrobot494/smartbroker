@@ -6,7 +6,7 @@
 export default class DataSource {
     constructor() {
         this.companies = [];
-        this.questions = this.initQuestions();
+        this.questions = [];
         this.results = [];
         this.settings = this.loadSettings();
         this.investigationState = {
@@ -32,63 +32,59 @@ export default class DataSource {
             investigationState: [],
             apiUsage: []
         };
+        
+        // Load questions from server
+        this.loadQuestions();
     }
 
     /**
-     * Initialize with predefined questions
+     * Load questions from the server
+     * Fetches questions JSON from API endpoint
+     */
+    async loadQuestions() {
+        try {
+            const response = await fetch('/api/questions');
+            if (!response.ok) {
+                throw new Error(`Failed to load questions: ${response.statusText}`);
+            }
+            
+            const questions = await response.json();
+            this.questions = questions;
+            
+            // Notify listeners that questions have changed
+            this.notifyListeners('questions');
+            
+            console.log(`Loaded ${questions.length} questions from server`);
+            return questions;
+        } catch (error) {
+            console.error('Error loading questions:', error);
+            // Fall back to default questions if server request fails
+            this.questions = this.getDefaultQuestions();
+            return this.questions;
+        }
+    }
+
+    /**
+     * Get default questions (used as fallback if server request fails)
      * @returns {Array} Array of question objects
      */
-    initQuestions() {
+    getDefaultQuestions() {
         return [
             { 
                 text: "Does the company sell a software product or products?", 
                 positiveAnswer: "YES", 
-                detailedDescription: "We're looking for companies that develop and sell their own software products, as opposed to companies that primarily offer software development services or consulting. A software product is a packaged application or platform that clients can purchase, license, or subscribe to use. If the company appears to primarily sell a software product, whether to businesses or consumers, it passes this question with a YES.",
-                searchGuidance: "Examine the company website, especially 'Products', 'Solutions', or 'Services' pages. Look for specific named software offerings, pricing pages, demo requests, or product screenshots. Software products typically have specific names, features lists, and may mention licensing models.",
-                disqualificationCriteria: "The company should be disqualified if it primarily offers custom software development, IT consulting, implementation services, or integration of third-party software without having its own products. Companies describing themselves as 'software development shops' or 'dev agencies' are typically not what we're looking for."
+                detailedDescription: "We're looking for companies that develop and sell their own software products, as opposed to companies that primarily offer software development services or consulting.",
+                searchGuidance: "Examine the company website, especially 'Products', 'Solutions', or 'Services' pages.",
+                disqualificationCriteria: "The company should be disqualified if it primarily offers custom software development, IT consulting, implementation services, or integration of third-party software without having its own products."
             },
             { 
                 text: "Are the company's products vertical market software?", 
                 positiveAnswer: "YES", 
-                detailedDescription: "Vertical market software is designed to address the needs of a specific industry or business type, rather than being general-purpose software. We're looking for software that specializes in a particular industry vertical like healthcare, legal, construction, manufacturing, etc.",
-                searchGuidance: "Look at how the company describes its target market. Check if they mention specific industries they serve. Examine customer testimonials and case studies for industry focus. Look for industry-specific terminology or features in their product descriptions.",
-                disqualificationCriteria: "The company should be disqualified if their products are horizontal (designed for all businesses regardless of industry) like general accounting software, generalized CRM, or productivity tools that aren't industry-specific."
-            },
-            { 
-                text: "Who is the president or owner of the company?", 
-                positiveAnswer: "NAME", 
-                detailedDescription: "We need to identify the primary decision-maker at the company - typically the founder, CEO, president, or majority owner. For small businesses, this is often one person who holds a title like Owner, President, CEO, or Founder.",
-                searchGuidance: "Check the company website's 'About Us', 'Team', or 'Leadership' pages. LinkedIn company page often lists key executives. For smaller companies, also look at LinkedIn profiles connected to the company with founder/owner/CEO titles. State business registrations sometimes list owners/officers.",
-                disqualificationCriteria: "This question doesn't disqualify a company, but is used to gather information for subsequent questions. If no clear owner can be identified, note this but continue with other questions."
-            },
-            { 
-                text: "Is the owner of the company at least 50 years old?", 
-                positiveAnswer: "YES", 
-                detailedDescription: "We need to verify if the identified owner/president is at least 50 years of age. This helps identify established business owners rather than younger entrepreneurs.",
-                searchGuidance: "Use public records services or search for information about education/career timeline that might indicate approximate age. Look for graduation dates on LinkedIn that might suggest approximate age (e.g., college graduation in 1995 or earlier would suggest they're likely 50+). Search for news articles or interviews that might mention age or career length.",
-                disqualificationCriteria: "If you find concrete evidence that the owner is under 50 years old, the company should be disqualified."
-            },
-            { 
-                text: "Does the company number between 5 and 40 employees?", 
-                positiveAnswer: "YES", 
-                detailedDescription: "We're looking for small businesses with enough employees to be established (at least 5) but not so large that they're beyond our target size (no more than 40).",
-                searchGuidance: "Check LinkedIn company page which often shows employee count. Look at the company website's team or about page to count visible employees. If exact counts aren't available, you might estimate based on company size descriptions (small, medium) and annual revenue.",
-                disqualificationCriteria: "Companies with fewer than 5 employees may be too small or too new. Companies with more than 40 employees are too large for our criteria."
-            },
-            { 
-                text: "Is the company bootstrapped?", 
-                positiveAnswer: "YES", 
-                detailedDescription: "We're looking for companies that are self-funded (bootstrapped) rather than venture-backed or private equity owned. Bootstrapped companies are typically funded by the founders, their revenue, or small personal investments rather than institutional investors.",
-                searchGuidance: "Look for funding information on Crunchbase, which typically lists investment rounds. Check company press releases or news for mentions of funding. Review the company's 'About Us' page which might mention their funding approach. Absence of VC funding information often suggests bootstrapping.",
-                disqualificationCriteria: "Evidence of venture capital funding, private equity ownership, or being acquired by a larger company would disqualify the business. If there's no indication of external funding, assume the company is bootstrapped."
-            },
-            { 
-                text: "Are the majority of the employees based in the USA?", 
-                positiveAnswer: "YES", 
-                detailedDescription: "We want to identify companies with most of their workforce in the United States rather than primarily offshore operations.",
-                searchGuidance: "Check the company website for office locations. Look at employee LinkedIn profiles to see where they're located. Check job postings to see where they're hiring.",
-                disqualificationCriteria: "If most employees appear to be located outside the USA, or if the company primarily advertises its offshore development capabilities, it should be disqualified."
+                detailedDescription: "Vertical market software is designed to address the needs of a specific industry or business type, rather than being general-purpose software.",
+                searchGuidance: "Look at how the company describes its target market. Check if they mention specific industries they serve.",
+                disqualificationCriteria: "The company should be disqualified if their products are horizontal (designed for all businesses regardless of industry)."
             }
+            // Simplified default questions as fallback
         ];
     }
 
@@ -182,6 +178,84 @@ export default class DataSource {
             return this.questions[index];
         }
         return null;
+    }
+    
+    /**
+     * Add a new question to the collection
+     * @param {Object} question - Question object to add
+     */
+    async addQuestion(question) {
+        try {
+            const response = await fetch('/api/questions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(question)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to add question: ${response.statusText}`);
+            }
+            
+            // Reload questions from server
+            await this.loadQuestions();
+            return true;
+        } catch (error) {
+            console.error('Error adding question:', error);
+            return false;
+        }
+    }
+    
+    /**
+     * Update an existing question
+     * @param {number} index - Index of the question to update
+     * @param {Object} updatedQuestion - Updated question data
+     */
+    async updateQuestion(index, updatedQuestion) {
+        try {
+            const response = await fetch(`/api/questions/${index}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedQuestion)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to update question: ${response.statusText}`);
+            }
+            
+            // Reload questions from server
+            await this.loadQuestions();
+            return true;
+        } catch (error) {
+            console.error('Error updating question:', error);
+            return false;
+        }
+    }
+    
+    /**
+     * Delete a question
+     * @param {number} index - Index of the question to delete
+     */
+    async deleteQuestion(index) {
+        try {
+            const response = await fetch(`/api/questions/${index}`, {
+                method: 'DELETE'
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to delete question: ${response.statusText}`);
+            }
+            
+            // Reload questions from server
+            await this.loadQuestions();
+            return true;
+        } catch (error) {
+            console.error('Error deleting question:', error);
+            return false;
+        }
     }
 
     /**

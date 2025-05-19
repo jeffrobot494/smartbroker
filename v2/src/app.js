@@ -932,8 +932,14 @@ export default class App {
      * @param {Object} data - Prompt data
      */
     handleClaudePrompt(data) {
-        // Display Claude prompt in terminal
-        this.terminalWindow.appendClaudePrompt(data.prompt, data.systemPrompt);
+        // Get display settings
+        const displaySettings = {
+            showSystemPrompt: this.settings.getSetting('showSystemPrompt'),
+            showQuestionPrompt: this.settings.getSetting('showQuestionPrompt')
+        };
+        
+        // Display Claude prompt in terminal with settings
+        this.terminalWindow.appendClaudePrompt(data.prompt, data.systemPrompt, displaySettings);
     }
     
     /**
