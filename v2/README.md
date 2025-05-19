@@ -1,5 +1,34 @@
 # SmartBroker v2
 
+## Deployment Instructions
+
+### Railway.app Deployment
+
+1. Create an account on [Railway.app](https://railway.app)
+2. Install the Railway CLI:
+   ```
+   npm install -g @railway/cli
+   ```
+3. Login to Railway:
+   ```
+   railway login
+   ```
+4. Initialize your project:
+   ```
+   railway init
+   ```
+5. Deploy your application:
+   ```
+   railway up
+   ```
+
+### Environment Variables
+
+Make sure to set the following environment variables in the Railway dashboard:
+
+- `ANTHROPIC_API_KEY` - Your Claude API key
+- `PERPLEXITY_API_KEY` - Your Perplexity API key
+
 A web application for researching companies using AI tools (Claude and Perplexity).
 
 ## Overview
