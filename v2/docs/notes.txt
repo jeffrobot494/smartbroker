@@ -1,0 +1,97 @@
+Qs FOR DAVID:
+1) Does Demand.io sell a software product? It's more a platform that people and businesses use and they collect fees.
+2) If it's a CEO, does that disqualify it?
+3) Revenue?
+4) Age of business?
+5) Has been acquired? Disqualified
+6) Any other hints or disqualifying factors?
+7) Website 404s
+8) Website redirects somewhere else (acquired?)
+
+2) Need to add all the information we have on a company to the searches, key identifiers, etc
+3) One wide perplexity search at the start to capture as much information as we can, then go hunting.
+
+Taurus Software is selling a service, not a product. Not just software development services, but services of any kind. 
+
+-
+
+
+Notes on App:
+2) In researching for question 1, we learned that Attra was previously acquired by Synechron. This is a red flag. We should eliminate it for that reason. 
+
+8) "Datatech Corp" has a 404 website, but Claude seems to believe otherwise. We need to make sure that we check the website listed. If it's 404, big error, company may be dead. Claude lied to me about the website. Where did it get the info from, then? The info is very vague, maybe a yellow flag there.
+
+10) A company was disqualified due to a negative answer. That's not what we want.
+
+11) I need to be able to insert a question to Claude about it's search/results.
+
+12) What percent of employees need to be in the US? 50%? 90%? Let this be adjustable in settings.
+
+13) How strict is our definition for vertical market software? Check out Stn Solutions for example of borderline case.
+
+14) It got a No on VMS right.
+
+15) Got an owner age question wrong. The information was available on LinkedIn.
+
+16) It claimed LinkedIn was a source, but how can that be if it's not logged on? That was a perplexity search - how is perplexity finding LinkedIn info? 
+
+20) We should prioritize companies where we have the identity of the president/owner
+
+21) We should get the approximate age, not just the binary yes/no.
+
+22) Be sure to check domain to see if it's still there, or goes somewhere else (bought) or 404s.
+Website check happens in question 1. If the website 404s or navigates somewhere else... for now disqualify that company.
+
+23) Use phone number area code as hint for owner location/identity.
+
+24) Companies are sometimes repeated in this list. We should clean the list before we use it. 
+
+26) Let David add a question on the fly if he thinks of one that he can just type, boop, adds the column, now he can start asking that question for everybody.
+
+27) If we aren't sure of the owner's age, put a link to his LinkedIn profile right there in the table so David can click it and view the profile.
+
+28) If confidence is low in an answer, instead of putting "NO" put an "unknown" or something. 
+
+29) We need a database so that we can save information if we want to call it up
+
+30) We need to output a file
+
+31) We need to be able to eliminate companies from the search
+	This might require some kind of new data structure
+	The data from the sheet is read into a database/table
+	When we get a no, we flag that whole company as "no"
+	Our search skips over companies that are flagged "no"
+
+32) The terminal output isn't a massive list, the responses are written to the database, the terminal output shows 
+OR maybe the terminal has two tabs: 1) full investigation (what it is now), 2) selected information (outputs info on a particular company/cell search
+
+33) Import president/owner name when possible
+
+34) Add confidence rating to all responses
+
+35) We need to better define a software product - MyCircles does not sell a software product!
+
+36) The questions, which their prompts and whatnot, need to all be exposed in a settings page where David can edit them.
+
+37) We need to pass all the information from the csv.
+
+38) Confidence levels are not being properly posted on the frontend
+
+39) On owner name, it's "disqualifying due to negative answer" on everyone, despite this not being a disqualifying question, and despite it finding the right person.
+
+Heavy Deployment... very powerful.
+
+40) We will have to parse the tool result later to reduce context to claude.
+
+41) We need to organize our tool use, questions, prompts, etc into one file.
+
+42) We don't need to talk to claude for the first tool use, it's generally pretty obvious. Each question can have a default prompt sent to perplexity, right?
+
+43) After we do our first search for the company, compare what we found against what else we have.
+
+44) Are the API costs real? No they aren't
+
+45) Disable API cost calculations. 
+
+
+

@@ -1,0 +1,25 @@
+1. shyamalanadkat on twitter for evals
+
+evals particularly useful when switching models
+make comparisons between models with different costs
+Helps you see at a glance how the model is performing overall
+Evals should be full of edge cases.... try to break it.
+
+System prompt:
+You are a search engine pro
+
+User prompt:
+Does Prostar Software sell a software product or a service?
+
+Answer: make a tool call
+
+System Prompt:
+You are an expert analyst
+
+User prompt:
+Prostar Software sells SuperPro for $10.99
+
+Answer: FINAL ANSWER: Yes
+
+2. huggingface cookbook RAG evaluation
+Q: How do I turn data into a vector database?
