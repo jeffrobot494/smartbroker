@@ -1,0 +1,29 @@
+CSV Parser Prompt
+
+Your job is to create a script that parses a csv file into JSON. The script's name is csv-to-json.js. It requires node.js and can be run from the command line. 
+
+It takes the path to the csv file as a command line argument when the function is called.
+
+It turns each row into a JSON object. The JSON object is structured thusly:
+
+{
+	"name": {Company},
+	"website": {Website},
+	"linkedin: {Company LinkedIn Url}.
+	"city": {Company City},
+	"state": {Company State},
+	"phone": {Company Phone},
+	"revenue": {Annual Revenue},
+	"president/owner/ceo": {owner}
+	"other":{{other}}
+}
+
+For name, website, linkedin, city, state, phone, and revenue, those are taken directly from the columns with titles matching the value. For "president/owner/ceo", this is filled only if the "Title" column contains "president", "owner", or "ceo". If so, it concatenates the values from the "First Name" and "Last Name" columns to get the full name. The "other"  field contains an object that contains all the remaining column titles and their values. We don't know for sure what these will contain, so we don't assume their names.
+
+The csv file will contain duplicate entries for the same company, but with varying other details. For each company, the program should check if a company with the exact same name and exact website already exists in the JSON. If it does, the program should print out 
+complete information from the csv file for each company, side by side in a two-column format, then wait for the user to press 1 or 2, indicating which to keep. The record indicated to keep is converted to a json object if not already, then the other record is deleted from the JSON if already converted, or skipped over for conversion if not. Sometimes there are more than two duplicates, in which case we will compare the first two, then whichever remains and the next one, etc.
+
+The output json file will be called "company_info.json".
+
+
+
