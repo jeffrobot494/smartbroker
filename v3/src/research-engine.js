@@ -87,8 +87,20 @@ class ResearchEngine {
           });
         }
 
-        // Skip if already disqualified
-        if (company.disqualified) {
+        // Get all research results for this company
+        let companyResults = [];
+        try {
+          companyResults = await this.research.getCompanyResults(company.name);
+        } catch (error) {
+          console.warn(`Error getting research results for ${company.name}: ${error.message}`);
+        }
+
+        // Check if company is disqualified based on research results
+        const disqualifyingCriteria = CRITERIA.filter(c => c.disqualifying).map(c => c.name);
+        const isDisqualified = companyResults.some(result => 
+          disqualifyingCriteria.includes(result.criterion) && result.type === 'negative'
+        );
+        if (isDisqualified) {
           totalSkipped++;
           if (progressCallback) {
             progressCallback({
@@ -99,21 +111,17 @@ class ResearchEngine {
           continue;
         }
 
-        // Skip if already researched
-        try {
-          const hasResult = await this.research.checkExists(company.name, criterion.name);
-          if (hasResult) {
-            totalSkipped++;
-            if (progressCallback) {
-              progressCallback({
-                type: 'company_skipped',
-                reason: 'already_researched'
-              });
-            }
-            continue;
+        // Check if research already exists for this criterion
+        const hasResult = companyResults.some(result => result.criterion === criterion.name);
+        if (hasResult) {
+          totalSkipped++;
+          if (progressCallback) {
+            progressCallback({
+              type: 'company_skipped',
+              reason: 'already_researched'
+            });
           }
-        } catch (error) {
-          console.warn(`Error checking research result for ${company.name}: ${error.message}`);
+          continue;
         }
 
         try {
@@ -126,10 +134,8 @@ class ResearchEngine {
           
           totalResearched++;
 
-          // Check for disqualification
+          // Track disqualification for session statistics
           if (criterion.disqualifying && result.type === 'negative') {
-            company.disqualified = true;
-            company.disqualificationReason = criterion.name;
             totalDisqualified++;
             
             if (progressCallback) {
@@ -512,6 +518,14 @@ ${searchResults}
 Based on the initial research results and company information above, please determine your answer for the criterion: ${criterion.name}
 
 Expected answer format: ${criterion.answerFormat}`;
+  }
+
+  /**
+   * Clear all research results from the database
+   * @returns {Object} Summary of deleted records
+   */
+  async clearAllResults() {
+    return await this.research.clearAllResults();
   }
 
   /**

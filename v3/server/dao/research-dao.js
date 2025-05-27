@@ -170,6 +170,34 @@ class ResearchDAO {
     
     return companiesWithResults;
   }
+
+  /**
+   * Clear all research results from the database
+   * @returns {Promise<Object>} Summary of deleted records
+   */
+  async clearAllResults() {
+    try {
+      // Count results before deletion
+      const resultCount = await this.db.get('SELECT COUNT(*) as count FROM research_results');
+      const companyCount = await this.db.get('SELECT COUNT(*) as count FROM companies');
+
+      // Delete all research results (companies will be deleted by CASCADE)
+      await this.db.run('DELETE FROM research_results');
+      
+      // Note: companies are deleted automatically due to CASCADE foreign key
+      // But we can also explicitly delete them to be sure
+      await this.db.run('DELETE FROM companies');
+
+      return {
+        deletedResults: resultCount.count,
+        deletedCompanies: companyCount.count,
+        success: true
+      };
+    } catch (error) {
+      console.error('Error clearing research results:', error);
+      throw error;
+    }
+  }
 }
 
 module.exports = ResearchDAO;

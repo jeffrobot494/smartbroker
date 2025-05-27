@@ -213,6 +213,25 @@ app.get('/api/research', async (req, res) => {
   }
 });
 
+// Clear all research results
+app.delete('/api/research/clear', async (req, res) => {
+  try {
+    const summary = await researchDAO.clearAllResults();
+
+    res.json({
+      message: 'Research data cleared successfully',
+      ...summary
+    });
+
+  } catch (error) {
+    console.error('Error clearing research data:', error);
+    res.status(500).json({
+      error: 'Failed to clear research data',
+      details: error.message
+    });
+  }
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 

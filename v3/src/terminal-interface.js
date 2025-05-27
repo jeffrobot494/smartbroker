@@ -341,6 +341,7 @@ class TerminalInterface {
     console.log('\n1. Edit templates');
     console.log('2. Edit system prompt');
     console.log('3. Edit criteria');
+    console.log('4. Clear research data');
 
     const choice = await this.promptUser('Enter option: ');
 
@@ -353,6 +354,9 @@ class TerminalInterface {
         break;
       case '3':
         await this.editCriteria();
+        break;
+      case '4':
+        await this.clearResearchData();
         break;
       default:
         console.log('❌ Invalid option.');
@@ -386,6 +390,40 @@ class TerminalInterface {
     });
     console.log('\n🚧 Criteria editing not yet implemented');
     await this.promptUser('Press Enter to continue...');
+  }
+
+  async clearResearchData() {
+    console.log('\n⚠️  Clear Research Data');
+    console.log('This will permanently delete ALL research results from the database.');
+    console.log('Companies and their research history will be removed.');
+    
+    const confirmation = await this.promptUser('\nAre you sure you want to continue? (y/N): ');
+    
+    if (confirmation.toLowerCase() !== 'y') {
+      console.log('❌ Operation cancelled.');
+      return;
+    }
+
+    const doubleConfirm = await this.promptUser('Type "DELETE" to confirm: ');
+    
+    if (doubleConfirm !== 'DELETE') {
+      console.log('❌ Operation cancelled.');
+      return;
+    }
+
+    try {
+      console.log('\n🔄 Clearing research data...');
+      const summary = await this.engine.clearAllResults();
+      
+      console.log(`✅ Research data cleared successfully!`);
+      console.log(`📊 Deleted ${summary.deletedResults} research results`);
+      console.log(`🏢 Deleted ${summary.deletedCompanies} company records`);
+      
+    } catch (error) {
+      console.error(`❌ Failed to clear research data: ${error.message}`);
+    }
+
+    await this.promptUser('\nPress Enter to continue...');
   }
 
   /**

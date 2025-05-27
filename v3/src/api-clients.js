@@ -125,6 +125,19 @@ class ResearchClient {
       throw new Error(`Company results failed: ${error.response?.data?.details || error.message}`);
     }
   }
+
+  async clearAllResults() {
+    try {
+      const response = await axios.delete(
+        `${this.serverURL}/api/research/clear`
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error('Clear results API Error:', error.response?.data || error.message);
+      throw new Error(`Clear results failed: ${error.response?.data?.details || error.message}`);
+    }
+  }
 }
 
 module.exports = {
