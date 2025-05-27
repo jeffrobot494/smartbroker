@@ -20,7 +20,27 @@
       "Company Address": "4540 Kearny Villa Rd, San Diego, California, United States, 92123-1555",
       "Company Country": "United States",
       "Technologies": "Microsoft Office 365, Google Analytics, WordPress.org, Google Font API, Mobile Friendly, Nginx, Remote, Render"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on the available information, STN Solutions does not appear to be a software publisher. The key indicators are:\n\n1. **Technology Stack Analysis**: Their listed technologies (Microsoft Office 365, Google Analytics, WordPress.org, Google Font API, Mobile Friendly, Nginx, Remote, Render) suggest they are a web development/consulting company rather than a software publisher. These are primarily tools used for building websites and providing IT services.\n\n2. **Company Name Pattern**: \"STN Solutions\" with the \".com\" domain and \"Solutions\" in the name typically indicates a consulting or service provider rather than a software product company.\n\n3. **Revenue vs. Business Model**: With $11.3M in revenue but using standard web development tools, this points toward a service-based business model rather than software product sales.\n\n4. **Technology Profile**: The combination of WordPress, Nginx, and various web APIs suggests they build custom websites and web applications for clients, which falls under consulting/custom development rather than publishing software products for sale.\n\nWithout being able to access their website directly, the available data strongly suggests STN Solutions is a consulting/web development company that builds custom solutions for clients, not a company whose primary business is developing and selling software products.",
+        "type": "negative",
+        "iterations": 3,
+        "toolCalls": 2,
+        "usage": {
+          "input_tokens": 962,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 272,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T04:35:23.993Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "Attra, a Synechron Company",
@@ -43,7 +63,27 @@
       "Company Address": "Box Hill, Victoria, Australia, 3128",
       "Company Country": "Australia",
       "Technologies": "Outlook, Microsoft Office 365, Microsoft Azure"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on the available information, Attra appears to be a consulting/services company rather than a software publisher. The key indicators are:\n\n1. **Parent Company Context**: Attra is described as \"a Synechron Company.\" Synechron is a well-known global consulting and technology services company that specializes in financial services, particularly providing consulting, system integration, and custom software development services.\n\n2. **Business Model Inference**: Given that Attra operates under the Synechron umbrella, it most likely follows the same business model of providing consulting services and custom software development rather than publishing standardized software products for sale.\n\n3. **Technology Stack**: The listed technologies (Outlook, Microsoft Office 365, Microsoft Azure) are common business tools rather than proprietary software products, suggesting they use these tools to deliver services rather than develop software products.\n\n4. **Geographic Setup**: Having operations in Australia while the CEO is based in California suggests a services delivery model typical of consulting firms rather than a software publishing operation.\n\nWithout evidence of proprietary software products being sold to customers, Attra appears to fall into the \"consulting companies that build custom software\" category, which is explicitly excluded from the software publisher definition.",
+        "type": "negative",
+        "iterations": 3,
+        "toolCalls": 2,
+        "usage": {
+          "input_tokens": 972,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 268,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T04:54:50.768Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "FirstWatch",
@@ -66,6 +106,24 @@
       "Company Address": "1930 Palomar Point Way, Carlsbad, California, United States, 92008-5577",
       "Company Country": "United States",
       "Technologies": "Sendgrid, Outlook, CloudFlare Hosting, Amazon AWS, WordPress.org, Microsoft-IIS, Google Tag Manager, ASP.NET, Google Font API, Gravity Forms, YouTube, Webex, AngularJS, Mobile Friendly, Google Play, reCAPTCHA, Vimeo, Remote, AI"
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "Yes",
+        "explanation": "FirstWatch is clearly a software publisher. Their primary business is developing and selling software products, specifically:\n\n1. **Real-time Data Analysis Platform** - A web-based software platform for emergency services and healthcare\n2. **Dashboard Software** - Data visualization software with real-time capabilities\n3. **Mobile Apps** - Mobile interfaces for accessing their platform\n4. **Analytics Tools and Compliance Utilities** - Software tools for monitoring and compliance\n\nThe company operates as a SaaS provider, offering software solutions to public safety and healthcare organizations. Their platform integrates with over 200 different data sources and is deployed across hundreds of agencies in North America. This is a clear software publishing business model where they develop proprietary software products and sell them to customers in specific vertical markets (public safety/healthcare).\n\nThe revenue of $23.4 million and their technology stack (including AWS, ASP.NET, AngularJS) further supports that this is a legitimate software company whose primary business is publishing and selling software products, not providing consulting services or selling hardware.",
+        "type": "positive",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1483,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 232,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T04:57:19.652Z"
+      }
     }
   },
   {

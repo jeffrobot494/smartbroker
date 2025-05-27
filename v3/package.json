@@ -5,14 +5,19 @@
   "main": "src/main.js",
   "scripts": {
     "start": "node src/main.js",
-    "research": "node src/research-loop.js",
-    "convert-csv": "node csv-to-json.js"
+    "server": "cd server && npm start",
+    "server:dev": "cd server && npm run dev",
+    "server:install": "cd server && npm install",
+    "convert-csv": "node csv-to-json.js",
+    "dev": "concurrently \"npm run server:dev\" \"npm start\"",
+    "setup": "npm install && npm run server:install"
   },
   "dependencies": {
-    "axios": "^1.6.0",
-    "dotenv": "^16.3.1"
+    "axios": "^1.6.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
   "engines": {
     "node": ">=16.0.0"
   }
