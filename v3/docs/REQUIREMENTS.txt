@@ -1,0 +1,48 @@
+REQUIREMENTS
+
+When the program starts:
+1) it tells me how many companies were loaded from data. 
+2) it shows me the research template (a system prompt plus criteria)
+3) it then presents me with a menu of options and waits for me to enter a number:
+	1. Perform research
+	2. View results
+	3. Edit options
+
+**Perform Research**
+it waits for me to input a range of companies (1-100, 200-300, etc)
+it asks me to choose a criterion
+it asks if I want to do the remaining criterion after it finishes with the first.
+it asks me what verbosity of output to use, on a scale of 1 to 3. If I enter nothing, it defaults to 1. 
+1: minimal - show the company, the criterion, tool uses, and final answers
+2: all of the above, plus the results from the tool uses
+3: all of the above plus the full prompts being sent to claude
+it asks if I want it to wait between tool uses. Nothing for no, 1 for yes.
+if I said yes, then when it shows a proposed tool use, I can press enter to approve it. OR, I can type an alternate tool use into the terminal, eg "perplexity_search: how old is John Goodman?". If I do, it uses the search I entered instead of the one proposed by Claude. 
+
+**View Results**
+It prints a table with columns for "Company" and each of the criteria.
+For each company, a column shows either a "+" for a positive result, a "-" for a negative result, a "?" if the result could not be determined, and nothing if the research hasn't been performed yet. 
+The table shows 20 rows at a time. 
+It waits for user input. The user can input 1 to return to the previous menu, 2 to page to the previous 20 companies, and 3 to page to the next 20 companies. 
+
+**Edit Options**
+This displays the name of the current template and presents a menu:
+1. Edit templates
+2. Edit system prompt
+3. Edit criteria
+
+*Edit Templates*
+Displays the current template, lists all templates, and shows a menu:
+1. Switch template
+2. Create new template
+3. Delete template
+
+Switching template lets you change which template the application will use for research.
+Create new template lets you create a new template and give it a name. It does not automatically switch to it.
+Delete template lets you delete a template from a list of all the templates.
+
+*Edit system prompt*
+Lets you edit the system prompt for the current template
+
+*Edit Criteria*
+Lists the criteria and lets you add, edit, and delete them.
