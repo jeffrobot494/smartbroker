@@ -147,7 +147,27 @@
       "Company Address": "2692 Middlefield Rd, Redwood City, California, United States, 94063-3485",
       "Company Country": "United States",
       "Technologies": "Gmail, Google Apps, Google Tag Manager, WordPress.org, YouTube, JQuery 1.11.1, Google Font API, Apache, Mobile Friendly, Android, SharePoint, Flutter, Python, Remote"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Bay Reprographic & Supply Inc is not a software publisher. Based on the research, this company is primarily a hardware and equipment supplier that has been operating since 1978. Their main business involves:\n\n1. **Selling printing equipment** - They sell HP, Canon, Xerox, Epson, and other brand printers, plotters, and large format printing equipment\n2. **Providing equipment services** - Installation, training, technical support, maintenance, and rental services\n3. **Selling supplies** - Ink, paper, and other consumables for printing equipment\n4. **Serving AEC and graphics markets** - They focus on architecture, engineering, construction, and sign/graphics industries\n\nWhile they may use various software technologies (as indicated by their tech stack including Python, Flutter, etc.), these appear to be for internal operations, website functionality, or possibly bundled with hardware sales. Their core business model is selling physical printing equipment and related services, not developing and selling software products as their primary revenue source.\n\nThis is a classic example of a hardware/equipment company that may utilize software but is not primarily a software publisher.",
+        "type": "negative",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1278,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 250,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T16:06:44.439Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "CipherEx",
@@ -170,7 +190,27 @@
       "Company Address": "2010 Crow Canyon Place, San Ramon, California, United States, 94583",
       "Company Country": "United States",
       "Technologies": "Outlook, Microsoft Office 365, GoDaddy Hosting, Microsoft Azure, Google Font API, Bootstrap Framework, Mobile Friendly, AdRoll, Google Tag Manager, WordPress.org, reCAPTCHA, JQuery 1.11.1, Apache, Google Analytics"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on my research, CipherEx is a managed IT and cybersecurity services company, not a software publisher. Their primary business model is providing IT services to other businesses, including:\n\n- Managed IT helpdesk and support\n- IT infrastructure management\n- Cybersecurity services\n- Network consulting and assessment\n- Business continuity services\n\nCipherEx operates as an IT service provider that helps small to medium-sized businesses with their technology needs. They don't develop or sell software products as their primary business - instead, they provide ongoing IT management and support services. This falls into the category of \"IT service providers\" which is explicitly excluded from the definition of a software publisher.\n\nWhile they may use various software tools and platforms to deliver their services, their core business is service delivery rather than software development and publishing.",
+        "type": "negative",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1379,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 181,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T16:07:55.501Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "MyCircles",
@@ -193,6 +233,24 @@
       "Company Address": "California, United States",
       "Company Country": "United States",
       "Technologies": "Mobile Friendly, WordPress.org, Google Font API, Google Maps, MailChimp, reCAPTCHA, Woo Commerce"
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "Yes",
+        "explanation": "MyCircles is clearly a software publisher. Based on the research, MyCircles operates as a SaaS (Software-as-a-Service) company that develops and sells a social networking and dating platform as their primary business. Their main product is software - specifically a web-based social media platform that allows users to maintain multiple profiles for different aspects of their lives.\n\nKey evidence that confirms they are a software publisher:\n1. **Primary business is software**: Their core product is a social networking/dating platform delivered as SaaS\n2. **Revenue model**: They operate on a recurring revenue model typical of software publishers (likely subscriptions or paid features)\n3. **Software development focus**: They develop and maintain a comprehensive platform with features like multi-profile management, privacy controls, and niche dating services\n4. **Direct-to-consumer software sales**: They sell their software platform directly to consumers globally\n\nThis fits the definition of a software publisher as a company whose primary business is developing and selling software products to customers, specifically falling into the SaaS category.",
+        "type": "positive",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1512,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 233,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T16:59:23.142Z"
+      }
     }
   },
   {
@@ -216,6 +274,24 @@
       "Company Address": "12100 Wilshire Blvd, Los Angeles, California, United States, 90025-1104",
       "Company Country": "United States",
       "Technologies": "Amazon SES, Sendgrid, Gmail, Google Apps, Google Cloud Hosting, React Redux, Active Campaign, Mobile Friendly, Bootstrap Framework, reCAPTCHA, CrazyEgg, Nginx, Google Tag Manager, Circle, Remote, AI"
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "Yes",
+        "explanation": "Demand.io is a software publisher whose primary business is developing and selling AI-driven e-commerce software products. The company operates multiple software applications including SimplyCodes (a deals platform), Knoji and Favely (social shopping platforms), Product.ai (an AI shopping assistant), and ShopGraph (a knowledge graph platform). \n\nThese are all software products that serve millions of users and facilitate over $1 billion in annual transaction volume. The company's core business model is built around their proprietary AI commerce data platform and various consumer-facing software applications. They are not a consulting company building custom software or an IT service provider - they are developing and operating their own software products at scale for end consumers. This clearly fits the definition of a software publisher, specifically in the SaaS category as their products appear to be web-based applications serving consumers in the e-commerce space.",
+        "type": "positive",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1338,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 195,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T16:59:42.940Z"
+      }
     }
   },
   {
@@ -239,6 +315,24 @@
       "Company Address": "420 Brewster Ave, Redwood City, California, United States, 94063",
       "Company Country": "United States",
       "Technologies": "Gmail, Google Apps, Amazon AWS, Salesforce, Mobile Friendly, Typekit, WordPress.org, Ubuntu, Google Font API, reCAPTCHA, Apache, Google Tag Manager, Android, SAP, Flutter, Circle, React Native, Avaya, , Python, Basis, SharePoint, Remote, AI"
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "Yes",
+        "explanation": "Based on the research, Taurus Software is clearly a software publisher. The company's primary business model centers around developing and selling proprietary software products for data management, integration, and business intelligence. Their product suite includes multiple software solutions like DataBridger, Manage Metrix, Ecomedate, BridgeWare, SystemBridger, EloCap, Amisys Archiving, and Measures for CommercialWare.\n\nThese are enterprise software products that they license and sell to over 700 customers worldwide. The company has been in the software business since 1987, developing no-code data integration and migration tools that customers purchase to solve their data management challenges. While they also offer professional services, their core business is creating and selling software products, which makes them a software publisher according to the defined criteria.",
+        "type": "positive",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1824,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 188,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:00:05.147Z"
+      }
     }
   },
   {
@@ -262,7 +356,27 @@
       "Company Address": "3259 Esplanade, Chico, California, United States, 95973",
       "Company Country": "United States",
       "Technologies": "RackSpace DNS, Outlook, Hubspot, Appcues, Campaign Monitor, Chargebee, DoubleClick Conversion, Vimeo, Linkedin Login, Facebook Custom Audiences, Mobile Friendly, Linkedin Widget, DoubleClick, Google Font API, Google Tag Manager, Typekit, Google Analytics, Facebook Widget, Facebook Login (Connect), Wufoo, Google Dynamic Remarketing, Remote, AI"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on the search results, Matson & Isom Technology Consulting is clearly a technology consulting company, not a software publisher. Their business model revolves around providing consulting services to other businesses, including:\n\n1. **IT Consulting and Planning** - helping businesses plan their technology infrastructure\n2. **Custom Software Development** - building tailored solutions for specific clients\n3. **Technology Support** - ongoing support services\n4. **Network Services** - networking solutions\n5. **Web Design** - creating websites for clients\n\nThis is a classic consulting firm that builds custom software FOR clients rather than developing and selling their own software products to the market. The company name itself includes \"Technology Consulting\" which confirms their service-based business model. They generate revenue by providing consulting services and custom development work, not by publishing and selling software products or licenses to customers.\n\nThe fact that they employ software developers doesn't make them a software publisher - these developers create custom solutions for individual clients rather than developing packaged software products for sale to the general market.",
+        "type": "negative",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1286,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 227,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:00:23.016Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "Cloudious LLC",
@@ -285,7 +399,27 @@
       "Company Address": "2833 Junction Ave, San Jose, California, United States, 95134",
       "Company Country": "United States",
       "Technologies": "Rackspace MailGun, Gmail, Outlook, Google Apps, Google Cloud Hosting, WordPress.org, Mobile Friendly, Google Maps (Non Paid Users), Google Font API, Varnish, Google Maps, Wix, reCAPTCHA, Nginx, Linux OS, IoT, Xamarin, Docker, , , Android, , Scala, Databricks, Splunk, Node.js, Microsoft Sql Server, SAP, Snowflake, Data Storage, Data Analytics, Azure Devops, Micro, Elasticsearch, Phoenix, Reviews, Basis, , , SharePoint, GitLab, Python, Remote"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on the research, Cloudious LLC is primarily an IT business consultancy, not a software publisher. The company describes itself as \"IT business consultants\" and \"allies on your IT journey\" who provide consulting services to help clients with their technology needs.\n\nTheir business model is centered around providing IT consulting and services including:\n- Managed IT services\n- ServiceNow implementation\n- SAP cloud solutions consulting\n- RPA consulting\n- Business intelligence/analytics consulting\n- Staff augmentation\n- Custom mobile and web app development for clients\n\nWhile they do develop mobile and web applications, this appears to be custom development work for clients rather than publishing their own software products for sale. The company's core business is providing consulting services and implementing existing software solutions (like ServiceNow and SAP) for their clients, which places them in the IT services/consulting category rather than as a software publisher.\n\nThis fits the exclusion criteria as they are a \"consulting company that builds custom software\" and \"IT service provider\" rather than a company whose primary business is developing and selling their own software products.",
+        "type": "negative",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1480,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 238,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:00:44.804Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "dotSolved Systems Inc.",
@@ -308,7 +442,27 @@
       "Company Address": "4900 Hopyard Rd, Pleasanton, California, United States, 94588-3150",
       "Company Country": "United States",
       "Technologies": "Outlook, Microsoft Office 365, GoDaddy Hosting, Salesforce, Hubspot, YouTube, WordPress.org, Apache, Google Font API, Google Tag Manager, Bootstrap Framework, Google Dynamic Remarketing, DoubleClick Conversion, Mobile Friendly, DoubleClick, reCAPTCHA, Linkedin Marketing Solutions, SAP, Remote, AI"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on my research, dotSolved Systems Inc. is not a software publisher. The company is a digital transformation service provider and consulting firm that specializes in:\n\n1. **Implementation and consulting services** - They help clients implement existing enterprise software like ERP, CRM, and cloud solutions rather than developing their own software products\n2. **Digital transformation consulting** - They provide strategic consulting and implementation services across AI, automation, and enterprise systems\n3. **Managed services** - They offer ongoing support and management of enterprise applications\n4. **Business process outsourcing** - They provide BPO and RPA services\n\nThe company's business model is based on providing consulting, implementation, and managed services using existing third-party software platforms (like SAP, Salesforce, etc.) rather than developing and selling their own software products. This makes them a technology consulting and services company, not a software publisher. Their revenue comes from professional services rather than software licenses or SaaS subscriptions.",
+        "type": "negative",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1374,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 217,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:01:06.162Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "Centroid Systems",
@@ -331,7 +485,27 @@
       "Company Address": "1050 Wilshire Drive, Troy, Michigan, United States, 48084",
       "Company Country": "United States",
       "Technologies": "Outlook, Pardot, MailChimp SPF, Microsoft Office 365, WP Engine, Leadfeeder, Salesforce, Google Analytics, Olark, Facebook Widget, Cedexis Radar, Facebook Login (Connect), Google Tag Manager, Facebook Custom Audiences, WordPress.org, Hotjar, Vimeo, DoubleClick, Google Dynamic Remarketing, Linkedin Marketing Solutions, Adobe Media Optimizer, DoubleClick Conversion, YouTube, Mobile Friendly, Oracle Products, SAP Analytics Cloud, Looker, Qlik Sense, Oracle Fusion, SAP, Remote, Snowflake"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Centroid Systems is primarily a technology consulting and managed services company, not a software publisher. Based on my research, their business model centers on providing Oracle-related consulting services, managed cloud services, and enterprise workload consulting rather than developing and selling software products. \n\nThe company operates as a service provider that helps clients with Oracle cloud solutions, infrastructure consulting, and 24/7 support services. While they may use various technologies in their operations (as evidenced by their tech stack), their core business is providing consulting and managed services to other companies rather than publishing software products for sale.\n\nThis falls into the category of \"consulting companies that build custom software\" and \"IT service providers\" which are specifically excluded from the software publisher definition. Their revenue comes from service contracts and consulting engagements, not from selling software licenses or SaaS subscriptions.",
+        "type": "negative",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1552,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 186,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:01:26.545Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "Productive Solutions",
@@ -354,6 +528,24 @@
       "Company Address": "59 Damonte Ranch Parkway, Reno, Nevada, United States, 89521",
       "Company Country": "United States",
       "Technologies": "Cloudflare DNS, Outlook, CloudFlare Hosting, Mobile Friendly, WordPress.org, Google Font API, Varnish, reCAPTCHA, Gravity Forms, Bootstrap Framework, Node.js, Android, IoT, Python, Flutter, Remote, SharePoint, AI"
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "Yes",
+        "explanation": "Based on the research, Productive Solutions is indeed a software publisher. The company develops and sells specialized software products as their primary business, including:\n\n- Point of Sale Systems for secure transactions and fare collection\n- Cash Accounting and Inventory Control software\n- Fare Media Management systems for encoding and tracking smart cards\n- Sales and Inventory Reporting software\n- ID and Credential Production systems\n- Integration and Credentialing software solutions\n\nThese are proprietary software products that the company has developed and sells to customers, primarily public transit agencies and municipal authorities. While they may also provide some hardware integration, their core business model revolves around developing and licensing these specialized software solutions to their target market. This clearly fits the definition of a software publisher whose primary business is developing and selling software products to customers.",
+        "type": "positive",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1514,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 176,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:01:45.525Z"
+      }
     }
   },
   {
@@ -377,7 +569,27 @@
       "Company Address": "548 Market Street, San Francisco, California, United States, 94104",
       "Company Country": "United States",
       "Technologies": "Basis, Circle, Micro, Laravel, Android, Flutter, React Native, Xamarin, , IoT, AI, SharePoint, Python, Node.js"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on the search results, PeaceofCode.com (associated with Tidokan.com) is a software development service provider that offers custom development work for clients, not a software publisher. The company provides:\n\n- Custom website development services\n- Mobile application development \n- Outsourced coding on a per-ticket basis\n- Platform-as-a-Service infrastructure\n\nThis business model clearly falls into the \"consulting companies that build custom software\" category, which is explicitly excluded from the software publisher definition. They develop software for other companies as a service rather than creating and selling their own software products to customers. Their revenue comes from providing development services, not from publishing and licensing software products.\n\nThe technologies listed (Laravel, Android, Flutter, React Native, etc.) further support this conclusion as these are development frameworks and tools used by service providers rather than indicating proprietary software products being sold.",
+        "type": "negative",
+        "iterations": 3,
+        "toolCalls": 2,
+        "usage": {
+          "input_tokens": 1650,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 198,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:02:15.768Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "Source III, Inc.",
@@ -400,6 +612,24 @@
       "Company Address": "2103 Harrison Ave NW, Olympia, Washington, United States, 98502",
       "Company Country": "United States",
       "Technologies": ""
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "Yes",
+        "explanation": "Based on the search results, Source III Inc. is a software publisher that specializes in electronic design automation (EDA) solutions. The company develops and sells specialized software products including:\n\n1. CAE-to-Test software tools\n2. Vector file translation software (VTRAN) that links logic simulation data files to vector formats\n3. Electronic design automation solutions and services\n\nFounded in 1980, Source III has evolved from providing custom design services to becoming a provider of software tools for the electronics industry. Their business model centers on developing and licensing specialized software products for electronic design and testing applications, which clearly fits the definition of a software publisher. The company creates proprietary software solutions that they sell to customers in the electronics and semiconductor industries, making software development and sales their primary business focus.",
+        "type": "positive",
+        "iterations": 3,
+        "toolCalls": 2,
+        "usage": {
+          "input_tokens": 1621,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 174,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:02:46.564Z"
+      }
     }
   },
   {
@@ -423,7 +653,27 @@
       "Company Address": "785 Orchard Dr, Folsom, California, United States, 95630-5547",
       "Company Country": "United States",
       "Technologies": "Outlook, Blue Host, JobDiva, Microsoft Office 365, WordPress.org, Google Tag Manager, Nginx, Google Analytics, Google Font API, Linkedin Marketing Solutions, YouTube, Mobile Friendly, Apache, SAP, Remote, AI, Uipath"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on my research, TSP - The Silicon Partners Inc is not a software publisher. They are a consulting and implementation services company that specializes in digital transformation. Their business model is centered around:\n\n1. **SAP consulting and implementation** - They help clients implement SAP S/4HANA and SuccessFactors\n2. **IT services and consulting** - Providing advisory services, system integration, and customization\n3. **Process automation consulting** - Using tools like UiPath for RPA implementations\n4. **Cloud consulting** - Helping clients with cloud migration and modernization\n\nTSP does not develop or sell their own software products. Instead, they implement and customize existing enterprise software solutions (like SAP, UiPath) for their clients. This makes them a consulting and IT services company rather than a software publisher. Their revenue comes from professional services, not from selling software licenses or SaaS subscriptions.",
+        "type": "negative",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1731,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 207,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:03:08.125Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "Accounting Micro Systems",
@@ -446,7 +696,27 @@
       "Company Address": "1700 Montgomery St, San Francisco, California, United States, 94111",
       "Company Country": "United States",
       "Technologies": "Gmail, Google Apps, Hubspot, VueJS, Google AdWords Conversion, DoubleClick Conversion, Google Tag Manager, Google AdSense, Google Remarketing, Facebook Login (Connect), Wistia, Google Dynamic Remarketing, Facebook Custom Audiences, Mobile Friendly, ConnectWise, YouTube, Facebook Widget, Google Analytics, DoubleClick, SAP, Micro, Android, SharePoint, Python, Flutter, Remote, Basis, AI, Acumatica"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Accounting Micro Systems is not a software publisher. They are primarily a value-added reseller (VAR) and consultant for third-party software products like SAP and Sage. While they do provide some custom development services, this consists of customizations and integrations for existing platforms rather than developing and selling their own software products. Their business model is based on reselling, implementing, and supporting other companies' software solutions, which places them in the consulting/IT services category rather than as a software publisher. They do not develop or sell their own standalone software products as their primary business.",
+        "type": "negative",
+        "iterations": 3,
+        "toolCalls": 2,
+        "usage": {
+          "input_tokens": 1620,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 132,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:03:27.065Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "Procase Consulting",
@@ -469,7 +739,27 @@
       "Company Address": "180 Caster Ave, Vaughan, Ontario, Canada, L4L 5Y7",
       "Company Country": "Canada",
       "Technologies": "Outlook, WordPress.org, Google Font API, Mobile Friendly, Bootstrap Framework, Google Tag Manager, Google Maps, Google Analytics"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on the research, Procase Consulting is clearly a consulting and IT services company, not a software publisher. Their business model revolves around providing custom development services, web solutions, and enterprise database applications to clients on a project basis. They specialize in technologies like Oracle, Microsoft .NET, Java, and PHP to build custom solutions for their clients' specific needs.\n\nKey indicators that they are NOT a software publisher:\n1. They operate as a \"professional services company\" and \"IT services and consulting firm\"\n2. Their core offerings are custom development services, not packaged software products\n3. They build \"custom web applications\" and \"business applications\" for specific client needs\n4. Their value proposition is solving \"specific business needs\" through custom development\n5. They work on a project basis with \"tight budgets and deadlines\" rather than selling recurring software licenses\n\nThis fits the definition of a consulting company that builds custom software for clients, which is explicitly excluded from the software publisher criteria. They develop software as a service to clients rather than publishing software products for sale to the market.",
+        "type": "negative",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1231,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 238,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:03:45.500Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "Applied CAx",
@@ -492,7 +782,27 @@
       "Company Address": "555 SE Martin Luther King Jr Blvd, Portland, Oregon, United States, 97214-2120",
       "Company Country": "United States",
       "Technologies": "Cloudflare DNS, Outlook, Pardot, Microsoft Office 365, CloudFlare Hosting, Hubspot, Mobile Friendly, Google AdWords Conversion, Google AdSense, Linkedin Marketing Solutions, Google Tag Manager, Zift Solutions, WordPress.org, Typekit, Google Dynamic Remarketing, DoubleClick, DoubleClick Conversion, YouTube, Google Remarketing, SAP, Remote, Autodesk"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Applied CAx is not a software publisher. Based on the research, Applied CAx is a Siemens PLM Solution Partner that operates as a boutique services provider and reseller. Their primary business model includes:\n\n1. **Software Reselling**: They sell and license Siemens Digital Industries Software products (like Teamcenter, NX CAD/CAM) but do not develop these software products themselves.\n\n2. **Consulting and Professional Services**: They provide digital transformation strategy, implementation, integration, and optimization services.\n\n3. **Training and Support**: They offer technical support, training, and enablement services for the Siemens software they resell.\n\n4. **Custom Solutions**: While they create custom post-processors and simulation kits, these appear to be extensions/customizations of existing Siemens software rather than standalone software products.\n\nApplied CAx fits the profile of a consulting company and software reseller rather than a software publisher. Their revenue comes from reselling third-party software (Siemens) and providing professional services around that software, not from developing and selling their own software products as their primary business.",
+        "type": "negative",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1636,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 254,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:04:08.437Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "Nicus Software, Inc.",
@@ -515,6 +825,24 @@
       "Company Address": "130 Church Ave SW, Roanoke, Virginia, United States, 24011",
       "Company Country": "United States",
       "Technologies": "Outlook, Marketo, Microsoft Office 365, Pantheon, Leadfeeder, Adobe Marketing Cloud, Salesforce, Linkedin Marketing Solutions, Facebook Login (Connect), YouTube, Mobile Friendly, Facebook Widget, Facebook Custom Audiences, Google Font API, Varnish, Nginx, WordPress.org, LiveChat, Google Tag Manager"
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "Yes",
+        "explanation": "Nicus Software, Inc. is clearly a software publisher whose primary business is developing and selling software products. They specialize in IT Financial Management (ITFM) and Technology Business Management (TBM) software solutions, with a comprehensive product portfolio including:\n\n- Nicus ITFM Platform (their core offering)\n- Nicus IT Cost Transparency\n- Nicus IT Planning  \n- Nicus FMDB on ServiceNow\n- Nicus FMDB for Enterprise Architecture\n- Nicus FMDB for IT Asset Management\n\nThese are all commercial software products that they develop and sell to enterprise customers to help organizations optimize IT costs and transform financial data into actionable insights. The company fits the definition of a software publisher as their primary business model is creating and selling software licenses/solutions rather than providing consulting services or building custom software for clients. While they do have some consulting capabilities (enhanced through their acquisition of Proven FM), their core business remains software product development and sales.",
+        "type": "positive",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 1394,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 226,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:04:25.905Z"
+      }
     }
   },
   {
@@ -538,7 +866,27 @@
       "Company Address": "1433 State Route 34, Farmingdale, New Jersey, United States, 07727",
       "Company Country": "United States",
       "Technologies": "DNS Made Easy, Outlook, Microsoft Office 365, Typekit, Google Font API, Google Analytics, Mobile Friendly, Bootstrap Framework, WordPress.org, Google Tag Manager, Apache, Avaya, IoT, Genesys, Remote"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on the initial research, Communication Resources Inc. does not primarily publish software products. The company operates as a systems integrator and technology consultant with a hybrid business model that includes systems integration services (particularly for Avaya communication systems), consulting services, and technology development for government clients. Their primary revenue appears to come from systems integration services and consulting rather than publishing and selling software products as a core business. While they may develop some technology solutions like \"CRI Insight,\" their main business focus is on services rather than software publishing.",
+        "type": "negative",
+        "iterations": 1,
+        "toolCalls": 0,
+        "usage": {
+          "input_tokens": 1290,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 118,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:31:18.296Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "Hexaview Technologies Inc.",
@@ -561,7 +909,27 @@
       "Company Address": "43 W 23rd St, New York, New York, United States, 10010-4203",
       "Company Country": "United States",
       "Technologies": "Cloudflare DNS, Outlook, Microsoft Office 365, CloudFlare Hosting, Nginx, Mobile Friendly, Ubuntu, Linkedin Marketing Solutions, Google translate API, Google Tag Manager, Google Font API, Google AdWords Conversion, Google Analytics, DoubleClick, YouTube, Google translate widget, Multilingual, AT Internet, SAP, AI"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on the initial research, Hexaview Technologies Inc. does not primarily publish software products. The company clearly positions itself as \"a Digital Transformation Firm\" and \"A Trusted FinTech Software Development Firm\" that provides services rather than published software products.\n\nThe evidence shows Hexaview operates primarily as a service-based business:\n\n1. **Service-focused positioning**: They describe themselves as providing \"solutions\" and \"services\" to clients, specifically mentioning they are a \"digital transformation firm\"\n\n2. **Custom development model**: Their business revolves around custom software development for specific clients, as evidenced by their case study of developing a \"comprehensive WealthTech platform for a US-based wealth management firm\"\n\n3. **Service offerings**: Their core business includes data migration services, analytics and AI solutions, and custom development work - all of which are service-based rather than product-based\n\n4. **Client-focused approach**: They emphasize working with \"clients\" and providing \"tailored software development\" rather than selling standardized software products to the market\n\nWhile they mention having \"products\" in their description, the overwhelming evidence points to a services company that builds custom software solutions for individual clients rather than a software publisher that develops and sells standardized software products to the general market.",
+        "type": "negative",
+        "iterations": 1,
+        "toolCalls": 0,
+        "usage": {
+          "input_tokens": 1342,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 284,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:31:35.305Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "Global Science & Technology, Inc",
@@ -584,7 +952,27 @@
       "Company Address": "7855 Walker Dr, Greenbelt, Maryland, United States, 20770",
       "Company Country": "United States",
       "Technologies": "Route 53, Outlook, Microsoft Azure Hosting, Microsoft Office 365, Drupal, Oracle Cloud, Apache, Mobile Friendly, Android, Python, SharePoint, Flutter"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on the initial research, Global Science & Technology, Inc. (GST) is primarily a technical services company rather than a software publisher. Their business model revolves around providing specialized technical services including remote sensing, space science, enterprise data systems, IT security, and engineering services to government, industry, and academic clients. Their revenue comes primarily from service contracts, particularly government contracts with organizations like NOAA. While they may develop software as part of their service delivery, their core business is providing technical expertise and services rather than publishing and selling proprietary software products. The company operates as a consulting and technical services provider, not as a software product vendor.",
+        "type": "negative",
+        "iterations": 1,
+        "toolCalls": 0,
+        "usage": {
+          "input_tokens": 1281,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 143,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:31:50.944Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "Signiant",
@@ -607,6 +995,24 @@
       "Company Address": "91 Hartwell Avenue, Lexington, Massachusetts, United States, 02421",
       "Company Country": "United States",
       "Technologies": "Route 53, Outlook, Marketo, Zendesk, Google Cloud Hosting, Amazon SES, Microsoft Office 365, Amazon AWS, Amazon CloudFront, Gmail, Amazon Elastic Load Balancer, Google Apps, Brightcove, StatusPage IO, SalesLoft, WP Engine, Atlassian Cloud, Netlify, React Redux, Adobe Marketing Cloud, Salesforce, Optimizely, DoubleClick Conversion, CrazyEgg, Linkedin Marketing Solutions, Facebook Custom Audiences, Google Analytics, Adobe Media Optimizer, Cedexis Radar, WordPress.org, DoubleClick, Shutterstock, Nginx, Facebook Widget, New Relic, Mobile Friendly, Google Dynamic Remarketing, Vidyard, Google Tag Manager, Bootstrap Framework, Google Font API, Vimeo, Facebook Login (Connect), Bing Ads, Apache, SAP, Remote, AI, IoT, Render, Circle, Python, Stitch, Proofpoint, Avalara, Android"
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "Yes",
+        "explanation": "Based on the initial research, Signiant clearly operates as a software publisher. The company's primary business model is selling packaged software products through a SaaS (Software-as-a-Service) subscription model. Their main offerings include the Software Defined Content Exchange (SDCX) platform and Media Shuttle, which are cloud-based software solutions for media file movement and asset management. The research explicitly states that Signiant \"primarily sells software products rather than software development services\" and generates revenue through \"recurring subscription fees for software products.\" This fits the definition of a software publisher, as they develop, package, and distribute software products to customers rather than providing custom development services.",
+        "type": "positive",
+        "iterations": 1,
+        "toolCalls": 0,
+        "usage": {
+          "input_tokens": 1479,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 152,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:32:04.879Z"
+      }
     }
   },
   {
@@ -630,7 +1036,27 @@
       "Company Address": "13101 W Washington Blvd, Los Angeles, California, United States, 90066",
       "Company Country": "United States",
       "Technologies": "Amazon AWS, Data Analytics, Remote"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on the research, ASAP Inc. (formerly Waitr Holdings Inc.) was primarily an on-demand delivery platform company, not a software publisher. Their main business model involved operating a delivery marketplace that connected customers with merchants and delivery drivers across approximately 1,000 cities. While they did develop proprietary technology including in-stadium mobile ordering systems, their primary revenue came from delivery platform operations rather than selling software products. The company was in the delivery/logistics industry, not software publishing. Additionally, the company ceased operations and filed for Chapter 7 bankruptcy in April 2024, indicating they are no longer in business.",
+        "type": "negative",
+        "iterations": 1,
+        "toolCalls": 0,
+        "usage": {
+          "input_tokens": 1178,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 141,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:32:17.413Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "Zap",
@@ -653,7 +1079,27 @@
       "Company Address": "Brisbane, Queensland, Australia",
       "Company Country": "Australia",
       "Technologies": "CSC Corporate Domains, Sendgrid, Outlook, Zendesk, Google Cloud Hosting, Amazon SES, Sage Intacct, LifterLMS, Azure Active Directory, Intercom, DoubleClick, Hubspot, Wix, Bootstrap Framework, Mobile Friendly, Hotjar, Google Dynamic Remarketing, Varnish, Google Tag Manager, Linkedin Marketing Solutions, YouTube, DoubleClick Conversion, SharePoint, AI"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "The search results reveal a significant discrepancy between the provided company information and the actual Zap BI company. While Zap BI (zapbi.com) does primarily publish software products as a SaaS provider specializing in business intelligence and data warehouse automation, the company details don't match the provided information:\n\n1. **Leadership Mismatch**: The actual CEO of Zap BI is Christopher Reeves, not Harold Simpson as listed in the provided information.\n\n2. **Location Discrepancy**: Zap BI is headquartered in London, UK, not Brisbane, Queensland as indicated in the company details.\n\n3. **Revenue Difference**: The actual company has ~$17.6 million in revenue with 84 employees, while the provided information lists $12 million revenue.\n\nGiven these substantial discrepancies, it appears the provided company information may be outdated, incorrect, or referring to a different entity entirely. Since I cannot verify that the company described in the initial details actually exists or matches the legitimate Zap BI software publisher, I cannot confirm that this specific company primarily publishes software products.",
+        "type": "negative",
+        "iterations": 2,
+        "toolCalls": 1,
+        "usage": {
+          "input_tokens": 2484,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 254,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:33:01.215Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "LMBe Solutions",
@@ -676,7 +1122,27 @@
       "Company Address": "2624 Fruitvale Ave, Oakland, California, United States, 94601-2024",
       "Company Country": "United States",
       "Technologies": "Outlook, Microsoft Office 365, Mobile Friendly, Bootstrap Framework, Eventbrite"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on the initial research, LMBe Solutions is clearly a software development services company rather than a software publisher. The research indicates they provide \"custom software development services and IT consulting\" with a business model centered around creating \"web-based platforms tailored to specific client needs\" such as real estate platforms, database management systems, and educational portals. Their revenue appears to come from custom development projects and IT support contracts rather than selling packaged software products. A software publisher typically develops and sells standardized software products to multiple customers, whereas LMBe Solutions creates custom solutions for individual clients' specific needs.",
+        "type": "negative",
+        "iterations": 1,
+        "toolCalls": 0,
+        "usage": {
+          "input_tokens": 1200,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 135,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:33:15.766Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "LLumin, Inc.",
@@ -699,6 +1165,24 @@
       "Company Address": "293 Bridge St, Springfield, Massachusetts, United States, 01103",
       "Company Country": "United States",
       "Technologies": "Outlook, CloudFlare Hosting, Hubspot, Pantheon, Barracuda Networks, YouTube, Google Tag Manager, Facebook Widget, Google Dynamic Remarketing, Adobe Media Optimizer, Gravity Forms, Cedexis Radar, Vimeo, reCAPTCHA, DoubleClick Conversion, Bing Ads, Linkedin Marketing Solutions, Webtraxs, Facebook Login (Connect), Bootstrap Framework, Google Analytics, Google Font API, Hotjar, Facebook Custom Audiences, DoubleClick, Mobile Friendly, WordPress.org, Shutterstock, , SAP, Remote"
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "Yes",
+        "explanation": "LLumin, Inc. clearly qualifies as a software publisher. The research shows they primarily sell their own proprietary software products - specifically a cloud-based SaaS platform for enterprise asset management, CMMS, and predictive maintenance solutions. Their business model is built around recurring revenue from software subscriptions with published pricing starting at $45 per user per month. They are not a custom software development company or consulting firm, but rather a company that has developed, publishes, and licenses their own software products to industrial and manufacturing clients. This aligns perfectly with the definition of a software publisher.",
+        "type": "positive",
+        "iterations": 1,
+        "toolCalls": 0,
+        "usage": {
+          "input_tokens": 1124,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 135,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:33:24.361Z"
+      }
     }
   },
   {
@@ -722,7 +1206,27 @@
       "Company Address": "MONARCH BAY, California, United States, 92629",
       "Company Country": "United States",
       "Technologies": "Outlook, Google Tag Manager, Google Font API, reCAPTCHA, WordPress.org, Mobile Friendly, Hotjar, Google Analytics, SAP, , Workday Financial, Acumatica, S/4HANA, Remote"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on the research, Basileia Consulting Group, LLC is clearly a consulting and services company, not a software publisher. Their business model is built around being a Microsoft Partner that provides ERP implementation, support services, and managed services for Microsoft's existing software products (particularly Dynamics 365 Business Central). They generate revenue through consulting services, implementation projects, troubleshooting, and managed services rather than developing and selling their own software products. While they have developed a proprietary methodology called \"BRAMP© Solution Determination Process,\" this appears to be a consulting framework rather than a software product they publish and sell. The company positions itself as a value-added reseller and implementation partner, which is fundamentally different from being a software publisher.",
+        "type": "negative",
+        "iterations": 1,
+        "toolCalls": 0,
+        "usage": {
+          "input_tokens": 1288,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 165,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:33:40.887Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "ITSolutions|Currie",
@@ -745,7 +1249,27 @@
       "Company Address": "1801 Tully Rd, Modesto, California, United States, 95350",
       "Company Country": "United States",
       "Technologies": "Cloudflare DNS, Microsoft Office 365, CloudFlare Hosting, Google Font API, WordPress.org, Eventbrite, Varnish, YouTube, Adobe Media Optimizer, Google Analytics, Google Tag Manager, CallRail, Yelp, Mobile Friendly, Woo Commerce, Cedexis Radar, Vimeo, AI, Remote"
-    }
+    },
+    "research": {
+      "Software Publisher": {
+        "criterion": "Software Publisher",
+        "answer": "No",
+        "explanation": "Based on the initial research, ITSolutions|Currie operates as a managed IT service provider rather than a software publisher. The company's primary business model is providing \"Fully Managed IT Services\" including unlimited business hours support, emergency after-hours support, server implementations, and strategic IT consulting. Customer testimonials describe service-oriented activities like responding to server failures, implementing backup solutions, and conducting server upgrades. Their revenue appears to come from subscription-based managed IT services and project-based consulting work, not from publishing or selling software products. This positions them clearly as an IT services company rather than a software publisher.",
+        "type": "negative",
+        "iterations": 1,
+        "toolCalls": 0,
+        "usage": {
+          "input_tokens": 1273,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 0,
+          "output_tokens": 139,
+          "service_tier": "standard"
+        },
+        "timestamp": "2025-05-27T17:33:53.513Z"
+      }
+    },
+    "disqualified": true,
+    "disqualificationReason": "Software Publisher"
   },
   {
     "name": "Cleartelligence",

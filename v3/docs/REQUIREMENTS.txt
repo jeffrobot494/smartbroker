@@ -46,3 +46,33 @@ Lets you edit the system prompt for the current template
 
 *Edit Criteria*
 Lists the criteria and lets you add, edit, and delete them.
+
+
+STORAGE AND MEMORY
+1) We perform a long investigation on, say, 100 companies. Maybe it costs us, say, $25. We don't need to literally all the tool calls, but we should save the comparisons to the criteria and a brief sentence explanation for each. If we do that in one session, we should be able to come back to it the next day and, essentially "load" those results and continue where we left off. 
+
+2) Search Templates: The system prompt and criteria for a search are saved as a template. For instance, the template we're starting with would be called "Small Software Publishers". Each template has a "Results Table" of data that's been found with it. In the GUI, when you choose a template, it creates a hybrid table of the company information and data from the Results Table, to display all the companies with results from investigations that have been done.
+
+3) The investigation results table. Each template has its own table of results. When an investigation is conducted using a template, we add the data to the template's table of results. When the application begins research on a new company, it checks the results table to see if that company is already there, using name and verifying with location and website. If the company isn't already on the table, results will be saved to a new row. If the company is already there, results will be saved to the existing row.
+
+4) At any time, the user can hit the "export" button on the GUI to export the results table.
+
+5) Criteria in a template can be marked "qualifying". If the research indicates a negative comparison/answer to a qualifying criterion, that company is skipped in subsequent investigations. 
+
+TEST
+If the user loads 1,000 companies and begins a full investigation on each one, and gets halfway through and then the power gets turned off or the internet goes out. The user should be able to go back to the website and continue the investigation from where he left off.
+
+TEST
+The user has a template with five questions, and he has completed full investigations using that template on 1,000 companies. Now he wants to add a sixth question, from the remaining 250 companies that qualified during the original investigation, he wants to eliminate more of them using the sixth question. He should be able to load the template, add a sixth question, select to run the investigation starting with the sixth question, and it will append the resulting data to the existing company records.
+
+If we use a database that looks like this
+
+criteria_table
+software publisher?     id=1, name="software publisher" text="the question is..." format="yes/no", 
+us-based? 		id=2, name="us-based", text="the leadership team, at least..." format="yes/no"
+
+When you edit a criterion, it's recommended you clear the data, but not necessary. There's a "clear memory" button.
+
+TESTING
+
+

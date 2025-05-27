@@ -191,9 +191,26 @@ class TerminalInterface {
           }
           break;
 
+        case 'automatic_query':
+          if (this.verbosity >= 1) {
+            console.log(`🔍 Automatic search: "${progress.query}"`);
+          }
+          break;
+
+        case 'automatic_query_result':
+          if (this.verbosity >= 2 && progress.result) {
+            console.log('\n📊 Automatic Search Result:');
+            console.log(progress.result.substring(0, 300) + '...');
+          }
+          break;
+
+        case 'automatic_query_error':
+          console.error(`❌ Automatic search error: ${progress.error}`);
+          break;
+
         case 'tool_request':
           if (this.verbosity >= 1) {
-            console.log(`🔧 Tool use: ${progress.toolName} - "${progress.query}"`);
+            console.log(`🔧 Additional tool use: ${progress.toolName} - "${progress.query}"`);
           }
           break;
 
@@ -266,7 +283,7 @@ class TerminalInterface {
     const pageSize = 20;
 
     while (true) {
-      const tableData = this.engine.getResultsTable(companies, page, pageSize);
+      const tableData = await this.engine.getResultsTable(companies, page, pageSize);
 
       console.log('\n📈 Research Results');
       console.log('='.repeat(60));

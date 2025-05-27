@@ -3,8 +3,15 @@ const cors = require('cors');
 const axios = require('axios');
 require('dotenv').config();
 
+const Database = require('./database');
+const ResearchDAO = require('./dao/research-dao');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Initialize database
+const database = new Database();
+const researchDAO = new ResearchDAO(database);
 
 // Middleware
 app.use(cors());
@@ -97,6 +104,115 @@ app.post('/api/perplexity', async (req, res) => {
   }
 });
 
+// Research Results API endpoints
+
+// Save research result
+app.post('/api/research', async (req, res) => {
+  try {
+    const { companyName, criterionName, result, companyData } = req.body;
+
+    if (!companyName || !criterionName || !result) {
+      return res.status(400).json({ 
+        error: 'Missing required fields: companyName, criterionName, result' 
+      });
+    }
+
+    const resultId = await researchDAO.saveResearchResult(
+      companyName, 
+      criterionName, 
+      result, 
+      companyData || {}
+    );
+
+    res.json({ 
+      success: true, 
+      id: resultId,
+      message: 'Research result saved successfully' 
+    });
+
+  } catch (error) {
+    console.error('Error saving research result:', error);
+    res.status(500).json({ 
+      error: 'Failed to save research result',
+      details: error.message 
+    });
+  }
+});
+
+// Check if research result exists
+app.get('/api/research/check', async (req, res) => {
+  try {
+    const { companyName, criterionName } = req.query;
+
+    if (!companyName || !criterionName) {
+      return res.status(400).json({ 
+        error: 'Missing required query parameters: companyName, criterionName' 
+      });
+    }
+
+    const exists = await researchDAO.hasResearchResult(companyName, criterionName);
+
+    res.json({ exists });
+
+  } catch (error) {
+    console.error('Error checking research result:', error);
+    res.status(500).json({ 
+      error: 'Failed to check research result',
+      details: error.message 
+    });
+  }
+});
+
+// Get all research results for a company
+app.get('/api/research/company/:name', async (req, res) => {
+  try {
+    const { name } = req.params;
+    const results = await researchDAO.getCompanyResults(name);
+
+    res.json({ 
+      companyName: name,
+      results 
+    });
+
+  } catch (error) {
+    console.error('Error getting company results:', error);
+    res.status(500).json({ 
+      error: 'Failed to get company results',
+      details: error.message 
+    });
+  }
+});
+
+// Get specific research result
+app.get('/api/research', async (req, res) => {
+  try {
+    const { companyName, criterionName } = req.query;
+
+    if (!companyName || !criterionName) {
+      return res.status(400).json({ 
+        error: 'Missing required query parameters: companyName, criterionName' 
+      });
+    }
+
+    const result = await researchDAO.getResearchResult(companyName, criterionName);
+
+    if (!result) {
+      return res.status(404).json({ 
+        error: 'Research result not found' 
+      });
+    }
+
+    res.json(result);
+
+  } catch (error) {
+    console.error('Error getting research result:', error);
+    res.status(500).json({ 
+      error: 'Failed to get research result',
+      details: error.message 
+    });
+  }
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 
@@ -107,15 +223,41 @@ app.get('/health', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 SmartBroker API Server running on port ${PORT}`);
-  console.log(`📋 Health check: http://localhost:${PORT}/health`);
-  
-  // Check API keys
-  if (!process.env.ANTHROPIC_API_KEY) {
-    console.warn('⚠️  ANTHROPIC_API_KEY not found in environment');
+// Initialize database and start server
+async function startServer() {
+  try {
+    await database.initialize();
+    
+    app.listen(PORT, () => {
+      console.log(`🚀 SmartBroker API Server running on port ${PORT}`);
+      console.log(`📋 Health check: http://localhost:${PORT}/health`);
+      console.log(`💾 Database initialized successfully`);
+      
+      // Check API keys
+      if (!process.env.ANTHROPIC_API_KEY) {
+        console.warn('⚠️  ANTHROPIC_API_KEY not found in environment');
+      }
+      if (!process.env.PERPLEXITY_API_KEY) {
+        console.warn('⚠️  PERPLEXITY_API_KEY not found in environment');
+      }
+    });
+  } catch (error) {
+    console.error('Failed to initialize database:', error);
+    process.exit(1);
   }
-  if (!process.env.PERPLEXITY_API_KEY) {
-    console.warn('⚠️  PERPLEXITY_API_KEY not found in environment');
-  }
+}
+
+// Handle graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('\n🛑 Shutting down server...');
+  await database.close();
+  process.exit(0);
 });
+
+process.on('SIGTERM', async () => {
+  console.log('\n🛑 Shutting down server...');
+  await database.close();
+  process.exit(0);
+});
+
+startServer();

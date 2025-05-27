@@ -75,51 +75,6 @@ class CompanyLoader {
     return info.join('\n');
   }
 
-  /**
-   * Initialize research results structure for a company
-   * @param {Object} company - Company object
-   */
-  initializeResearchResults(company) {
-    if (!company.research) {
-      company.research = {};
-    }
-    return company;
-  }
-
-  /**
-   * Add research result for a company and criterion
-   * @param {Object} company - Company object
-   * @param {string} criterionName - Name of the research criterion
-   * @param {Object} result - Research result
-   */
-  addResearchResult(company, criterionName, result) {
-    this.initializeResearchResults(company);
-    
-    company.research[criterionName] = {
-      ...result,
-      timestamp: new Date().toISOString()
-    };
-  }
-
-  /**
-   * Get research result for a company and criterion
-   * @param {Object} company - Company object
-   * @param {string} criterionName - Name of the research criterion
-   * @returns {Object|null} Research result or null if not found
-   */
-  getResearchResult(company, criterionName) {
-    return company.research?.[criterionName] || null;
-  }
-
-  /**
-   * Check if company has been researched for a criterion
-   * @param {Object} company - Company object
-   * @param {string} criterionName - Name of the research criterion
-   * @returns {boolean} True if already researched
-   */
-  hasResearchResult(company, criterionName) {
-    return !!(company.research?.[criterionName]);
-  }
 }
 
 module.exports = CompanyLoader;

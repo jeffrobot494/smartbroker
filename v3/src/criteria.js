@@ -5,7 +5,9 @@
 
 const SYSTEM_PROMPT = `You are a business researcher. Your task is to research software development companies to determine whether they fit certain criteria to determine if the owner is likely to want to sell the company.
 
-You have the following tools at your disposal:
+You will be provided with initial research results from a web search about the company and criterion. Analyze these results first to determine your answer.
+
+You have the following tools at your disposal if you need additional information:
 
 Perplexity Web Search
 Perplexity is your general-purpose web search tool. It can be used to ask a question or for general web search via key terms.
@@ -13,10 +15,10 @@ To use a perplexity search, use the following format:
 <<perplexity_search: {query}>>
 
 Each tool use has a cost. Perplexity search costs $0.01.
-Your goal is to complete your research while minimizing costs. You should use perplexity searches strategically to gather the most relevant information.
+Your goal is to complete your research while minimizing costs. Only request additional searches if the initial research is insufficient to make a determination.
 
 You should respond in one of three ways:
-1. With a tool use request if you need more information
+1. With a tool use request if you need more information beyond what was initially provided
 2. With a positive answer to the criterion 
 3. With a negative answer to the criterion
 
@@ -30,38 +32,30 @@ The third line starts your analysis and explanation of your decision.
 
 Here are some examples:
 
-EXAMPLE #1
+EXAMPLE #1 - Sufficient initial research
 Criterion: The company is a software publisher
+Initial Research: "Apple Inc. is primarily a hardware company that designs and manufactures consumer electronics including iPhones, iPads, and Mac computers. While they do develop software like iOS and macOS, their primary revenue comes from hardware sales."
+
+RESPONSE:
+TYPE: negative_result
+No
+Although Apple does develop and sell software, their main business is selling hardware in the form of consumer electronics. Their primary revenue source is hardware sales, not software publishing.
+
+EXAMPLE #2 - Additional research needed
+Criterion: The company is a software publisher  
+Initial Research: "TechCorp is a technology company founded in 2015. They have offices in San Francisco and employ about 50 people."
 
 RESPONSE:
 TYPE: tool_use
-<<perplexity_search: does apple inc primarily publish software products for sale?>>
-I need to figure out if Apple publishes software. I'll do a perplexity search.
-
-EXAMPLE #2  
-Criterion: The company is a software publisher
-TYPE: negative_result
-No
-Although Apple does publish and sell software, their main business is selling hardware in the form of the iPhone and MacBook and iMac computers.`;
+<<perplexity_search: TechCorp software products services revenue model business>>
+The initial research doesn't provide enough detail about TechCorp's business model or whether they primarily sell software products. I need more specific information about their products and revenue sources.`;
 
 const CRITERIA = [
   {
     name: "Software Publisher",
     description: "Determine if the company primarily publishes software products",
     disqualifying: true,
-    text: `Your task is to determine whether the company publishes software. You will primarily learn this from the company's website and business model.
-
-A software publisher is a company whose primary business is developing and selling software products to customers. This includes:
-- SaaS (Software as a Service) companies
-- Companies that sell software licenses
-- Mobile app developers who sell apps
-- Enterprise software companies
-
-This does NOT include:
-- Hardware companies that happen to make software
-- Consulting companies that build custom software
-- IT service providers
-- Companies whose software is just internal tools`,
+    firstQueryTemplate: "Does {company_name} primarily sell software products or software development services? What is their main business model and revenue source?",
     answerFormat: "yes/no"
   },
 
@@ -69,16 +63,7 @@ This does NOT include:
     name: "Owner Name", 
     description: "Find the name of the company owner, founder, or CEO",
     disqualifying: false,
-    text: `Your task is to find the name of the company's owner, founder, or current CEO.
-
-Look for:
-- Founder information on the company website
-- Leadership team or "About Us" pages
-- Press releases mentioning executives
-- LinkedIn company page leadership
-- News articles about the company
-
-Provide the full name of the primary owner/founder/CEO. If there are multiple co-founders, provide the one who appears to be the primary leader or current CEO.`,
+    firstQueryTemplate: "Who is the founder, owner, or current CEO of {company_name}? What is their full name?",
     answerFormat: "string"
   },
 
@@ -86,16 +71,7 @@ Provide the full name of the primary owner/founder/CEO. If there are multiple co
     name: "Owner Age",
     description: "Determine the approximate age of the company owner/founder/CEO", 
     disqualifying: false,
-    text: `Your task is to determine the approximate age of the company's owner, founder, or CEO.
-
-Look for:
-- Biographical information about the founder/CEO
-- Educational background (graduation years can indicate age)
-- Work history and career timeline
-- News articles or press releases mentioning age
-- LinkedIn profiles showing career progression
-
-Provide the approximate age as a number. If you can only find age ranges, provide the middle of the range (e.g., if "40s" then answer "45").`,
+    firstQueryTemplate: "What is the age or birth year of the founder/CEO/owner of {company_name}? Include biographical information and career timeline.",
     answerFormat: "number"
   },
 
@@ -103,16 +79,7 @@ Provide the approximate age as a number. If you can only find age ranges, provid
     name: "Employee Count",
     description: "Find the current number of employees at the company",
     disqualifying: false,
-    text: `Your task is to find the current number of employees at the company.
-
-Look for:
-- Company website "About" or "Team" pages
-- LinkedIn company page employee count
-- Recent job postings indicating company size
-- Press releases mentioning headcount
-- Industry reports or company profiles
-
-Provide the number of employees as a whole number. If you find a range, provide the midpoint. If you can only find rough estimates like "10-50 employees", provide the midpoint (30).`,
+    firstQueryTemplate: "How many employees does {company_name} currently have? What is their company size and headcount?",
     answerFormat: "number"
   },
 
@@ -120,17 +87,7 @@ Provide the number of employees as a whole number. If you find a range, provide 
     name: "Bootstrapped Status",
     description: "Determine if the company is bootstrapped or has taken outside funding",
     disqualifying: true,
-    text: `Your task is to determine whether the company is bootstrapped (self-funded) or has taken outside investment.
-
-Look for:
-- Press releases about funding rounds
-- Mentions of investors or venture capital
-- Company statements about being self-funded
-- News articles about investment
-- Crunchbase or similar database entries
-
-Answer "Yes" if the company is bootstrapped (no outside investment).
-Answer "No" if the company has taken venture capital, angel investment, or other outside funding.`,
+    firstQueryTemplate: "Has {company_name} taken any venture capital, angel investment, or outside funding? Are they bootstrapped or self-funded?",
     answerFormat: "yes/no"
   },
 
@@ -138,16 +95,7 @@ Answer "No" if the company has taken venture capital, angel investment, or other
     name: "US Employees",
     description: "Determine what percentage of employees are based in the United States",
     disqualifying: true,
-    text: `Your task is to determine what percentage of the company's employees are based in the United States.
-
-Look for:
-- Company office locations
-- Job postings by location
-- Team pages showing employee locations
-- Company statements about remote/distributed workforce
-- LinkedIn employee location data
-
-Provide the percentage as a whole number (e.g., "75" for 75% US-based employees). If the company appears to be entirely US-based, answer "100". If entirely international, answer "0".`,
+    firstQueryTemplate: "Where are {company_name}'s employees located? What percentage of their workforce is based in the United States vs internationally?",
     answerFormat: "number"
   }
 ];

@@ -1,4 +1,4 @@
-const { ClaudeClient, PerplexityClient } = require('./api-clients');
+const { ClaudeClient, PerplexityClient, ResearchClient } = require('./api-clients');
 const CompanyLoader = require('./company-loader');
 const { SYSTEM_PROMPT, CRITERIA } = require('./criteria');
 
@@ -6,6 +6,7 @@ class ResearchEngine {
   constructor() {
     this.claude = new ClaudeClient();
     this.perplexity = new PerplexityClient();
+    this.research = new ResearchClient();
     this.companyLoader = new CompanyLoader();
     this.maxIterations = 5;
     this.currentTemplate = 'Default';
@@ -99,15 +100,20 @@ class ResearchEngine {
         }
 
         // Skip if already researched
-        if (this.companyLoader.hasResearchResult(company, criterion.name)) {
-          totalSkipped++;
-          if (progressCallback) {
-            progressCallback({
-              type: 'company_skipped',
-              reason: 'already_researched'
-            });
+        try {
+          const hasResult = await this.research.checkExists(company.name, criterion.name);
+          if (hasResult) {
+            totalSkipped++;
+            if (progressCallback) {
+              progressCallback({
+                type: 'company_skipped',
+                reason: 'already_researched'
+              });
+            }
+            continue;
           }
-          continue;
+        } catch (error) {
+          console.warn(`Error checking research result for ${company.name}: ${error.message}`);
         }
 
         try {
@@ -132,9 +138,6 @@ class ResearchEngine {
                 reason: criterion.name
               });
             }
-            
-            // Stop researching this company for remaining criteria
-            break;
           }
 
         } catch (error) {
@@ -146,11 +149,27 @@ class ResearchEngine {
           }
           
           // Store error result
-          this.companyLoader.addResearchResult(company, criterion.name, {
-            error: error.message,
-            answer: 'Error',
-            explanation: `Research failed: ${error.message}`
-          });
+          try {
+            const companyData = {
+              website: company.website,
+              linkedin: company.linkedin,
+              city: company.city,
+              state: company.state,
+              phone: company.phone,
+              revenue: company.revenue,
+              'president/owner/ceo': company['president/owner/ceo'],
+              other: company.other
+            };
+            
+            await this.research.saveResult(company.name, criterion.name, {
+              error: error.message,
+              answer: 'Error',
+              explanation: `Research failed: ${error.message}`,
+              type: 'error'
+            }, companyData);
+          } catch (saveError) {
+            console.error(`Error saving error result for ${company.name}: ${saveError.message}`);
+          }
         }
       }
     }
@@ -183,12 +202,10 @@ class ResearchEngine {
     let iterations = 0;
     let toolCalls = 0;
 
-    const initialPrompt = `${criterion.text}
-
-The company you are researching is:
-${companyInfo}
-
-Please analyze this company and determine your answer for the criterion: ${criterion.name}`;
+    // Execute automatic first query
+    const automaticSearchResults = await this.executeAutomaticFirstQuery(company, criterion, progressCallback);
+    
+    const initialPrompt = this.createEnhancedPrompt(criterion, companyInfo, automaticSearchResults);
 
     conversation.push({ role: 'user', content: initialPrompt });
 
@@ -272,7 +289,23 @@ Please analyze this company and determine your answer for the criterion: ${crite
             usage: response.usage
           };
 
-          this.companyLoader.addResearchResult(company, criterion.name, result);
+          // Save research result to server
+          try {
+            const companyData = {
+              website: company.website,
+              linkedin: company.linkedin,
+              city: company.city,
+              state: company.state,
+              phone: company.phone,
+              revenue: company.revenue,
+              'president/owner/ceo': company['president/owner/ceo'],
+              other: company.other
+            };
+            
+            await this.research.saveResult(company.name, criterion.name, result, companyData);
+          } catch (error) {
+            console.error(`Error saving research result for ${company.name}: ${error.message}`);
+          }
           
           if (progressCallback) {
             progressCallback({
@@ -362,31 +395,39 @@ Please analyze this company and determine your answer for the criterion: ${crite
    * @param {number} pageSize - Number of companies per page
    * @returns {Object} Table data
    */
-  getResultsTable(companies, page = 0, pageSize = 20) {
+  async getResultsTable(companies, page = 0, pageSize = 20) {
     const start = page * pageSize;
     const end = Math.min(start + pageSize, companies.length);
     const pageCompanies = companies.slice(start, end);
 
-    const tableData = pageCompanies.map((company, index) => {
+    const tableData = [];
+    
+    for (let index = 0; index < pageCompanies.length; index++) {
+      const company = pageCompanies[index];
       const row = {
         index: start + index + 1,
         name: company.name,
         results: {}
       };
 
-      CRITERIA.forEach(criterion => {
-        const result = this.companyLoader.getResearchResult(company, criterion.name);
-        if (result) {
-          if (result.type === 'positive') row.results[criterion.name] = '+';
-          else if (result.type === 'negative') row.results[criterion.name] = '-';
-          else row.results[criterion.name] = '?';
-        } else {
+      for (const criterion of CRITERIA) {
+        try {
+          const result = await this.research.getResult(company.name, criterion.name);
+          if (result) {
+            if (result.type === 'positive') row.results[criterion.name] = '+';
+            else if (result.type === 'negative') row.results[criterion.name] = '-';
+            else row.results[criterion.name] = '?';
+          } else {
+            row.results[criterion.name] = '';
+          }
+        } catch (error) {
+          console.warn(`Error getting result for ${company.name}, ${criterion.name}: ${error.message}`);
           row.results[criterion.name] = '';
         }
-      });
+      }
 
-      return row;
-    });
+      tableData.push(row);
+    }
 
     return {
       data: tableData,
@@ -400,6 +441,77 @@ Please analyze this company and determine your answer for the criterion: ${crite
       },
       criteria: CRITERIA.map(c => ({ name: c.name, disqualifying: c.disqualifying }))
     };
+  }
+
+  /**
+   * Execute automatic first query using criterion template
+   * @param {Object} company - Company object
+   * @param {Object} criterion - Criterion object  
+   * @param {Function} progressCallback - Progress callback
+   * @returns {string} Search results
+   */
+  async executeAutomaticFirstQuery(company, criterion, progressCallback = null) {
+    try {
+      const query = this.substitutePlaceholders(criterion.firstQueryTemplate, company);
+      
+      if (progressCallback) {
+        progressCallback({
+          type: 'automatic_query',
+          query: query,
+          criterionName: criterion.name
+        });
+      }
+      
+      const result = await this.perplexity.search(query);
+      
+      if (progressCallback) {
+        progressCallback({
+          type: 'automatic_query_result',
+          result: result.content
+        });
+      }
+      
+      return result.content;
+    } catch (error) {
+      if (progressCallback) {
+        progressCallback({
+          type: 'automatic_query_error',
+          error: error.message
+        });
+      }
+      return `Error executing automatic query: ${error.message}`;
+    }
+  }
+
+  /**
+   * Substitute placeholders in query template
+   * @param {string} template - Query template with placeholders
+   * @param {Object} company - Company object
+   * @returns {string} Query with substituted values
+   */
+  substitutePlaceholders(template, company) {
+    return template.replace(/{company_name}/g, company.name || 'the company');
+  }
+
+  /**
+   * Create enhanced prompt with automatic search results
+   * @param {Object} criterion - Criterion object
+   * @param {string} companyInfo - Formatted company information
+   * @param {string} searchResults - Initial search results
+   * @returns {string} Enhanced prompt
+   */
+  createEnhancedPrompt(criterion, companyInfo, searchResults) {
+    return `Criterion: ${criterion.description}
+
+The company you are researching is:
+${companyInfo}
+
+Initial Research Results:
+${searchResults}
+
+Based on the initial research results and company information above, please determine your answer for the criterion: ${criterion.name}
+
+Expected answer format: ${criterion.answerFormat}`;
   }
 
   /**
