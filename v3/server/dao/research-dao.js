@@ -85,14 +85,15 @@ class ResearchDAO {
 
     const insertResult = await this.db.run(`
       INSERT OR REPLACE INTO research_results 
-      (template_id, company_id, criterion_id, answer, explanation, result_type, iterations, tool_calls, tokens_used, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      (template_id, company_id, criterion_id, answer, explanation, confidence_score, result_type, iterations, tool_calls, tokens_used, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
     `, [
       criterion.template_id,
       companyId,
       criterionId,
       result.answer || '',
       result.explanation || '',
+      result.confidence_score || null,
       result.type || 'unknown',
       result.iterations || 0,
       result.toolCalls || 0,
@@ -140,6 +141,7 @@ class ResearchDAO {
       criterion: result.criterion_name,
       answer: result.answer,
       explanation: result.explanation,
+      confidence_score: result.confidence_score,
       type: result.result_type,
       iterations: result.iterations,
       toolCalls: result.tool_calls,
@@ -149,24 +151,35 @@ class ResearchDAO {
   }
 
   /**
-   * Get all research results for a company
+   * Get all research results for a company (optionally filtered by template)
    * @param {string} companyName - Company name
+   * @param {number|null} templateId - Optional template ID to filter by
    * @returns {Promise<Array>} Array of research results
    */
-  async getCompanyResults(companyName) {
-    const results = await this.db.all(`
+  async getCompanyResults(companyName, templateId = null) {
+    let query = `
       SELECT rr.*, cr.name as criterion_name
       FROM research_results rr
       JOIN companies c ON rr.company_id = c.id
       JOIN criteria cr ON rr.criterion_id = cr.id
       WHERE c.name = ?
-      ORDER BY rr.created_at
-    `, [companyName]);
+    `;
+    let params = [companyName];
+
+    if (templateId) {
+      query += ` AND rr.template_id = ?`;
+      params.push(templateId);
+    }
+
+    query += ` ORDER BY rr.created_at`;
+
+    const results = await this.db.all(query, params);
 
     return results.map(result => ({
       criterion: result.criterion_name,
       answer: result.answer,
       explanation: result.explanation,
+      confidence_score: result.confidence_score,
       type: result.result_type,
       iterations: result.iterations,
       toolCalls: result.tool_calls,
@@ -240,6 +253,110 @@ class ResearchDAO {
       console.error('Error clearing research results:', error);
       throw error;
     }
+  }
+
+  /**
+   * Get all templates
+   * @returns {Promise<Array>} Array of templates
+   */
+  async getTemplates() {
+    return await this.db.all('SELECT * FROM templates ORDER BY created_at DESC');
+  }
+
+  /**
+   * Create new template (with optional copying)
+   * @param {string} name - Template name
+   * @param {number|null} basedOnTemplateId - Template to copy from
+   * @param {boolean} makeActive - Whether to make this template active
+   * @returns {Promise<Object>} Created template
+   */
+  async createTemplate(name, basedOnTemplateId = null, makeActive = false) {
+    // Validation
+    const existing = await this.db.get('SELECT id FROM templates WHERE name = ?', [name]);
+    if (existing) {
+      throw new Error('Template name already exists');
+    }
+
+    // Create template
+    const templateResult = await this.db.run(
+      'INSERT INTO templates (name, system_prompt, is_active) VALUES (?, ?, ?)',
+      [name, '', makeActive ? 1 : 0]
+    );
+    const newTemplateId = templateResult.id;
+
+    // Copy criteria if basedOnTemplateId provided
+    if (basedOnTemplateId) {
+      const baseTemplate = await this.db.get('SELECT system_prompt FROM templates WHERE id = ?', [basedOnTemplateId]);
+      if (baseTemplate) {
+        // Copy system prompt
+        await this.db.run('UPDATE templates SET system_prompt = ? WHERE id = ?', [baseTemplate.system_prompt, newTemplateId]);
+        
+        // Copy criteria
+        const baseCriteria = await this.db.all('SELECT * FROM criteria WHERE template_id = ? ORDER BY order_index', [basedOnTemplateId]);
+        for (const criterion of baseCriteria) {
+          await this.db.run(`
+            INSERT INTO criteria (template_id, name, description, first_query_template, answer_format, disqualifying, order_index)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+          `, [newTemplateId, criterion.name, criterion.description, criterion.first_query_template, criterion.answer_format, criterion.disqualifying, criterion.order_index]);
+        }
+      }
+    }
+
+    // Handle activation
+    if (makeActive) {
+      await this.db.run('UPDATE templates SET is_active = 0 WHERE id != ?', [newTemplateId]);
+    }
+
+    // Get the final template data to return
+    const finalTemplate = await this.db.get('SELECT * FROM templates WHERE id = ?', [newTemplateId]);
+    return finalTemplate;
+  }
+
+  /**
+   * Set active template
+   * @param {number} templateId - Template ID to activate
+   * @returns {Promise<Object>} Success result
+   */
+  async setActiveTemplate(templateId) {
+    const template = await this.db.get('SELECT id FROM templates WHERE id = ?', [templateId]);
+    if (!template) {
+      throw new Error('Template not found');
+    }
+
+    // Deactivate all, activate target
+    await this.db.run('UPDATE templates SET is_active = 0');
+    await this.db.run('UPDATE templates SET is_active = 1 WHERE id = ?', [templateId]);
+    
+    return { success: true };
+  }
+
+  /**
+   * Delete template
+   * @param {number} templateId - Template ID to delete
+   * @returns {Promise<Object>} Deletion result
+   */
+  async deleteTemplate(templateId) {
+    // Check template exists
+    const template = await this.db.get('SELECT * FROM templates WHERE id = ?', [templateId]);
+    if (!template) {
+      throw new Error('Template not found');
+    }
+
+    // Check not last template (check this first, it's more specific)
+    const templateCount = await this.db.get('SELECT COUNT(*) as count FROM templates');
+    if (templateCount.count <= 1) {
+      throw new Error('Cannot delete the last template');
+    }
+
+    // Check not active
+    if (template.is_active) {
+      throw new Error('Cannot delete active template. Switch to another template first.');
+    }
+
+    // Delete (CASCADE will handle criteria and research results)
+    await this.db.run('DELETE FROM templates WHERE id = ?', [templateId]);
+    
+    return { success: true, remainingCount: templateCount.count - 1 };
   }
 }
 

@@ -53,7 +53,8 @@ class DatabaseWrapper {
           order_index INTEGER NOT NULL,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (template_id) REFERENCES templates(id) ON DELETE CASCADE,
-          UNIQUE(template_id, name)
+          UNIQUE(template_id, name),
+          UNIQUE(template_id, order_index)
         )
       `;
 
@@ -75,6 +76,7 @@ class DatabaseWrapper {
           criterion_id INTEGER NOT NULL,
           answer TEXT NOT NULL,
           explanation TEXT,
+          confidence_score INTEGER CHECK(confidence_score >= 1 AND confidence_score <= 3),
           result_type TEXT NOT NULL,
           iterations INTEGER DEFAULT 0,
           tool_calls INTEGER DEFAULT 0,

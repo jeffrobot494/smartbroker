@@ -183,7 +183,9 @@ app.get('/api/research/check', async (req, res) => {
 app.get('/api/research/company/:name', async (req, res) => {
   try {
     const { name } = req.params;
-    const results = await researchDAO.getCompanyResults(name);
+    const { templateId } = req.query;
+    
+    const results = await researchDAO.getCompanyResults(name, templateId ? parseInt(templateId) : null);
 
     res.json({ 
       companyName: name,
@@ -245,6 +247,60 @@ app.delete('/api/research/clear', async (req, res) => {
       error: 'Failed to clear research data',
       details: error.message
     });
+  }
+});
+
+// Template Management Endpoints
+
+// Get all templates
+app.get('/api/templates', async (req, res) => {
+  try {
+    const templates = await researchDAO.getTemplates();
+    res.json(templates);
+  } catch (error) {
+    console.error('Error getting templates:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Create new template
+app.post('/api/templates', async (req, res) => {
+  try {
+    const { name, basedOnTemplateId, makeActive } = req.body;
+    
+    if (!name || name.trim() === '') {
+      return res.status(400).json({ success: false, error: 'Template name is required' });
+    }
+
+    const template = await researchDAO.createTemplate(name.trim(), basedOnTemplateId, makeActive);
+    res.json({ success: true, template });
+  } catch (error) {
+    console.error('Error creating template:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Activate template
+app.put('/api/templates/:id/activate', async (req, res) => {
+  try {
+    const templateId = parseInt(req.params.id);
+    const result = await researchDAO.setActiveTemplate(templateId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error activating template:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Delete template
+app.delete('/api/templates/:id', async (req, res) => {
+  try {
+    const templateId = parseInt(req.params.id);
+    const result = await researchDAO.deleteTemplate(templateId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error deleting template:', error);
+    res.status(400).json({ success: false, error: error.message });
   }
 });
 

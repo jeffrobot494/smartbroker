@@ -30,6 +30,13 @@ Indicate the response type in the first line of your response:
 The second line should be your answer, eg: "Yes", "No", "47", "San Francisco, California", etc
 The third line starts your analysis and explanation of your decision.
 
+Additionally, provide a confidence score from 1-3 indicating how certain you are about this assessment:
+- 1: Just a guess (0-60% chance this is true) - Limited or unclear information
+- 2: Probably correct (61-79% chance this is true) - Some evidence but gaps remain  
+- 3: Very likely correct (80-100% chance this is true) - Strong evidence supports conclusion
+
+Format your confidence as "Confidence: [1|2|3]" at the end of your response.
+
 Here are some examples:
 
 EXAMPLE #1 - Sufficient initial research
@@ -40,6 +47,8 @@ RESPONSE:
 TYPE: negative_result
 No
 Although Apple does develop and sell software, their main business is selling hardware in the form of consumer electronics. Their primary revenue source is hardware sales, not software publishing.
+
+Confidence: 3
 
 EXAMPLE #2 - Additional research needed
 Criterion: The company is a software publisher  

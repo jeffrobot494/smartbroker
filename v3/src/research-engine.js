@@ -1,6 +1,12 @@
 const { ClaudeClient, PerplexityClient, ResearchClient, TemplateClient } = require('./api-clients');
 const CompanyLoader = require('./company-loader');
 
+const CONFIDENCE_LEVELS = {
+  1: { label: 'guess', description: '0-60% chance this is true' },
+  2: { label: 'probably', description: '61-79% chance this is true' },
+  3: { label: 'very likely', description: '80-100% chance this is true' }
+};
+
 class ResearchEngine {
   constructor() {
     this.claude = new ClaudeClient();
@@ -106,10 +112,10 @@ class ResearchEngine {
           });
         }
 
-        // Get all research results for this company
+        // Get research results for this company (filtered by current template)
         let companyResults = [];
         try {
-          companyResults = await this.research.getCompanyResults(company.name);
+          companyResults = await this.research.getCompanyResults(company.name, this.currentTemplate.id);
         } catch (error) {
           console.warn(`Error getting research results for ${company.name}: ${error.message}`);
         }
@@ -227,10 +233,10 @@ class ResearchEngine {
     let iterations = 0;
     let toolCalls = 0;
 
-    // Get previous research results for context
+    // Get previous research results for context (from current template only)
     let previousResults = [];
     try {
-      const allResults = await this.research.getCompanyResults(company.name);
+      const allResults = await this.research.getCompanyResults(company.name, this.currentTemplate.id);
       previousResults = allResults.filter(result => result.criterion !== criterion.name);
     } catch (error) {
       console.warn(`Error getting previous results for ${company.name}: ${error.message}`);
@@ -317,6 +323,7 @@ class ResearchEngine {
             criterion: criterion.name,
             answer: parsed.answer,
             explanation: parsed.explanation,
+            confidence_score: parsed.confidence_score,
             type: parsed.type,
             iterations: iterations,
             toolCalls: toolCalls,
@@ -346,7 +353,8 @@ class ResearchEngine {
               type: 'final_result',
               answer: parsed.answer,
               explanation: parsed.explanation,
-              type: parsed.type
+              confidence_score: parsed.confidence_score,
+              result_type: parsed.type
             });
           }
           
@@ -381,6 +389,9 @@ class ResearchEngine {
     
     const type = typeMatch[1].toLowerCase();
     
+    // Single confidence extraction method
+    const confidence_score = this.extractConfidenceScore(content);
+    
     if (type === 'tool_use') {
       const toolMatch = content.match(/<<(\w+):\s*([^>>]+)>>/);
       if (!toolMatch) {
@@ -400,9 +411,64 @@ class ResearchEngine {
       return {
         type: type === 'positive_result' ? 'positive' : 'negative',
         answer: answer,
-        explanation: explanation
+        explanation: explanation,
+        confidence_score: confidence_score
       };
     }
+  }
+
+  /**
+   * Extract confidence score from Claude response
+   */
+  extractConfidenceScore(content) {
+    const confidenceMatch = content.match(/Confidence:\s*([123])/i);
+    const score = confidenceMatch ? parseInt(confidenceMatch[1]) : null;
+    
+    // Validate score is within our defined range
+    if (score && !CONFIDENCE_LEVELS[score]) {
+      console.warn(`Invalid confidence score: ${score}. Expected 1-3.`);
+      return null;
+    }
+    
+    return score;
+  }
+
+  /**
+   * Template Management Methods (Business Logic)
+   */
+
+  /**
+   * Get all templates with current active marked
+   */
+  async getTemplateList() {
+    return await this.template.getTemplates();
+  }
+
+  /**
+   * Switch to a different template and reload engine
+   */
+  async switchToTemplate(templateId) {
+    await this.template.setActiveTemplate(templateId);
+    await this.initialize(); // Reload engine with new template
+    return this.currentTemplate;
+  }
+
+  /**
+   * Create a new template with optional copying
+   */
+  async createNewTemplate(name, basedOnTemplateId = null, makeActive = false) {
+    const result = await this.template.createTemplate(name, basedOnTemplateId, makeActive);
+    if (makeActive) {
+      await this.initialize(); // Reload engine if this template was activated
+    }
+    return result;
+  }
+
+  /**
+   * Remove a template (with business rule validation handled by API)
+   */
+  async removeTemplate(templateId) {
+    return await this.template.deleteTemplate(templateId);
   }
 
   /**

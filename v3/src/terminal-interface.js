@@ -244,7 +244,14 @@ class TerminalInterface {
 
         case 'final_result':
           if (this.verbosity >= 1) {
-            console.log(`✅ Final Answer: ${progress.answer}`);
+            let resultText = `✅ Final Answer: ${progress.answer}`;
+            
+            // Add confidence display for verbosity 2+
+            if (this.verbosity >= 2) {
+              resultText += this.formatConfidenceDisplay(progress.confidence_score);
+            }
+            
+            console.log(resultText);
           }
           break;
 
@@ -367,15 +374,201 @@ class TerminalInterface {
   }
 
   /**
-   * Placeholder methods for editing (to be implemented later)
+   * Template management interface
    */
   async editTemplates() {
-    console.log('\n📋 Current Template: Default');
-    console.log('📋 All Templates: Default');
-    console.log('\n1. Switch template');
+    while (true) {
+      try {
+        const templates = await this.engine.getTemplateList();
+        this.displayTemplateMenu(templates);
+        
+        const choice = await this.promptUser('\nEnter option: ');
+        
+        if (choice === '4') return;
+        
+        const shouldContinue = await this.handleTemplateChoice(choice, templates);
+        if (shouldContinue) continue;
+        
+      } catch (error) {
+        console.error('❌ Template management error:', error.message);
+        await this.promptUser('Press Enter to continue...');
+      }
+    }
+  }
+
+  /**
+   * Display template management menu (Pure UI)
+   */
+  displayTemplateMenu(templates) {
+    const activeTemplate = templates.find(t => t.is_active);
+    
+    console.log('\n📋 Template Management');
+    console.log('='.repeat(50));
+    console.log(`🎯 Current Active: ${activeTemplate.name}\n`);
+    
+    console.log('📋 Available Templates:');
+    templates.forEach((template, index) => {
+      const marker = template.is_active ? ' ✓ (Active)' : '';
+      console.log(`${index + 1}. ${template.name}${marker}`);
+    });
+    
+    console.log('\n⚙️ Options:');
+    console.log('1. Switch active template');
     console.log('2. Create new template');
     console.log('3. Delete template');
-    console.log('\n🚧 Template editing not yet implemented');
+    console.log('4. Back to main menu');
+  }
+
+  /**
+   * Handle user menu choice (Minimal UI logic, delegates to engine)
+   */
+  async handleTemplateChoice(choice, templates) {
+    switch (choice.trim()) {
+      case '1':
+        await this.switchTemplateFlow(templates);
+        return true;
+      case '2':
+        await this.createTemplateFlow(templates);
+        return true;
+      case '3':
+        await this.deleteTemplateFlow(templates);
+        return true;
+      default:
+        console.log('❌ Invalid option. Please enter 1-4.');
+        return true;
+    }
+  }
+
+  /**
+   * Template switching workflow
+   */
+  async switchTemplateFlow(templates) {
+    const inactiveTemplates = templates.filter(t => !t.is_active);
+    
+    if (inactiveTemplates.length === 0) {
+      console.log('❌ No other templates to switch to.');
+      await this.promptUser('Press Enter to continue...');
+      return;
+    }
+    
+    console.log('\n🔄 Switch Active Template');
+    inactiveTemplates.forEach((template, index) => {
+      console.log(`${index + 1}. ${template.name}`);
+    });
+    
+    const choice = await this.promptUser('\nEnter template number (or 0 to cancel): ');
+    if (choice === '0') return;
+    
+    const templateIndex = parseInt(choice) - 1;
+    if (templateIndex < 0 || templateIndex >= inactiveTemplates.length) {
+      console.log('❌ Invalid template number.');
+      return;
+    }
+    
+    const selectedTemplate = inactiveTemplates[templateIndex];
+    
+    try {
+      const newTemplate = await this.engine.switchToTemplate(selectedTemplate.id);
+      console.log(`✅ Switched to template: ${newTemplate.name}`);
+    } catch (error) {
+      console.error('❌ Failed to switch template:', error.message);
+    }
+    
+    await this.promptUser('Press Enter to continue...');
+  }
+
+  /**
+   * Template creation workflow
+   */
+  async createTemplateFlow(templates) {
+    console.log('\n➕ Create New Template');
+    
+    const name = await this.promptUser('Enter template name: ');
+    if (!name.trim()) {
+      console.log('❌ Template name cannot be empty.');
+      await this.promptUser('Press Enter to continue...');
+      return;
+    }
+    
+    console.log('\nBase template options:');
+    console.log('0. Create empty template');
+    templates.forEach((template, index) => {
+      console.log(`${index + 1}. Copy from: ${template.name}`);
+    });
+    
+    const baseChoice = await this.promptUser('\nEnter option (0 for empty): ');
+    let basedOnTemplateId = null;
+    
+    if (baseChoice !== '0') {
+      const baseIndex = parseInt(baseChoice) - 1;
+      if (baseIndex < 0 || baseIndex >= templates.length) {
+        console.log('❌ Invalid option.');
+        return;
+      }
+      basedOnTemplateId = templates[baseIndex].id;
+    }
+    
+    const makeActive = await this.promptUser('Make this template active? (y/N): ');
+    const shouldActivate = makeActive.toLowerCase() === 'y';
+    
+    try {
+      const result = await this.engine.createNewTemplate(name.trim(), basedOnTemplateId, shouldActivate);
+      console.log(`✅ Created template: ${name}`);
+      if (shouldActivate) {
+        console.log('✅ Template activated and research engine reloaded');
+      }
+    } catch (error) {
+      console.error('❌ Failed to create template:', error.message);
+    }
+    
+    await this.promptUser('Press Enter to continue...');
+  }
+
+  /**
+   * Template deletion workflow
+   */
+  async deleteTemplateFlow(templates) {
+    const inactiveTemplates = templates.filter(t => !t.is_active);
+    
+    if (inactiveTemplates.length === 0) {
+      console.log('❌ No inactive templates to delete.');
+      console.log('💡 Switch to another template first to delete the current one.');
+      await this.promptUser('Press Enter to continue...');
+      return;
+    }
+    
+    console.log('\n🗑️ Delete Template');
+    console.log('⚠️ This will permanently delete the template and all its research results.');
+    console.log('\nInactive templates:');
+    
+    inactiveTemplates.forEach((template, index) => {
+      console.log(`${index + 1}. ${template.name}`);
+    });
+    
+    const choice = await this.promptUser('\nEnter template number (or 0 to cancel): ');
+    if (choice === '0') return;
+    
+    const templateIndex = parseInt(choice) - 1;
+    if (templateIndex < 0 || templateIndex >= inactiveTemplates.length) {
+      console.log('❌ Invalid template number.');
+      return;
+    }
+    
+    const selectedTemplate = inactiveTemplates[templateIndex];
+    
+    const confirmation = await this.promptUser(`⚠️ Delete "${selectedTemplate.name}"? Type "DELETE" to confirm: `);
+    if (confirmation !== 'DELETE') {
+      console.log('❌ Deletion cancelled.');
+      return;
+    }
+    
+    try {
+      await this.engine.removeTemplate(selectedTemplate.id);
+      console.log(`✅ Deleted template: ${selectedTemplate.name}`);
+    } catch (error) {
+      console.error('❌ Failed to delete template:', error.message);
+    }
+    
     await this.promptUser('Press Enter to continue...');
   }
 
@@ -427,6 +620,23 @@ class TerminalInterface {
     }
 
     await this.promptUser('\nPress Enter to continue...');
+  }
+
+  /**
+   * Format confidence score for display
+   */
+  formatConfidenceDisplay(confidence_score) {
+    const CONFIDENCE_LABELS = {
+      1: 'guess',
+      2: 'probably', 
+      3: 'very likely'
+    };
+    
+    if (!confidence_score || !CONFIDENCE_LABELS[confidence_score]) {
+      return '';
+    }
+    
+    return ` [Confidence: ${confidence_score}/3 - ${CONFIDENCE_LABELS[confidence_score]}]`;
   }
 
   /**

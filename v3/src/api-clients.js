@@ -113,11 +113,14 @@ class ResearchClient {
     }
   }
 
-  async getCompanyResults(companyName) {
+  async getCompanyResults(companyName, templateId = null) {
     try {
-      const response = await axios.get(
-        `${this.serverURL}/api/research/company/${encodeURIComponent(companyName)}`
-      );
+      let url = `${this.serverURL}/api/research/company/${encodeURIComponent(companyName)}`;
+      if (templateId) {
+        url += `?templateId=${templateId}`;
+      }
+      
+      const response = await axios.get(url);
 
       return response.data.results;
     } catch (error) {
@@ -155,6 +158,50 @@ class TemplateClient {
     } catch (error) {
       console.error('Template API Error:', error.response?.data || error.message);
       throw new Error(`Template fetch failed: ${error.response?.data?.details || error.message}`);
+    }
+  }
+
+  async getTemplates() {
+    try {
+      const response = await axios.get(`${this.serverURL}/api/templates`);
+      return response.data;
+    } catch (error) {
+      console.error('Templates API Error:', error.response?.data || error.message);
+      throw new Error(`Templates fetch failed: ${error.response?.data?.error || error.message}`);
+    }
+  }
+
+  async createTemplate(name, basedOnTemplateId = null, makeActive = false) {
+    try {
+      const response = await axios.post(`${this.serverURL}/api/templates`, {
+        name,
+        basedOnTemplateId,
+        makeActive
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Create Template API Error:', error.response?.data || error.message);
+      throw new Error(`Template creation failed: ${error.response?.data?.error || error.message}`);
+    }
+  }
+
+  async setActiveTemplate(templateId) {
+    try {
+      const response = await axios.put(`${this.serverURL}/api/templates/${templateId}/activate`);
+      return response.data;
+    } catch (error) {
+      console.error('Activate Template API Error:', error.response?.data || error.message);
+      throw new Error(`Template activation failed: ${error.response?.data?.error || error.message}`);
+    }
+  }
+
+  async deleteTemplate(templateId) {
+    try {
+      const response = await axios.delete(`${this.serverURL}/api/templates/${templateId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Delete Template API Error:', error.response?.data || error.message);
+      throw new Error(`Template deletion failed: ${error.response?.data?.error || error.message}`);
     }
   }
 }
