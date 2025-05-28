@@ -1,15 +1,30 @@
-const { ClaudeClient, PerplexityClient, ResearchClient } = require('./api-clients');
+const { ClaudeClient, PerplexityClient, ResearchClient, TemplateClient } = require('./api-clients');
 const CompanyLoader = require('./company-loader');
-const { SYSTEM_PROMPT, CRITERIA } = require('./criteria');
 
 class ResearchEngine {
   constructor() {
     this.claude = new ClaudeClient();
     this.perplexity = new PerplexityClient();
     this.research = new ResearchClient();
+    this.template = new TemplateClient();
     this.companyLoader = new CompanyLoader();
     this.maxIterations = 5;
-    this.currentTemplate = 'Default';
+    this.currentTemplate = null;
+    this.currentCriteria = [];
+  }
+
+  /**
+   * Initialize engine by loading template from database
+   */
+  async initialize() {
+    try {
+      const templateData = await this.template.getActiveTemplate();
+      this.currentTemplate = templateData;
+      this.currentCriteria = templateData.criteria;
+    } catch (error) {
+      console.error('Error loading template:', error.message);
+      throw error;
+    }
   }
 
   /**
@@ -33,10 +48,14 @@ class ResearchEngine {
    * @returns {Object} Template information
    */
   getTemplateInfo() {
+    if (!this.currentTemplate) {
+      throw new Error('Template not loaded. Call initialize() first.');
+    }
+    
     return {
-      name: this.currentTemplate,
-      systemPrompt: SYSTEM_PROMPT,
-      criteria: CRITERIA
+      name: this.currentTemplate.name,
+      systemPrompt: this.currentTemplate.systemPrompt,
+      criteria: this.currentCriteria
     };
   }
 
@@ -58,7 +77,7 @@ class ResearchEngine {
     } = options;
 
     // Get criteria objects
-    const criteriaToResearch = CRITERIA.filter(c => criteriaNames.includes(c.name));
+    const criteriaToResearch = this.currentCriteria.filter(c => criteriaNames.includes(c.name));
     const companiesInRange = companies.slice(startIndex, endIndex + 1);
 
     let totalResearched = 0;
@@ -96,7 +115,7 @@ class ResearchEngine {
         }
 
         // Check if company is disqualified based on research results
-        const disqualifyingCriteria = CRITERIA.filter(c => c.disqualifying).map(c => c.name);
+        const disqualifyingCriteria = this.currentCriteria.filter(c => c.disqualifying).map(c => c.name);
         const isDisqualified = companyResults.some(result => 
           disqualifyingCriteria.includes(result.criterion) && result.type === 'negative'
         );
@@ -167,7 +186,7 @@ class ResearchEngine {
               other: company.other
             };
             
-            await this.research.saveResult(company.name, criterion.name, {
+            await this.research.saveResult(company.name, criterion.id, {
               error: error.message,
               answer: 'Error',
               explanation: `Research failed: ${error.message}`,
@@ -208,10 +227,19 @@ class ResearchEngine {
     let iterations = 0;
     let toolCalls = 0;
 
+    // Get previous research results for context
+    let previousResults = [];
+    try {
+      const allResults = await this.research.getCompanyResults(company.name);
+      previousResults = allResults.filter(result => result.criterion !== criterion.name);
+    } catch (error) {
+      console.warn(`Error getting previous results for ${company.name}: ${error.message}`);
+    }
+
     // Execute automatic first query
     const automaticSearchResults = await this.executeAutomaticFirstQuery(company, criterion, progressCallback);
     
-    const initialPrompt = this.createEnhancedPrompt(criterion, companyInfo, automaticSearchResults);
+    const initialPrompt = this.createEnhancedPrompt(criterion, companyInfo, automaticSearchResults, previousResults);
 
     conversation.push({ role: 'user', content: initialPrompt });
 
@@ -226,7 +254,7 @@ class ResearchEngine {
       iterations++;
 
       try {
-        const response = await this.claude.sendMessage(conversation, SYSTEM_PROMPT);
+        const response = await this.claude.sendMessage(conversation, this.currentTemplate.systemPrompt);
         
         if (progressCallback) {
           progressCallback({
@@ -308,7 +336,7 @@ class ResearchEngine {
               other: company.other
             };
             
-            await this.research.saveResult(company.name, criterion.name, result, companyData);
+            await this.research.saveResult(company.name, criterion.id, result, companyData);
           } catch (error) {
             console.error(`Error saving research result for ${company.name}: ${error.message}`);
           }
@@ -416,9 +444,9 @@ class ResearchEngine {
         results: {}
       };
 
-      for (const criterion of CRITERIA) {
+      for (const criterion of this.currentCriteria) {
         try {
-          const result = await this.research.getResult(company.name, criterion.name);
+          const result = await this.research.getResult(company.name, criterion.id);
           if (result) {
             if (result.type === 'positive') row.results[criterion.name] = '+';
             else if (result.type === 'negative') row.results[criterion.name] = '-';
@@ -445,7 +473,7 @@ class ResearchEngine {
         start: start + 1,
         end: end
       },
-      criteria: CRITERIA.map(c => ({ name: c.name, disqualifying: c.disqualifying }))
+      criteria: this.currentCriteria.map(c => ({ name: c.name, disqualifying: c.disqualifying }))
     };
   }
 
@@ -496,28 +524,47 @@ class ResearchEngine {
    * @returns {string} Query with substituted values
    */
   substitutePlaceholders(template, company) {
-    return template.replace(/{company_name}/g, company.name || 'the company');
+    return template
+      .replace(/{company_name}/g, company.name || 'the company')
+      .replace(/{city}/g, company.city || '')
+      .replace(/{state}/g, company.state || '')
+      .replace(/{website}/g, company.website || '')
+      .replace(/{linkedin}/g, company.linkedin || '')
+      .replace(/{phone}/g, company.phone || '')
+      .replace(/{revenue}/g, company.revenue || '')
+      .replace(/{president_owner_ceo}/g, company['president/owner/ceo'] || '');
   }
 
   /**
-   * Create enhanced prompt with automatic search results
+   * Create enhanced prompt with automatic search results and previous research context
    * @param {Object} criterion - Criterion object
    * @param {string} companyInfo - Formatted company information
    * @param {string} searchResults - Initial search results
+   * @param {Array} previousResults - Previous research results for context
    * @returns {string} Enhanced prompt
    */
-  createEnhancedPrompt(criterion, companyInfo, searchResults) {
-    return `Criterion: ${criterion.description}
+  createEnhancedPrompt(criterion, companyInfo, searchResults, previousResults = []) {
+    let prompt = `Criterion: ${criterion.description}
 
 The company you are researching is:
-${companyInfo}
+${companyInfo}`;
 
-Initial Research Results:
+    // Add previous research results if available
+    if (previousResults.length > 0) {
+      prompt += `\n\nPrevious Research Results:`;
+      previousResults.forEach(result => {
+        prompt += `\n- ${result.criterion}: ${result.answer}`;
+      });
+    }
+
+    prompt += `\n\nInitial Research Results:
 ${searchResults}
 
-Based on the initial research results and company information above, please determine your answer for the criterion: ${criterion.name}
+Based on the initial research results${previousResults.length > 0 ? ', previous research findings,' : ''} and company information above, please determine your answer for the criterion: ${criterion.name}
 
 Expected answer format: ${criterion.answerFormat}`;
+
+    return prompt;
   }
 
   /**

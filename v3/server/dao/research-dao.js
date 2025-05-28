@@ -4,6 +4,40 @@ class ResearchDAO {
   }
 
   /**
+   * Get active template with criteria
+   * @returns {Promise<Object>} Template with criteria array
+   */
+  async getActiveTemplate() {
+    const template = await this.db.get(`
+      SELECT * FROM templates WHERE is_active = 1 LIMIT 1
+    `);
+
+    if (!template) {
+      throw new Error('No active template found');
+    }
+
+    const criteria = await this.db.all(`
+      SELECT * FROM criteria 
+      WHERE template_id = ? 
+      ORDER BY order_index
+    `, [template.id]);
+
+    return {
+      id: template.id,
+      name: template.name,
+      systemPrompt: template.system_prompt,
+      criteria: criteria.map(c => ({
+        id: c.id,
+        name: c.name,
+        description: c.description,
+        firstQueryTemplate: c.first_query_template,
+        answerFormat: c.answer_format,
+        disqualifying: !!c.disqualifying
+      }))
+    };
+  }
+
+  /**
    * Find or create a company by name
    * @param {string} companyName - Company name
    * @param {Object} companyData - Additional company data
@@ -36,20 +70,27 @@ class ResearchDAO {
   /**
    * Save research result
    * @param {string} companyName - Company name
-   * @param {string} criterionName - Criterion name
+   * @param {number} criterionId - Criterion ID
    * @param {Object} result - Research result object
    * @returns {Promise<number>} Research result ID
    */
-  async saveResearchResult(companyName, criterionName, result, companyData = {}) {
+  async saveResearchResult(companyName, criterionId, result, companyData = {}) {
     const companyId = await this.findOrCreateCompany(companyName, companyData);
+    
+    // Get template ID from criterion
+    const criterion = await this.db.get('SELECT template_id FROM criteria WHERE id = ?', [criterionId]);
+    if (!criterion) {
+      throw new Error(`Criterion not found: ${criterionId}`);
+    }
 
     const insertResult = await this.db.run(`
       INSERT OR REPLACE INTO research_results 
-      (company_id, criterion_name, answer, explanation, result_type, iterations, tool_calls, tokens_used, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      (template_id, company_id, criterion_id, answer, explanation, result_type, iterations, tool_calls, tokens_used, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
     `, [
+      criterion.template_id,
       companyId,
-      criterionName,
+      criterionId,
       result.answer || '',
       result.explanation || '',
       result.type || 'unknown',
@@ -64,16 +105,16 @@ class ResearchDAO {
   /**
    * Check if research result exists
    * @param {string} companyName - Company name
-   * @param {string} criterionName - Criterion name
+   * @param {number} criterionId - Criterion ID
    * @returns {Promise<boolean>} True if result exists
    */
-  async hasResearchResult(companyName, criterionName) {
+  async hasResearchResult(companyName, criterionId) {
     const result = await this.db.get(`
       SELECT rr.id 
       FROM research_results rr
       JOIN companies c ON rr.company_id = c.id
-      WHERE c.name = ? AND rr.criterion_name = ?
-    `, [companyName, criterionName]);
+      WHERE c.name = ? AND rr.criterion_id = ?
+    `, [companyName, criterionId]);
 
     return !!result;
   }
@@ -81,16 +122,17 @@ class ResearchDAO {
   /**
    * Get research result
    * @param {string} companyName - Company name
-   * @param {string} criterionName - Criterion name
+   * @param {number} criterionId - Criterion ID
    * @returns {Promise<Object|null>} Research result or null
    */
-  async getResearchResult(companyName, criterionName) {
+  async getResearchResult(companyName, criterionId) {
     const result = await this.db.get(`
-      SELECT rr.* 
+      SELECT rr.*, cr.name as criterion_name
       FROM research_results rr
       JOIN companies c ON rr.company_id = c.id
-      WHERE c.name = ? AND rr.criterion_name = ?
-    `, [companyName, criterionName]);
+      JOIN criteria cr ON rr.criterion_id = cr.id
+      WHERE c.name = ? AND rr.criterion_id = ?
+    `, [companyName, criterionId]);
 
     if (!result) return null;
 
@@ -113,9 +155,10 @@ class ResearchDAO {
    */
   async getCompanyResults(companyName) {
     const results = await this.db.all(`
-      SELECT rr.* 
+      SELECT rr.*, cr.name as criterion_name
       FROM research_results rr
       JOIN companies c ON rr.company_id = c.id
+      JOIN criteria cr ON rr.criterion_id = cr.id
       WHERE c.name = ?
       ORDER BY rr.created_at
     `, [companyName]);

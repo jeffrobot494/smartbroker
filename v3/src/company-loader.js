@@ -59,18 +59,6 @@ class CompanyLoader {
     if (company.website) info.push(`Website: ${company.website}`);
     if (company.linkedin) info.push(`LinkedIn: ${company.linkedin}`);
     if (company.city && company.state) info.push(`Location: ${company.city}, ${company.state}`);
-    if (company.phone) info.push(`Phone: ${company.phone}`);
-    if (company.revenue) info.push(`Revenue: ${company.revenue}`);
-    if (company['president/owner/ceo']) info.push(`CEO/Owner: ${company['president/owner/ceo']}`);
-    
-    // Add any additional fields from 'other'
-    if (company.other && typeof company.other === 'object') {
-      Object.entries(company.other).forEach(([key, value]) => {
-        if (value && value.toString().trim()) {
-          info.push(`${key}: ${value}`);
-        }
-      });
-    }
 
     return info.join('\n');
   }

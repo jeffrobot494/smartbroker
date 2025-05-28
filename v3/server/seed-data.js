@@ -1,7 +1,6 @@
 /**
- * Research criteria definitions for SmartBroker v3
- * NOTE: This file is now only used for database seeding.
- * The application loads templates and criteria from the database at runtime.
+ * Seed data for default template and criteria
+ * This is a copy of the data from src/criteria.js for server-side seeding
  */
 
 const SYSTEM_PROMPT = `You are a business researcher. Your task is to research software development companies to determine whether they fit certain criteria to determine if the owner is likely to want to sell the company.

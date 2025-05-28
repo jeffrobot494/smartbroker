@@ -53,13 +53,13 @@ class ResearchClient {
     this.serverURL = serverURL;
   }
 
-  async saveResult(companyName, criterionName, result, companyData = {}) {
+  async saveResult(companyName, criterionId, result, companyData = {}) {
     try {
       const response = await axios.post(
         `${this.serverURL}/api/research`,
         {
           companyName,
-          criterionName,
+          criterionId,
           result,
           companyData
         }
@@ -140,8 +140,28 @@ class ResearchClient {
   }
 }
 
+class TemplateClient {
+  constructor(serverURL = 'http://localhost:3000') {
+    this.serverURL = serverURL;
+  }
+
+  async getActiveTemplate() {
+    try {
+      const response = await axios.get(
+        `${this.serverURL}/api/template/active`
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error('Template API Error:', error.response?.data || error.message);
+      throw new Error(`Template fetch failed: ${error.response?.data?.details || error.message}`);
+    }
+  }
+}
+
 module.exports = {
   ClaudeClient,
   PerplexityClient,
-  ResearchClient
+  ResearchClient,
+  TemplateClient
 };

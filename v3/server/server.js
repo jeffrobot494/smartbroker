@@ -104,22 +104,38 @@ app.post('/api/perplexity', async (req, res) => {
   }
 });
 
+// Template API endpoints
+
+// Get active template with criteria
+app.get('/api/template/active', async (req, res) => {
+  try {
+    const template = await researchDAO.getActiveTemplate();
+    res.json(template);
+  } catch (error) {
+    console.error('Error getting active template:', error);
+    res.status(500).json({
+      error: 'Failed to get active template',
+      details: error.message
+    });
+  }
+});
+
 // Research Results API endpoints
 
 // Save research result
 app.post('/api/research', async (req, res) => {
   try {
-    const { companyName, criterionName, result, companyData } = req.body;
+    const { companyName, criterionId, result, companyData } = req.body;
 
-    if (!companyName || !criterionName || !result) {
+    if (!companyName || !criterionId || !result) {
       return res.status(400).json({ 
-        error: 'Missing required fields: companyName, criterionName, result' 
+        error: 'Missing required fields: companyName, criterionId, result' 
       });
     }
 
     const resultId = await researchDAO.saveResearchResult(
       companyName, 
-      criterionName, 
+      criterionId, 
       result, 
       companyData || {}
     );

@@ -17,6 +17,9 @@ class TerminalInterface {
    */
   async run() {
     try {
+      // 0) Initialize research engine with template from database
+      await this.engine.initialize();
+      
       // 1) Load companies and tell count
       const companies = this.engine.loadCompanies();
       if (companies.length === 0) {
