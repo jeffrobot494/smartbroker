@@ -372,25 +372,218 @@ GET /api/templates/:id/analytics
 - Automatic flagging of low-confidence results
 - Batch processing can skip low-confidence companies
 
-## Implementation Priority
+## Implementation Status
 
-1. **Step 2A - Database Schema Updates**
-   - Add confidence_score (1-3) to research_results
-   - Update criteria creation to accept order_index
+### ✅ COMPLETED: Step 2A - Database Schema Updates
+**Status**: Fully implemented and tested
+- ✅ Added confidence_score (1-3) to research_results table with CHECK constraint
+- ✅ Added UNIQUE(template_id, order_index) constraint to criteria table
+- ✅ Updated ResearchDAO to handle confidence_score in all CRUD operations
+- ✅ Database recreates properly with new schema
 
-2. **Step 2B - Backend API Foundation**
-   - Template management endpoints
-   - Frontend-independent service layer
-   - Simplified research execution APIs
+### ✅ COMPLETED: Step 2B - Backend API Foundation  
+**Status**: Fully implemented and tested (14/14 tests passing)
+- ✅ Extended ResearchDAO with 4 template management methods:
+  - `getTemplates()` - List all templates
+  - `createTemplate(name, basedOnId, makeActive)` - Create with optional copying
+  - `setActiveTemplate(id)` - Switch active template with exclusive activation
+  - `deleteTemplate(id)` - Delete with safety constraints
+- ✅ Added 4 server API endpoints: GET/POST/PUT/DELETE `/api/templates/*`
+- ✅ Extended TemplateClient with 4 corresponding frontend methods
+- ✅ Template creation copies system prompt + all criteria with preserved order_index
+- ✅ Business rule enforcement: unique names, can't delete active/last template
+- ✅ Frontend-independent JSON APIs ready for any interface
 
-3. **Step 2C - Terminal Interface Updates**
-   - Update terminal to call new APIs
-   - Template switching and creation menus
-   - Display confidence scores in results
+### ✅ COMPLETED: Step 2C - Terminal Interface Updates
+**Status**: Fully implemented with proper separation of concerns
+- ✅ **Business Logic in ResearchEngine** (4 methods, 40 lines):
+  - `getTemplateList()` - Template listing
+  - `switchToTemplate(id)` - Switch and reload engine  
+  - `createNewTemplate(name, basedOnId, makeActive)` - Creation with copying
+  - `removeTemplate(id)` - Deletion
+- ✅ **UI Logic in TerminalInterface** (5 methods, 195 lines):
+  - `editTemplates()` - Main template management menu
+  - `displayTemplateMenu()` - Pure display logic
+  - `switchTemplateFlow()` - Template switching workflow
+  - `createTemplateFlow()` - Template creation workflow  
+  - `deleteTemplateFlow()` - Template deletion workflow
+- ✅ Template switching automatically reloads research engine
+- ✅ User confirmations for destructive actions
+- ✅ Error handling with user-friendly messages
+- ✅ Confidence scores display in research results (verbosity 2+)
 
-4. **Step 3 - Advanced Features**
-   - Criteria editing with order management
-   - System prompt editing
-   - Confidence-based analytics
+### 🐛 FIXED: Template Isolation Bug
+**Issue**: Templates were sharing research results instead of maintaining isolation
+**Root Cause**: `getCompanyResults()` wasn't filtering by template_id during research duplicate detection
+**Fix Applied**:
+- ✅ Updated `ResearchDAO.getCompanyResults(companyName, templateId)` to filter by template
+- ✅ Updated `ResearchClient.getCompanyResults(companyName, templateId)` to pass template parameter
+- ✅ Updated server API endpoint to accept `?templateId=` query parameter
+- ✅ Updated research engine to pass current template ID in all calls
+- ✅ Now templates maintain completely isolated research results
 
-This streamlined architecture maintains powerful template functionality while keeping the system simple and ensuring complete frontend independence.
+### 🎯 TODO: Step 3 - Advanced Features
+**Next Implementation Priority**: System Prompt and Criteria Editing
+
+#### **CRITICAL: Architecture Pattern for Step 3**
+**🚨 MAINTAIN SEPARATION OF CONCERNS**: It is essential that Step 3 follows the established architecture pattern:
+
+1. **Business Logic → ResearchEngine**: Add methods for prompt/criteria operations
+2. **UI Logic → TerminalInterface**: Add workflow methods for user interaction
+3. **API Layer → Server + Client**: Ensure all functionality accessible via APIs
+
+**Why This Matters**: The GUI integration depends on this separation. Terminal UI should only handle user interaction (prompts, displays, navigation), while all business operations must be accessible through ResearchEngine methods. This allows future GUI components to call the same business logic methods without any terminal-specific dependencies.
+
+**Example Pattern**:
+```javascript
+// ✅ CORRECT - Business logic in ResearchEngine
+async updateSystemPrompt(templateId, newPrompt) {
+  // Business logic here
+}
+
+// ✅ CORRECT - UI logic in TerminalInterface  
+async editSystemPromptFlow() {
+  // User interaction, delegates to engine
+  const newPrompt = await this.promptUser('Enter prompt:');
+  await this.engine.updateSystemPrompt(templateId, newPrompt);
+}
+
+// ❌ WRONG - Business logic mixed with UI
+async editSystemPrompt() {
+  const prompt = await this.promptUser('Enter prompt:');
+  await axios.put('/api/template/prompt', {prompt}); // API call in UI!
+}
+```
+
+#### **3A. System Prompt Editing** (High Priority)
+**Goal**: Allow editing of template system prompts via terminal interface
+**Current Status**: Placeholder method exists in `terminal-interface.js:575`
+
+**Implementation Requirements**:
+1. **Backend API Endpoints**:
+   ```javascript
+   GET /api/template/:id/prompt     // Get system prompt for editing
+   PUT /api/template/:id/prompt     // Update system prompt
+   ```
+
+2. **ResearchDAO Methods**:
+   ```javascript
+   async getTemplatePrompt(templateId)
+   async updateTemplatePrompt(templateId, newPrompt)
+   ```
+
+3. **ResearchEngine Methods** (Business Logic):
+   ```javascript
+   async getSystemPrompt(templateId)
+   async updateSystemPrompt(templateId, newPrompt)  // Include engine reload
+   ```
+
+4. **Terminal Interface** (UI Logic Only):
+   - Multi-line text editor (handle newlines, long text)
+   - Show current prompt for editing
+   - Confirmation before saving changes
+   - Delegate all business operations to ResearchEngine
+
+5. **Technical Considerations**:
+   - System prompts are long (1000+ characters)
+   - Need proper text input handling in terminal
+   - Validate prompt is not empty
+   - Consider showing character count/validation
+
+#### **3B. Criteria Editing** (High Priority)
+**Goal**: Full CRUD operations on criteria within templates
+**Current Status**: Placeholder method exists in `terminal-interface.js:587`
+
+**Implementation Requirements**:
+1. **Backend API Endpoints**:
+   ```javascript
+   GET /api/templates/:id/criteria           // List criteria (already exists via template)
+   POST /api/templates/:id/criteria          // Create new criterion
+   PUT /api/criteria/:id                     // Update criterion
+   DELETE /api/criteria/:id                  // Delete criterion  
+   PUT /api/criteria/:id/reorder            // Change order_index
+   ```
+
+2. **ResearchDAO Methods**:
+   ```javascript
+   async createCriterion(templateId, criterionData)
+   async updateCriterion(criterionId, updates)
+   async deleteCriterion(criterionId)
+   async reorderCriterion(criterionId, newOrderIndex)
+   async getNextAvailableOrderIndex(templateId)
+   ```
+
+3. **ResearchEngine Methods** (Business Logic):
+   ```javascript
+   async addCriterion(templateId, criterionData)
+   async modifyCriterion(criterionId, updates)
+   async removeCriterion(criterionId)
+   async reorderCriteria(criterionId, newOrderIndex)
+   // All methods should reload engine if current template affected
+   ```
+
+4. **Terminal Interface Workflows** (UI Logic Only):
+   - **List Criteria**: Show current criteria with order_index, disqualifying flags
+   - **Add Criterion**: Form-like input for all fields (name, description, query template, etc.)
+   - **Edit Criterion**: Select and modify existing criterion
+   - **Delete Criterion**: With confirmation and research result cleanup warning
+   - **Reorder Criteria**: Allow changing execution order
+   - Delegate all business operations to ResearchEngine
+
+5. **Criterion Fields** (from database schema):
+   ```javascript
+   {
+     name: string,                    // Short identifier
+     description: string,             // Full research question
+     first_query_template: string,    // Optional Perplexity query with {placeholders}
+     answer_format: string,           // Expected response format
+     disqualifying: boolean,          // Whether negative result disqualifies company
+     order_index: integer            // User-defined execution order
+   }
+   ```
+
+6. **Technical Considerations**:
+   - Order index management (prevent duplicates, suggest next available)
+   - Research result cleanup when criteria are deleted
+   - Validation of criterion fields
+   - Automatic research engine reload after criteria changes
+
+#### **3C. Confidence-Based Analytics** (Lower Priority)
+**Goal**: Provide insights on research confidence and template effectiveness
+
+**Implementation Ideas**:
+1. **Analytics API**:
+   ```javascript
+   GET /api/templates/:id/analytics
+   // Returns: { avgConfidence, confidenceDistribution, disqualificationRate, etc. }
+   ```
+
+2. **Confidence Reporting**:
+   - Average confidence per template
+   - Confidence distribution (count of 1s, 2s, 3s)
+   - Low confidence flagging
+   - Template effectiveness metrics
+
+### **Current Working Features** ✅
+- **Database-driven templates and criteria**: Complete template isolation
+- **Template management**: Create, switch, delete templates via terminal
+- **Research execution**: With confidence scores (1-3 scale) displayed at verbosity 2+
+- **Automatic first queries**: With company placeholder substitution
+- **Research result persistence**: Template-isolated with confidence tracking
+- **Database-driven disqualification**: Based on negative results for disqualifying criteria
+- **Clear research data**: With confirmation prompts
+
+### **Architecture Notes for Step 3**
+- **🚨 CRITICAL: Follow established separation patterns**: Business logic in ResearchEngine, UI logic in TerminalInterface
+- **Reuse existing APIs**: Template switching, research engine reloading
+- **Maintain frontend independence**: All business logic accessible via APIs for future GUI
+- **Error handling**: Consistent with existing patterns
+- **User experience**: Confirmation prompts for destructive actions, clear navigation
+
+### **Testing Approach**
+- **Manual testing**: Via terminal interface Edit Options menus
+- **API testing**: Create test scripts similar to `test-step2b.js`
+- **Database validation**: Ensure constraints and relationships work correctly
+- **Integration testing**: Verify research engine reloads and template isolation
+
+This completes the database-driven template system foundation. Step 3 will add the final editing capabilities to make the system fully user-configurable while maintaining the architecture that enables seamless GUI integration.

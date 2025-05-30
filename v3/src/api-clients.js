@@ -204,6 +204,80 @@ class TemplateClient {
       throw new Error(`Template deletion failed: ${error.response?.data?.error || error.message}`);
     }
   }
+
+  async getSystemPrompt(templateId) {
+    try {
+      const response = await axios.get(`${this.serverURL}/api/template/${templateId}/prompt`);
+      return response.data.systemPrompt;
+    } catch (error) {
+      console.error('Get System Prompt API Error:', error.response?.data || error.message);
+      throw new Error(`System prompt fetch failed: ${error.response?.data?.error || error.message}`);
+    }
+  }
+
+  async updateSystemPrompt(templateId, systemPrompt) {
+    try {
+      const response = await axios.put(`${this.serverURL}/api/template/${templateId}/prompt`, {
+        systemPrompt
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Update System Prompt API Error:', error.response?.data || error.message);
+      throw new Error(`System prompt update failed: ${error.response?.data?.error || error.message}`);
+    }
+  }
+
+  async createCriterion(templateId, criterionData) {
+    try {
+      const response = await axios.post(`${this.serverURL}/api/templates/${templateId}/criteria`, criterionData);
+      return response.data;
+    } catch (error) {
+      console.error('Create Criterion API Error:', error.response?.data || error.message);
+      throw new Error(`Criterion creation failed: ${error.response?.data?.error || error.message}`);
+    }
+  }
+
+  async updateCriterion(criterionId, updates) {
+    try {
+      const response = await axios.put(`${this.serverURL}/api/criteria/${criterionId}`, updates);
+      return response.data;
+    } catch (error) {
+      console.error('Update Criterion API Error:', error.response?.data || error.message);
+      throw new Error(`Criterion update failed: ${error.response?.data?.error || error.message}`);
+    }
+  }
+
+  async deleteCriterion(criterionId) {
+    try {
+      const response = await axios.delete(`${this.serverURL}/api/criteria/${criterionId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Delete Criterion API Error:', error.response?.data || error.message);
+      throw new Error(`Criterion deletion failed: ${error.response?.data?.error || error.message}`);
+    }
+  }
+
+  async reorderCriterion(criterionId, newOrderIndex) {
+    try {
+      const response = await axios.put(`${this.serverURL}/api/criteria/${criterionId}/reorder`, {
+        newOrderIndex
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Reorder Criterion API Error:', error.response?.data || error.message);
+      throw new Error(`Criterion reorder failed: ${error.response?.data?.error || error.message}`);
+    }
+  }
+
+  async getNextOrderIndex(templateId) {
+    try {
+      const response = await axios.get(`${this.serverURL}/api/templates/${templateId}/next-order`);
+      return response.data.nextOrderIndex;
+    } catch (error) {
+      console.error('Get Next Order API Error:', error.response?.data || error.message);
+      throw new Error(`Next order fetch failed: ${error.response?.data?.error || error.message}`);
+    }
+  }
 }
 
 module.exports = {

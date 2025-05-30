@@ -119,7 +119,7 @@ class TerminalInterface {
     const continueWithRemaining = doRemaining.toLowerCase() === 'y';
 
     // Ask about verbosity (default 1)
-    const verbosityStr = await this.promptUser('Verbosity level (1-3, default 1): ');
+    const verbosityStr = await this.promptUser('Verbosity level (1-4, default 1): ');
     this.verbosity = verbosityStr.trim() === '' ? 1 : parseInt(verbosityStr) || 1;
 
     // Ask about waiting between tool uses
@@ -191,6 +191,29 @@ class TerminalInterface {
           if (this.verbosity >= 3 && progress.content) {
             console.log('\n📤 Claude Response:');
             console.log(progress.content);
+          }
+          break;
+
+        case 'claude_message_sent':
+          if (this.verbosity >= 4 && progress.payload) {
+            console.log('\n📦 Complete message sent to Claude:');
+            console.log('━'.repeat(60));
+            console.log(`🤖 Model: ${progress.payload.model}`);
+            console.log(`🔢 Max Tokens: ${progress.payload.maxTokens}`);
+            console.log('\n📋 System Prompt:');
+            console.log('─'.repeat(30));
+            console.log(progress.payload.systemPrompt);
+            console.log('\n💬 Conversation:');
+            console.log('─'.repeat(30));
+            progress.payload.messages.forEach((msg, index) => {
+              const icon = msg.role === 'user' ? '👤' : '🤖';
+              console.log(`${icon} ${msg.role.toUpperCase()}:`);
+              console.log(msg.content);
+              if (index < progress.payload.messages.length - 1) {
+                console.log(''); // Add spacing between messages
+              }
+            });
+            console.log('━'.repeat(60));
           }
           break;
 
@@ -573,19 +596,394 @@ class TerminalInterface {
   }
 
   async editSystemPrompt() {
-    console.log('🚧 System prompt editing not yet implemented');
-    await this.promptUser('Press Enter to continue...');
+    try {
+      const template = this.engine.getTemplateInfo();
+      console.log(`\n📝 Edit System Prompt for Template: ${template.name}`);
+      console.log('━'.repeat(60));
+      
+      // Get current system prompt
+      const currentPrompt = await this.engine.getSystemPrompt(template.id);
+      
+      console.log('\n🔍 Current System Prompt:');
+      console.log('─'.repeat(40));
+      console.log(currentPrompt);
+      console.log('─'.repeat(40));
+      console.log(`\n📊 Current length: ${currentPrompt.length} characters`);
+      
+      console.log('\n✏️  Enter new system prompt (multi-line input)');
+      console.log('💡 Tips: Enter your text, then type "DONE" on a new line when finished');
+      console.log('        Type "CANCEL" to abort without saving');
+      
+      // Multi-line input handling
+      const lines = [];
+      let line;
+      
+      while (true) {
+        line = await this.promptUser('> ');
+        
+        if (line.trim() === 'DONE') {
+          break;
+        } else if (line.trim() === 'CANCEL') {
+          console.log('❌ Edit cancelled.');
+          return;
+        }
+        
+        lines.push(line);
+      }
+      
+      const newPrompt = lines.join('\n').trim();
+      
+      if (!newPrompt) {
+        console.log('❌ System prompt cannot be empty. Edit cancelled.');
+        return;
+      }
+      
+      // Show preview and confirm
+      console.log('\n📋 New System Prompt Preview:');
+      console.log('─'.repeat(40));
+      console.log(newPrompt);
+      console.log('─'.repeat(40));
+      console.log(`📊 New length: ${newPrompt.length} characters`);
+      
+      const confirmation = await this.promptUser('\n💾 Save this system prompt? (y/N): ');
+      
+      if (confirmation.toLowerCase() !== 'y') {
+        console.log('❌ Changes not saved.');
+        return;
+      }
+      
+      // Save the new prompt
+      await this.engine.updateSystemPrompt(template.id, newPrompt);
+      
+      console.log('✅ System prompt updated successfully!');
+      if (template.id === this.engine.currentTemplate?.id) {
+        console.log('🔄 Research engine reloaded with new prompt.');
+      }
+      
+    } catch (error) {
+      console.error(`❌ Error editing system prompt: ${error.message}`);
+    }
+    
+    await this.promptUser('\nPress Enter to continue...');
   }
 
   async editCriteria() {
-    const template = this.engine.getTemplateInfo();
-    console.log('\n📝 Current Criteria:');
-    template.criteria.forEach((criterion, index) => {
-      const flag = criterion.disqualifying ? '🚫' : '📊';
-      console.log(`${index + 1}. ${flag} ${criterion.name} - ${criterion.description}`);
-    });
-    console.log('\n🚧 Criteria editing not yet implemented');
-    await this.promptUser('Press Enter to continue...');
+    while (true) {
+      try {
+        const template = this.engine.getTemplateInfo();
+        console.log(`\n📝 Edit Criteria for Template: ${template.name}`);
+        console.log('━'.repeat(60));
+        
+        this.displayCriteriaMenu(template.criteria);
+        
+        const choice = await this.promptUser('\nEnter option: ');
+        
+        if (choice === '6') return;
+        
+        const shouldContinue = await this.handleCriteriaChoice(choice, template);
+        if (shouldContinue) continue;
+        
+      } catch (error) {
+        console.error('❌ Criteria management error:', error.message);
+        await this.promptUser('Press Enter to continue...');
+      }
+    }
+  }
+
+  displayCriteriaMenu(criteria) {
+    console.log('\n📋 Current Criteria:');
+    if (criteria.length === 0) {
+      console.log('   (No criteria defined)');
+    } else {
+      criteria.forEach((criterion, index) => {
+        const flag = criterion.disqualifying ? '🚫' : '📊';
+        console.log(`   ${criterion.order_index || index + 1}. ${flag} ${criterion.name} - ${criterion.description}`);
+      });
+    }
+    
+    console.log('\n🔧 Criteria Management:');
+    console.log('1. Add new criterion');
+    console.log('2. Edit existing criterion');
+    console.log('3. Delete criterion');
+    console.log('4. Reorder criterion');
+    console.log('5. View criterion details');
+    console.log('6. Back to main menu');
+  }
+
+  async handleCriteriaChoice(choice, template) {
+    switch (choice.trim()) {
+      case '1':
+        await this.addCriterionFlow(template);
+        break;
+      case '2':
+        await this.editCriterionFlow(template);
+        break;
+      case '3':
+        await this.deleteCriterionFlow(template);
+        break;
+      case '4':
+        await this.reorderCriterionFlow(template);
+        break;
+      case '5':
+        await this.viewCriterionDetailsFlow(template);
+        break;
+      default:
+        console.log('❌ Invalid option.');
+        return true;
+    }
+    return true;
+  }
+
+  async addCriterionFlow(template) {
+    try {
+      console.log('\n➕ Add New Criterion');
+      console.log('─'.repeat(30));
+      
+      // Get next available order index
+      const nextOrder = await this.engine.template.getNextOrderIndex(template.id);
+      
+      const name = await this.promptUser('Criterion name: ');
+      if (!name.trim()) {
+        console.log('❌ Name is required.');
+        return;
+      }
+      
+      const description = await this.promptUser('Description (research question): ');
+      if (!description.trim()) {
+        console.log('❌ Description is required.');
+        return;
+      }
+      
+      const answerFormat = await this.promptUser('Expected answer format: ');
+      if (!answerFormat.trim()) {
+        console.log('❌ Answer format is required.');
+        return;
+      }
+      
+      const firstQueryTemplate = await this.promptUser('First query template (optional, use {company_name}, {city}, etc.): ');
+      
+      const disqualifyingStr = await this.promptUser('Is this disqualifying? (y/n): ');
+      const disqualifying = disqualifyingStr.toLowerCase() === 'y';
+      
+      const orderStr = await this.promptUser(`Order index (default ${nextOrder}): `);
+      const orderIndex = orderStr.trim() === '' ? nextOrder : parseInt(orderStr) || nextOrder;
+      
+      const criterionData = {
+        name: name.trim(),
+        description: description.trim(),
+        answer_format: answerFormat.trim(),
+        first_query_template: firstQueryTemplate.trim() || null,
+        disqualifying,
+        order_index: orderIndex
+      };
+      
+      const confirmation = await this.promptUser('\n💾 Create this criterion? (y/N): ');
+      if (confirmation.toLowerCase() !== 'y') {
+        console.log('❌ Creation cancelled.');
+        return;
+      }
+      
+      await this.engine.addCriterion(template.id, criterionData);
+      console.log('✅ Criterion created successfully!');
+      if (template.id === this.engine.currentTemplate?.id) {
+        console.log('🔄 Research engine reloaded with new criteria.');
+      }
+      
+    } catch (error) {
+      console.error(`❌ Error creating criterion: ${error.message}`);
+    }
+  }
+
+  async editCriterionFlow(template) {
+    try {
+      if (template.criteria.length === 0) {
+        console.log('❌ No criteria to edit.');
+        return;
+      }
+      
+      console.log('\n✏️  Edit Criterion');
+      console.log('─'.repeat(20));
+      
+      template.criteria.forEach((criterion, index) => {
+        console.log(`${index + 1}. ${criterion.name}`);
+      });
+      
+      const indexStr = await this.promptUser('\nSelect criterion number: ');
+      const index = parseInt(indexStr) - 1;
+      
+      if (index < 0 || index >= template.criteria.length) {
+        console.log('❌ Invalid selection.');
+        return;
+      }
+      
+      const criterion = template.criteria[index];
+      console.log(`\n📝 Editing: ${criterion.name}`);
+      
+      const updates = {};
+      
+      const name = await this.promptUser(`Name (current: "${criterion.name}"): `);
+      if (name.trim()) updates.name = name.trim();
+      
+      const description = await this.promptUser(`Description (current: "${criterion.description}"): `);
+      if (description.trim()) updates.description = description.trim();
+      
+      const answerFormat = await this.promptUser(`Answer format (current: "${criterion.answerFormat}"): `);
+      if (answerFormat.trim()) updates.answer_format = answerFormat.trim();
+      
+      const firstQuery = await this.promptUser(`First query template (current: "${criterion.firstQueryTemplate || 'none'}"): `);
+      if (firstQuery.trim() !== '') updates.first_query_template = firstQuery.trim() || null;
+      
+      const disqualifyingStr = await this.promptUser(`Disqualifying (current: ${criterion.disqualifying ? 'yes' : 'no'}) (y/n): `);
+      if (disqualifyingStr.trim()) updates.disqualifying = disqualifyingStr.toLowerCase() === 'y';
+      
+      if (Object.keys(updates).length === 0) {
+        console.log('❌ No changes made.');
+        return;
+      }
+      
+      const confirmation = await this.promptUser('\n💾 Save changes? (y/N): ');
+      if (confirmation.toLowerCase() !== 'y') {
+        console.log('❌ Changes not saved.');
+        return;
+      }
+      
+      await this.engine.modifyCriterion(criterion.id, updates);
+      console.log('✅ Criterion updated successfully!');
+      if (template.id === this.engine.currentTemplate?.id) {
+        console.log('🔄 Research engine reloaded with updated criteria.');
+      }
+      
+    } catch (error) {
+      console.error(`❌ Error editing criterion: ${error.message}`);
+    }
+  }
+
+  async deleteCriterionFlow(template) {
+    try {
+      if (template.criteria.length === 0) {
+        console.log('❌ No criteria to delete.');
+        return;
+      }
+      
+      console.log('\n🗑️  Delete Criterion');
+      console.log('─'.repeat(20));
+      
+      template.criteria.forEach((criterion, index) => {
+        console.log(`${index + 1}. ${criterion.name}`);
+      });
+      
+      const indexStr = await this.promptUser('\nSelect criterion number: ');
+      const index = parseInt(indexStr) - 1;
+      
+      if (index < 0 || index >= template.criteria.length) {
+        console.log('❌ Invalid selection.');
+        return;
+      }
+      
+      const criterion = template.criteria[index];
+      console.log(`\n⚠️  Delete: ${criterion.name}`);
+      console.log('This will permanently delete the criterion and all associated research results.');
+      
+      const confirmation = await this.promptUser('\n🗑️  Confirm deletion? (y/N): ');
+      if (confirmation.toLowerCase() !== 'y') {
+        console.log('❌ Deletion cancelled.');
+        return;
+      }
+      
+      await this.engine.removeCriterion(criterion.id);
+      console.log('✅ Criterion deleted successfully!');
+      if (template.id === this.engine.currentTemplate?.id) {
+        console.log('🔄 Research engine reloaded with updated criteria.');
+      }
+      
+    } catch (error) {
+      console.error(`❌ Error deleting criterion: ${error.message}`);
+    }
+  }
+
+  async reorderCriterionFlow(template) {
+    try {
+      if (template.criteria.length === 0) {
+        console.log('❌ No criteria to reorder.');
+        return;
+      }
+      
+      console.log('\n🔄 Reorder Criterion');
+      console.log('─'.repeat(20));
+      
+      template.criteria.forEach((criterion, index) => {
+        console.log(`${index + 1}. Order ${criterion.order_index || index + 1}: ${criterion.name}`);
+      });
+      
+      const indexStr = await this.promptUser('\nSelect criterion number: ');
+      const index = parseInt(indexStr) - 1;
+      
+      if (index < 0 || index >= template.criteria.length) {
+        console.log('❌ Invalid selection.');
+        return;
+      }
+      
+      const criterion = template.criteria[index];
+      const currentOrder = criterion.order_index || index + 1;
+      
+      const newOrderStr = await this.promptUser(`New order index (current: ${currentOrder}): `);
+      const newOrder = parseInt(newOrderStr);
+      
+      if (!newOrder || newOrder === currentOrder) {
+        console.log('❌ Invalid or unchanged order index.');
+        return;
+      }
+      
+      await this.engine.reorderCriteria(criterion.id, newOrder);
+      console.log('✅ Criterion reordered successfully!');
+      if (template.id === this.engine.currentTemplate?.id) {
+        console.log('🔄 Research engine reloaded with updated criteria order.');
+      }
+      
+    } catch (error) {
+      console.error(`❌ Error reordering criterion: ${error.message}`);
+    }
+  }
+
+  async viewCriterionDetailsFlow(template) {
+    try {
+      if (template.criteria.length === 0) {
+        console.log('❌ No criteria to view.');
+        return;
+      }
+      
+      console.log('\n👁️  View Criterion Details');
+      console.log('─'.repeat(25));
+      
+      template.criteria.forEach((criterion, index) => {
+        console.log(`${index + 1}. ${criterion.name}`);
+      });
+      
+      const indexStr = await this.promptUser('\nSelect criterion number: ');
+      const index = parseInt(indexStr) - 1;
+      
+      if (index < 0 || index >= template.criteria.length) {
+        console.log('❌ Invalid selection.');
+        return;
+      }
+      
+      const criterion = template.criteria[index];
+      
+      console.log(`\n📋 Criterion Details: ${criterion.name}`);
+      console.log('━'.repeat(40));
+      console.log(`🏷️  Name: ${criterion.name}`);
+      console.log(`📝 Description: ${criterion.description}`);
+      console.log(`📄 Answer Format: ${criterion.answerFormat}`);
+      console.log(`🔍 First Query Template: ${criterion.firstQueryTemplate || 'None'}`);
+      console.log(`🚫 Disqualifying: ${criterion.disqualifying ? 'Yes' : 'No'}`);
+      console.log(`📊 Order Index: ${criterion.order_index || 'Not set'}`);
+      console.log('━'.repeat(40));
+      
+    } catch (error) {
+      console.error(`❌ Error viewing criterion: ${error.message}`);
+    }
+    
+    await this.promptUser('\nPress Enter to continue...');
   }
 
   async clearResearchData() {

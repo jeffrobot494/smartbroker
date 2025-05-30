@@ -59,6 +59,7 @@ class ResearchEngine {
     }
     
     return {
+      id: this.currentTemplate.id,
       name: this.currentTemplate.name,
       systemPrompt: this.currentTemplate.systemPrompt,
       criteria: this.currentCriteria
@@ -260,6 +261,19 @@ class ResearchEngine {
       iterations++;
 
       try {
+        // Show complete Claude API payload at verbosity 4
+        if (progressCallback && verbosity >= 4) {
+          progressCallback({
+            type: 'claude_message_sent',
+            payload: {
+              messages: conversation,
+              systemPrompt: this.currentTemplate.systemPrompt,
+              model: 'claude-sonnet-4-20250514',
+              maxTokens: 4000
+            }
+          });
+        }
+
         const response = await this.claude.sendMessage(conversation, this.currentTemplate.systemPrompt);
         
         if (progressCallback) {
@@ -469,6 +483,83 @@ class ResearchEngine {
    */
   async removeTemplate(templateId) {
     return await this.template.deleteTemplate(templateId);
+  }
+
+  /**
+   * Get system prompt for a template
+   */
+  async getSystemPrompt(templateId) {
+    return await this.template.getSystemPrompt(templateId);
+  }
+
+  /**
+   * Update system prompt for a template and reload engine if it's the current template
+   */
+  async updateSystemPrompt(templateId, newPrompt) {
+    const result = await this.template.updateSystemPrompt(templateId, newPrompt);
+    
+    // If we're updating the current template, reload the engine
+    if (this.currentTemplate && this.currentTemplate.id === templateId) {
+      await this.initialize();
+    }
+    
+    return result;
+  }
+
+  /**
+   * Add criterion to a template and reload engine if it's the current template
+   */
+  async addCriterion(templateId, criterionData) {
+    const result = await this.template.createCriterion(templateId, criterionData);
+    
+    // If we're adding to the current template, reload the engine
+    if (this.currentTemplate && this.currentTemplate.id === templateId) {
+      await this.initialize();
+    }
+    
+    return result;
+  }
+
+  /**
+   * Modify criterion and reload engine if it affects the current template
+   */
+  async modifyCriterion(criterionId, updates) {
+    const result = await this.template.updateCriterion(criterionId, updates);
+    
+    // Check if this criterion belongs to current template
+    if (this.currentTemplate && this.currentCriteria.some(c => c.id === criterionId)) {
+      await this.initialize();
+    }
+    
+    return result;
+  }
+
+  /**
+   * Remove criterion and reload engine if it affects the current template
+   */
+  async removeCriterion(criterionId) {
+    const result = await this.template.deleteCriterion(criterionId);
+    
+    // Check if this criterion belongs to current template
+    if (this.currentTemplate && this.currentCriteria.some(c => c.id === criterionId)) {
+      await this.initialize();
+    }
+    
+    return result;
+  }
+
+  /**
+   * Reorder criterion and reload engine if it affects the current template
+   */
+  async reorderCriteria(criterionId, newOrderIndex) {
+    const result = await this.template.reorderCriterion(criterionId, newOrderIndex);
+    
+    // Check if this criterion belongs to current template
+    if (this.currentTemplate && this.currentCriteria.some(c => c.id === criterionId)) {
+      await this.initialize();
+    }
+    
+    return result;
   }
 
   /**

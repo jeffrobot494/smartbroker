@@ -304,6 +304,114 @@ app.delete('/api/templates/:id', async (req, res) => {
   }
 });
 
+// System Prompt Endpoints
+
+// Get template system prompt
+app.get('/api/template/:id/prompt', async (req, res) => {
+  try {
+    const templateId = parseInt(req.params.id);
+    const systemPrompt = await researchDAO.getTemplatePrompt(templateId);
+    res.json({ systemPrompt });
+  } catch (error) {
+    console.error('Error getting system prompt:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Update template system prompt
+app.put('/api/template/:id/prompt', async (req, res) => {
+  try {
+    const templateId = parseInt(req.params.id);
+    const { systemPrompt } = req.body;
+    
+    if (!systemPrompt || systemPrompt.trim() === '') {
+      return res.status(400).json({ success: false, error: 'System prompt is required' });
+    }
+
+    const result = await researchDAO.updateTemplatePrompt(templateId, systemPrompt);
+    res.json(result);
+  } catch (error) {
+    console.error('Error updating system prompt:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Criteria Management Endpoints
+
+// Create new criterion
+app.post('/api/templates/:id/criteria', async (req, res) => {
+  try {
+    const templateId = parseInt(req.params.id);
+    const criterionData = req.body;
+    
+    if (!criterionData.name || !criterionData.description || !criterionData.answer_format) {
+      return res.status(400).json({ success: false, error: 'Name, description, and answer_format are required' });
+    }
+
+    const criterion = await researchDAO.createCriterion(templateId, criterionData);
+    res.json({ success: true, criterion });
+  } catch (error) {
+    console.error('Error creating criterion:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Update criterion
+app.put('/api/criteria/:id', async (req, res) => {
+  try {
+    const criterionId = parseInt(req.params.id);
+    const updates = req.body;
+
+    const result = await researchDAO.updateCriterion(criterionId, updates);
+    res.json(result);
+  } catch (error) {
+    console.error('Error updating criterion:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Delete criterion
+app.delete('/api/criteria/:id', async (req, res) => {
+  try {
+    const criterionId = parseInt(req.params.id);
+    const result = await researchDAO.deleteCriterion(criterionId);
+    res.json(result);
+  } catch (error) {
+    console.error('Error deleting criterion:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Reorder criterion
+app.put('/api/criteria/:id/reorder', async (req, res) => {
+  try {
+    const criterionId = parseInt(req.params.id);
+    const { newOrderIndex } = req.body;
+    
+    if (newOrderIndex === undefined || newOrderIndex === null) {
+      return res.status(400).json({ success: false, error: 'newOrderIndex is required' });
+    }
+
+    const result = await researchDAO.reorderCriterion(criterionId, parseInt(newOrderIndex));
+    res.json(result);
+  } catch (error) {
+    console.error('Error reordering criterion:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Get next available order index
+app.get('/api/templates/:id/next-order', async (req, res) => {
+  try {
+    const templateId = parseInt(req.params.id);
+    const nextOrder = await researchDAO.getNextAvailableOrderIndex(templateId);
+    res.json({ nextOrderIndex: nextOrder });
+  } catch (error) {
+    console.error('Error getting next order index:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 

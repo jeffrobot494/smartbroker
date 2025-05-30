@@ -358,6 +358,220 @@ class ResearchDAO {
     
     return { success: true, remainingCount: templateCount.count - 1 };
   }
+
+  /**
+   * Get template system prompt
+   * @param {number} templateId - Template ID
+   * @returns {Promise<string>} System prompt
+   */
+  async getTemplatePrompt(templateId) {
+    const template = await this.db.get('SELECT system_prompt FROM templates WHERE id = ?', [templateId]);
+    if (!template) {
+      throw new Error('Template not found');
+    }
+    return template.system_prompt;
+  }
+
+  /**
+   * Update template system prompt
+   * @param {number} templateId - Template ID
+   * @param {string} newPrompt - New system prompt
+   * @returns {Promise<Object>} Success result
+   */
+  async updateTemplatePrompt(templateId, newPrompt) {
+    // Validation
+    if (!newPrompt || newPrompt.trim().length === 0) {
+      throw new Error('System prompt cannot be empty');
+    }
+
+    const template = await this.db.get('SELECT id FROM templates WHERE id = ?', [templateId]);
+    if (!template) {
+      throw new Error('Template not found');
+    }
+
+    await this.db.run('UPDATE templates SET system_prompt = ? WHERE id = ?', [newPrompt.trim(), templateId]);
+    return { success: true };
+  }
+
+  /**
+   * Create new criterion
+   * @param {number} templateId - Template ID
+   * @param {Object} criterionData - Criterion data
+   * @returns {Promise<Object>} Created criterion
+   */
+  async createCriterion(templateId, criterionData) {
+    const { name, description, first_query_template, answer_format, disqualifying, order_index } = criterionData;
+
+    // Validation
+    if (!name || !description || !answer_format) {
+      throw new Error('Name, description, and answer_format are required');
+    }
+
+    const template = await this.db.get('SELECT id FROM templates WHERE id = ?', [templateId]);
+    if (!template) {
+      throw new Error('Template not found');
+    }
+
+    // Check for duplicate order_index
+    if (order_index) {
+      const existing = await this.db.get('SELECT id FROM criteria WHERE template_id = ? AND order_index = ?', [templateId, order_index]);
+      if (existing) {
+        throw new Error(`Order index ${order_index} already exists. Use a different order index.`);
+      }
+    }
+
+    const result = await this.db.run(`
+      INSERT INTO criteria (template_id, name, description, first_query_template, answer_format, disqualifying, order_index)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `, [templateId, name.trim(), description.trim(), first_query_template || null, answer_format.trim(), disqualifying ? 1 : 0, order_index]);
+
+    // Auto-normalize order indexes after creation
+    await this.normalizeOrderIndexes(templateId);
+
+    return await this.db.get('SELECT * FROM criteria WHERE id = ?', [result.id]);
+  }
+
+  /**
+   * Update criterion
+   * @param {number} criterionId - Criterion ID
+   * @param {Object} updates - Fields to update
+   * @returns {Promise<Object>} Success result
+   */
+  async updateCriterion(criterionId, updates) {
+    const criterion = await this.db.get('SELECT * FROM criteria WHERE id = ?', [criterionId]);
+    if (!criterion) {
+      throw new Error('Criterion not found');
+    }
+
+    const { name, description, first_query_template, answer_format, disqualifying, order_index } = updates;
+
+    // Validation
+    if (name !== undefined && !name.trim()) {
+      throw new Error('Name cannot be empty');
+    }
+    if (description !== undefined && !description.trim()) {
+      throw new Error('Description cannot be empty');
+    }
+    if (answer_format !== undefined && !answer_format.trim()) {
+      throw new Error('Answer format cannot be empty');
+    }
+
+    // Check for duplicate order_index if changing
+    if (order_index !== undefined && order_index !== criterion.order_index) {
+      const existing = await this.db.get('SELECT id FROM criteria WHERE template_id = ? AND order_index = ?', [criterion.template_id, order_index]);
+      if (existing) {
+        throw new Error(`Order index ${order_index} already exists. Use a different order index.`);
+      }
+    }
+
+    const fields = [];
+    const values = [];
+
+    if (name !== undefined) { fields.push('name = ?'); values.push(name.trim()); }
+    if (description !== undefined) { fields.push('description = ?'); values.push(description.trim()); }
+    if (first_query_template !== undefined) { fields.push('first_query_template = ?'); values.push(first_query_template || null); }
+    if (answer_format !== undefined) { fields.push('answer_format = ?'); values.push(answer_format.trim()); }
+    if (disqualifying !== undefined) { fields.push('disqualifying = ?'); values.push(disqualifying ? 1 : 0); }
+    if (order_index !== undefined) { fields.push('order_index = ?'); values.push(order_index); }
+
+    if (fields.length === 0) {
+      throw new Error('No fields to update');
+    }
+
+    values.push(criterionId);
+    await this.db.run(`UPDATE criteria SET ${fields.join(', ')} WHERE id = ?`, values);
+    
+    // Auto-normalize order indexes only if order_index was changed
+    if (order_index !== undefined) {
+      await this.normalizeOrderIndexes(criterion.template_id);
+    }
+    
+    return { success: true };
+  }
+
+  /**
+   * Delete criterion
+   * @param {number} criterionId - Criterion ID
+   * @returns {Promise<Object>} Success result
+   */
+  async deleteCriterion(criterionId) {
+    const criterion = await this.db.get('SELECT * FROM criteria WHERE id = ?', [criterionId]);
+    if (!criterion) {
+      throw new Error('Criterion not found');
+    }
+
+    // Delete (CASCADE will handle research results)
+    await this.db.run('DELETE FROM criteria WHERE id = ?', [criterionId]);
+    
+    // Auto-normalize order indexes after deletion
+    await this.normalizeOrderIndexes(criterion.template_id);
+    
+    return { success: true, templateId: criterion.template_id };
+  }
+
+  /**
+   * Reorder criterion
+   * @param {number} criterionId - Criterion ID
+   * @param {number} newOrderIndex - New order index
+   * @returns {Promise<Object>} Success result
+   */
+  async reorderCriterion(criterionId, newOrderIndex) {
+    const criterion = await this.db.get('SELECT * FROM criteria WHERE id = ?', [criterionId]);
+    if (!criterion) {
+      throw new Error('Criterion not found');
+    }
+
+    if (newOrderIndex === criterion.order_index) {
+      return { success: true, message: 'Order index unchanged' };
+    }
+
+    // Check for duplicate order_index
+    const existing = await this.db.get('SELECT id FROM criteria WHERE template_id = ? AND order_index = ?', [criterion.template_id, newOrderIndex]);
+    if (existing) {
+      throw new Error(`Order index ${newOrderIndex} already exists. Use a different order index.`);
+    }
+
+    await this.db.run('UPDATE criteria SET order_index = ? WHERE id = ?', [newOrderIndex, criterionId]);
+    
+    // Auto-normalize order indexes after reordering
+    await this.normalizeOrderIndexes(criterion.template_id);
+    
+    return { success: true, templateId: criterion.template_id };
+  }
+
+  /**
+   * Get next available order index for template
+   * @param {number} templateId - Template ID
+   * @returns {Promise<number>} Next available order index
+   */
+  async getNextAvailableOrderIndex(templateId) {
+    const result = await this.db.get('SELECT MAX(order_index) as max_order FROM criteria WHERE template_id = ?', [templateId]);
+    return (result.max_order || 0) + 1;
+  }
+
+  /**
+   * Normalize order indexes to sequential numbers (1, 2, 3, 4...)
+   * @param {number} templateId - Template ID
+   * @returns {Promise<Object>} Success result
+   */
+  async normalizeOrderIndexes(templateId) {
+    // Get all criteria for template, ordered by current order_index
+    const criteria = await this.db.all(`
+      SELECT id FROM criteria 
+      WHERE template_id = ? 
+      ORDER BY order_index ASC
+    `, [templateId]);
+    
+    // Renumber sequentially (1, 2, 3, 4...)
+    for (let i = 0; i < criteria.length; i++) {
+      await this.db.run(
+        'UPDATE criteria SET order_index = ? WHERE id = ?', 
+        [i + 1, criteria[i].id]
+      );
+    }
+    
+    return { success: true, normalizedCount: criteria.length };
+  }
 }
 
 module.exports = ResearchDAO;
