@@ -1,0 +1,124 @@
+{
+    "status": "success",
+    "data": {
+        "runningContainers": 0,
+        "queuedContainers": 0,
+        "messages": [],
+        "progress": {
+            "progress": null,
+            "label": null,
+            "runtime": null
+        },
+        "agentStatus": "not running",
+        "containerId": "7666128429580813",
+        "containerStatus": "not running",
+        "output": "(node:1) NOTE: The AWS SDK for JavaScript (v2) will enter maintenance mode\r\non September 8, 2024 and reach end-of-support on September 8, 2025.\r\n\r\nPlease migrate your code to use AWS SDK for JavaScript (v3).\r\nFor more information, check blog post at https://a.co/cUPnyil\r\n(Use `node --trace-warnings ...` to show where the warning was created)\r\n* Container 7666128429580813 started in br-scw-nl-nh-1-high (Fri May 30 2025 03:56:01 GMT+0000 (Coordinated Universal Time))\r\n* Got dependency LinkedIn Profile Visitor.js\r\n* Spawning Node v16.20.2\r\n* using version 1.677.3\r\nℹ️ Your \"File management\" setting is currently on \"Delete previous files\", this Phantom may not be able to continue its job where it left off next launch. Consider changing it to \"Combine files\".\r\nℹ️ Your \"File management\" setting is currently on \"Delete previous files\", this Phantom may not be able to continue its job where it left off next launch. Consider changing it to \"Combine files\".\r\n🔄 Connecting to LinkedIn...\r\n✅ Connected successfully as Bo Banducci\r\nℹ️ Profile to scrape: [\r\n    \"https://www.linkedin.com/in/bruce-lebel-a9bb4/\"\r\n]\r\n🔄 Opening https://www.linkedin.com/in/bruce-lebel-a9bb4/\r\n✅ Profile loaded.\r\n✅ Profile of Bruce LeBel successfully scraped.\r\n🔄 Saving data...\r\n✅ CSV saved at https://phantombuster.s3.amazonaws.com/rgdKQFL7wGI/Z0ZVZqH9s1W2VZ2XqHKe6w/result.csv\r\n✅ JSON saved at https://phantombuster.s3.amazonaws.com/rgdKQFL7wGI/Z0ZVZqH9s1W2VZ2XqHKe6w/result.json\r\n✅ Data successfully saved!\r\n* Process finished successfully (exit code: 0) (Fri May 30 2025 03:56:36 GMT+0000 (Coordinated Universal Time))\r\n",
+        "outputPos": 1605,
+        "resultObject": [
+            {
+                "general": {
+                    "imgUrl": "https://media.licdn.com/dms/image/v2/C4E03AQFw5wlKaDO7eA/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1516185579901?e=1753920000&v=beta&t=OcSQHk1lSiXXuDDZs7C8K4mdSDREwM4yNhalE5JYYdY",
+                    "profileUrl": "https://www.linkedin.com/in/bruce-lebel-a9bb4/",
+                    "connectionDegree": "1st",
+                    "firstName": "Bruce",
+                    "lastName": "LeBel",
+                    "fullName": "Bruce LeBel",
+                    "location": "Arcata, California, United States",
+                    "headline": "CEO @ProStarSoftware: ERP Integration, Secure Payments, Digital Transformation",
+                    "countryCode": "US",
+                    "userId": "236567",
+                    "backgroundUrl": "https://media.licdn.com/dms/image/v2/C4E16AQGDmcJvEH7smw/profile-displaybackgroundimage-shrink_350_1400/profile-displaybackgroundimage-shrink_350_1400/0/1516185580604?e=1753920000&v=beta&t=dQBIT2lonWvg-VhLBfuN_xP93pc63kFcYPCThERAuyU",
+                    "vmid": "ACoAAAADnBcB4khgOMaaA0jV3gP_jVa2BDQomTw",
+                    "linkedinSalesNavigatorUrl": "https://www.linkedin.com/sales/people/ACoAAAADnBcB4khgOMaaA0jV3gP_jVa2BDQomTw,name",
+                    "mutualConnectionsUrl": "https://www.linkedin.com/search/results/people/?facetNetwork=%5B%22F%22%5D&facetConnectionOf=%5B%22ACoAAAADnBcB4khgOMaaA0jV3gP_jVa2BDQomTw%22%5D&origin=MEMBER_PROFILE_CANNED_SEARCH&RESULT_TYPE=PEOPLE",
+                    "connectionsUrl": "https://www.linkedin.com/search/results/people/?facetConnectionOf=%5B%22ACoAAAADnBcB4khgOMaaA0jV3gP_jVa2BDQomTw%22%5D&facetNetwork=%5B%22F%22%2C%22S%22%5D&origin=MEMBER_PROFILE_CANNED_SEARCH",
+                    "isOpenToWork": false,
+                    "isHiring": false,
+                    "description": "Delivering enterprise software solutions and fit-to-business enhancements to provide a better fit between business's needs and the business's systems. Forward-facing technology from ProStar Software complements, adapts and integrates enterprise business systems and their users, on any device. Business policies automatically enforced; complex business activities automatically coordinated. Systems follow the business's rules, not the other way around. Your system, your way.\n\n35+ years of leading-edge management, executive and consulting experience delivering return on investment and enabling growth. Improved profitability for vertical industries including medical, electronics, capital equipment, automotive and consumer goods.\n\nProStar Software provides customizations and integrations, including mobile, with no changes to your current systems' source code or db schema. Products include the TailorPro non-invasive customization development platform, Mobile Enterprise Integration and Credit Card Integration.\n\nSpecialties: \n- Producing rapid ROI (weeks-months) by enabling bona fide business requirements into the business system.\n- Providing value-focused ERP, BPM, Integration and Mobile solutions to complement any version of QAD Enterprise Applications.\n- Ethical business practices and high attention to customer satisfaction.",
+                    "company": "ProStar Software, Inc.",
+                    "school": "Antioch College",
+                    "isOpenLink": true
+                },
+                "jobs": [
+                    {
+                        "companyUrl": "https://www.linkedin.com/company/2309559/",
+                        "companyName": "ProStar Software, Inc.",
+                        "logoUrl": "https://media.licdn.com/dms/image/v2/C560BAQF0MTYW6HZndg/company-logo_400_400/company-logo_400_400/0/1643849652525/prostar_software_inc__logo?e=1753920000&v=beta&t=tn5ZPJDaHKzKWDgjbKppK6jseaND2Jb0HCPpof1BxYY",
+                        "jobTitle": "President & CEO",
+                        "dateRange": "Jan 2002 - Present",
+                        "startedSince": "2002-01-01",
+                        "isCurrent": true,
+                        "duration": "23 yrs 5 mos",
+                        "description": "Organizational and technical oversight, market development, product vision. \n\nProStar's products: \nCredit Card Integration + Enhanced Compliance (CCI+EC) provides PCI DSS compliant credit card processing integrated with OpenEdge (Progress) applications like QAD. \n\nThe TailorPro logic and rules engine, event processor and SDK provides the capability for companies to achieve the fit they need between their unique business requirements and their business system with no change to the base application's source code or the production database schema.",
+                        "location": "Arcata, CA"
+                    },
+                    {
+                        "companyUrl": "https://www.linkedin.com/company/29182/",
+                        "companyName": "Yakima Products",
+                        "logoUrl": "https://media.licdn.com/dms/image/v2/C4D0BAQHbZeLjcRLWcA/company-logo_400_400/company-logo_400_400/0/1630567354990/yakima_products_logo?e=1753920000&v=beta&t=hDcQXOeYwLwHuge64rqRxXxTtHOph-rumT7MrKWAvcs",
+                        "jobTitle": "Director of Operations & IT",
+                        "dateRange": "Dec 1990 - Jun 1999",
+                        "startedSince": "1990-12-01",
+                        "isCurrent": false,
+                        "duration": "8 yrs 7 mos",
+                        "description": "Responsible for IT, Operations and Distribution",
+                        "location": "Arcata, CA"
+                    }
+                ],
+                "schools": [
+                    {
+                        "schoolUrl": "https://www.linkedin.com/company/33290/",
+                        "schoolName": "Antioch College",
+                        "logoUrl": "https://media.licdn.com/dms/image/v2/C4E0BAQFIzD3mwXe3Ew/company-logo_400_400/company-logo_400_400/0/1630578247573/antioch_college_logo?e=1753920000&v=beta&t=n997v8XSbS8baNFkC9gQ754rbdP4f4cfO7j8keGCKaU",
+                        "degree": "BA, dual major: Education and Art",
+                        "dateRange": "1972 - 1976"
+                    },
+                    {
+                        "schoolUrl": "",
+                        "degree": "MA, Design Science",
+                        "schoolName": "Campus-Free College",
+                        "dateRange": "1977 - 1978"
+                    }
+                ],
+                "details": {
+                    "linkedinProfile": "https://www.linkedin.com/in/bruce-lebel-a9bb4/",
+                    "websites": "prostarsoftware.com",
+                    "connectedOn": "Apr 3, 2013",
+                    "phone": "707-822-3432",
+                    "mail": "bruce.lebel@prostarsoftware.com"
+                },
+                "skills": [
+                    { "name": "Integration", "endorsements": 66 },
+                    { "name": "Business Intelligence", "endorsements": 73 },
+                    { "name": "Business Process", "endorsements": 70 },
+                    { "name": "ERP", "endorsements": 49 },
+                    { "name": "Database Design", "endorsements": 5 },
+                    { "name": "Business Analysis", "endorsements": 16 },
+                    { "name": "Software Project Management", "endorsements": 14 },
+                    { "name": "Enterprise Software", "endorsements": 52 },
+                    { "name": "Software Development", "endorsements": 4 },
+                    { "name": "Databases", "endorsements": 27 },
+                    { "name": "SaaS", "endorsements": 13 },
+                    { "name": "IT Management", "endorsements": 5 },
+                    { "name": "Requirements Analysis", "endorsements": 4 },
+                    { "name": "Product Management", "endorsements": 7 },
+                    { "name": "Cloud Computing", "endorsements": 13 },
+                    { "name": "IT Strategy", "endorsements": 7 },
+                    { "name": "Business Process Improvement", "endorsements": 13 },
+                    { "name": "Solution Selling", "endorsements": 1 },
+                    { "name": "Professional Services", "endorsements": 11 },
+                    { "name": "Start-ups", "endorsements": 4 },
+                    { "name": "E-commerce", "endorsements": 4 },
+                    { "name": "CRM", "endorsements": 3 },
+                    { "name": "Cross-functional Team Leadership", "endorsements": 7 },
+                    { "name": "SharePoint", "endorsements": 3 },
+                    { "name": "Management", "endorsements": 28 },
+                    { "name": "Strategy", "endorsements": 6 }
+                ],
+                "allSkills": "Integration, Business Intelligence, Business Process, ERP, Database Design, Business Analysis, Software Project Management, Enterprise Software, Software Development, Databases, SaaS, IT Management, Requirements Analysis, Product Management, Cloud Computing, IT Strategy, Business Process Improvement, Solution Selling, Professional Services, Start-ups, E-commerce, CRM, Cross-functional Team Leadership, SharePoint, Management, Strategy",
+                "query": "https://www.linkedin.com/in/bruce-lebel-a9bb4/",
+                "timestamp": "2025-05-30T03:56:31.239Z"
+            }
+        ]
+    }
+}

@@ -1,0 +1,48 @@
+{
+    "status": "success",
+    "data": {
+        "runningContainers": 0,
+        "queuedContainers": 0,
+        "messages": [],
+        "progress": {
+            "progress": null,
+            "label": null,
+            "runtime": null
+        },
+        "agentStatus": "not running",
+        "containerId": "4670119805789774",
+        "containerStatus": "not running",
+        "output": "(node:1) NOTE: The AWS SDK for JavaScript (v2) will enter maintenance mode\r\non September 8, 2024 and reach end-of-support on September 8, 2025.\r\n\r\nPlease migrate your code to use AWS SDK for JavaScript (v3
+).\r\nFor more information, check blog post at https://a.co/cUPnyil\r\n(Use `node --trace-warnings ...` to show where the warning was created)\r\n* Container 4670119805789774 started in br-scw-fr-idf-3-gregor (Fri May 30 2025 03:5
+0:06 GMT+0000 (Coordinated Universal Time))\r\n* Got dependency LinkedIn Profile Visitor.js\r\n* Spawning Node v16.20.2\r\n* using version 1.677.3\r\nℹ️ Your \"File management\" setting is currently on \"Delete previous files\", t
+his Phantom may not be able to continue its job where it left off next launch. Consider changing it to \"Combine files\".\r\nℹ️ Your \"File management\" setting is currently on \"Delete previous files\", this Phantom may not be ab
+le to continue its job where it left off next launch. Consider changing it to \"Combine files\".\r\n� Connecting to LinkedIn...\r\n✅ Connected successfully as Bo Banducci\r\nℹ️ Profile to scrape: [\r\n    \"https://www.linkedin.
+com/in/bruce-lev-14a00812/\"\r\n]\r\n� Opening https://www.linkedin.com/in/bruce-lev-14a00812/\r\n✅ Profile loaded.\r\n✅ Profile of Bruce Lev successfully scraped.\r\n� Saving data...\r\n✅ CSV saved at https://phantombuster.s
+3.amazonaws.com/rgdKQFL7wGI/Z0ZVZqH9s1W2VZ2XqHKe6w/result.csv\r\n✅ JSON saved at https://phantombuster.s3.amazonaws.com/rgdKQFL7wGI/Z0ZVZqH9s1W2VZ2XqHKe6w/result.json\r\n✅ Data successfully saved!\r\n* Process finished successfu
+lly (exit code: 0) (Fri May 30 2025 03:51:01 GMT+0000 (Coordinated Universal Time))\r\n",
+        "outputPos": 1608,
+        "resultObject": "[{\"general\":{\"imgUrl\":\"https://media.licdn.com/dms/image/v2/C5603AQGX2GpHYaoq4w/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1517777184041?e=1753920000&v=beta&t=DSIPH_ixOq
+ZGLMzVcuVs-RtpLpTXO_P9xvWW4R1TXF8\",\"profileUrl\":\"https://www.linkedin.com/in/bruce-lev-14a00812/\",\"connectionDegree\":\"3rd\",\"subscribers\":1985,\"firstName\":\"Bruce\",\"lastName\":\"Lev\",\"fullName\":\"Bruce Lev\",\"loc
+ation\":\"Philadelphia, Pennsylvania, United States\",\"headline\":\"Partner, CEO LevLane Advertising\",\"countryCode\":\"us\",\"userId\":\"41817802\",\"vmid\":\"ACoAAAJ-FsoBftrwhJfpiPOrwm1DG8i7bvLXRpY\",\"linkedinSalesNavigatorUr
+l\":\"https://www.linkedin.com/sales/people/ACoAAAJ-FsoBftrwhJfpiPOrwm1DG8i7bvLXRpY,name\",\"mutualConnectionsUrl\":\"https://www.linkedin.com/search/results/people/?facetNetwork=%5B%22F%22%5D&facetConnectionOf=%5B%22ACoAAAJ-FsoBf
+trwhJfpiPOrwm1DG8i7bvLXRpY%22%5D&origin=MEMBER_PROFILE_CANNED_SEARCH&RESULT_TYPE=PEOPLE\",\"connectionsUrl\":\"https://www.linkedin.com/search/results/people/?facetConnectionOf=%5B%22ACoAAAJ-FsoBftrwhJfpiPOrwm1DG8i7bvLXRpY%22%5D&f
+acetNetwork=%5B%22F%22%2C%22S%22%5D&origin=MEMBER_PROFILE_CANNED_SEARCH\",\"isOpenToWork\":false,\"isHiring\":false,\"company\":\"LevLane\",\"school\":\"Temple University\",\"connectionsCount\":1951,\"isOpenLink\":false},\"jobs\":
+[{\"companyUrl\":\"https://www.linkedin.com/company/47096/\",\"companyName\":\"LevLane\",\"logoUrl\":\"https://media.licdn.com/dms/image/v2/C4D0BAQGxFmm3q02Gbg/company-logo_400_400/company-logo_400_400/0/1631304779933?e=1753920000
+&v=beta&t=Z4s8Db0Lf1U7pEPz_r8yPblceddFLUIdvz-SzlKACfU\",\"jobTitle\":\"Chief Executive Officer\",\"dateRange\":\"May 2021 - Present\",\"startedSince\":\"2021-05-01\",\"isCurrent\":true,\"duration\":\"4 yrs 1 mo\",\"location\":\"Ph
+iladelphia, Pennsylvania, United States\"},{\"companyUrl\":\"https://www.linkedin.com/company/47096/\",\"companyName\":\"LevLane Advertising\",\"logoUrl\":\"https://media.licdn.com/dms/image/v2/C4D0BAQGxFmm3q02Gbg/company-logo_400
+_400/company-logo_400_400/0/1631304779933?e=1753920000&v=beta&t=Z4s8Db0Lf1U7pEPz_r8yPblceddFLUIdvz-SzlKACfU\",\"jobTitle\":\"Partner, Chief Creative Officer\",\"dateRange\":\"May 2023\",\"startedSince\":\"2023-05-01\",\"isCurrent\
+":true},{\"companyUrl\":\"https://www.linkedin.com/company/4983/\",\"companyName\":\"Temple University\",\"logoUrl\":\"https://media.licdn.com/dms/image/v2/D4E0BAQFCgJvmO1eSjg/company-logo_400_400/company-logo_400_400/0/1691416681
+835/templeuniversity_logo?e=1753920000&v=beta&t=df1ThksaE8xpE_feFPoiCAXpZv0rf6fdTF8SEFMqyeQ\",\"jobTitle\":\"Adjunct Professor\",\"dateRange\":\"2006 - May 2023\",\"startedSince\":\"2006-01-01\",\"isCurrent\":false,\"duration\":\"
+17 yrs 5 mos\"}],\"schools\":[{\"schoolUrl\":\"https://www.linkedin.com/company/4983/\",\"schoolName\":\"Temple University\",\"logoUrl\":\"https://media.licdn.com/dms/image/v2/D4E0BAQFCgJvmO1eSjg/company-logo_400_400/company-logo_
+400_400/0/1691416681835/templeuniversity_logo?e=1753920000&v=beta&t=df1ThksaE8xpE_feFPoiCAXpZv0rf6fdTF8SEFMqyeQ\",\"degree\":\"bs, communications\"}],\"details\":{\"linkedinProfile\":\"https://www.linkedin.com/in/bruce-lev-14a0081
+2/\",\"websites\":\"levlane.com\"},\"skills\":[{\"name\":\"Advertising\",\"endorsements\":79},{\"name\":\"Marketing Communications\",\"endorsements\":22},{\"name\":\"Digital Marketing\",\"endorsements\":22},{\"name\":\"Social Medi
+a Marketing\",\"endorsements\":68},{\"name\":\"Creative Direction\",\"endorsements\":51},{\"name\":\"Social Media\",\"endorsements\":45},{\"name\":\"Copywriting\",\"endorsements\":49},{\"name\":\"Facebook\",\"endorsements\":10},{\
+"name\":\"Adobe Creative Suite\",\"endorsements\":2},{\"name\":\"Blogging\",\"endorsements\":2},{\"name\":\"Public Relations\",\"endorsements\":5},{\"name\":\"Marketing Strategy\",\"endorsements\":37},{\"name\":\"Integrated Market
+ing\",\"endorsements\":72},{\"name\":\"Email Marketing\",\"endorsements\":12},{\"name\":\"Online Advertising\",\"endorsements\":11},{\"name\":\"Corporate Communications\",\"endorsements\":2},{\"name\":\"Brand Development\",\"endor
+sements\":38},{\"name\":\"Digital Media\",\"endorsements\":10},{\"name\":\"Media Relations\",\"endorsements\":3},{\"name\":\"Social Networking\",\"endorsements\":3},{\"name\":\"Event Planning\",\"endorsements\":2},{\"name\":\"Dire
+ct Marketing\",\"endorsements\":3},{\"name\":\"InDesign\",\"endorsements\":1},{\"name\":\"Google Analytics\",\"endorsements\":0},{\"name\":\"WordPress\",\"endorsements\":0},{\"name\":\"Creative Strategy\",\"endorsements\":26}],\"a
+llSkills\":\"Advertising, Marketing Communications, Digital Marketing, Social Media Marketing, Creative Direction, Social Media, Copywriting, Facebook, Adobe Creative Suite, Blogging, Public Relations, Marketing Strategy, Integrat
+ed Marketing, Email Marketing, Online Advertising, Corporate Communications, Brand Development, Digital Media, Media Relations, Social Networking, Event Planning, Direct Marketing, InDesign, Google Analytics, WordPress, Creative S
+trategy\",\"query\":\"https://www.linkedin.com/in/bruce-lev-14a00812/\",\"timestamp\":\"2025-05-30T03:50:56.201Z\"}]"
+    }
+}
