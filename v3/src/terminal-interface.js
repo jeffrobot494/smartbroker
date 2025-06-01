@@ -149,6 +149,9 @@ class TerminalInterface {
         this.createProgressCallback()
       );
 
+      // Show cost summary after research completes
+      await this.showCostSummary();
+
       console.log('\n✅ Research complete!');
     } catch (error) {
       console.error('❌ Research failed:', error.message);
@@ -1063,6 +1066,30 @@ class TerminalInterface {
         resolve(answer);
       });
     });
+  }
+
+  /**
+   * Show cost summary after research completion
+   */
+  async showCostSummary() {
+    try {
+      const costs = await this.engine.getSessionCostSummary();
+      
+      console.log('\n💰 Research Cost Summary');
+      console.log('='.repeat(40));
+      console.log(`💵 Total cost: ${costs.total_cost}`);
+      console.log(`📈 Average per company: ${costs.cost_per_company}`);
+      console.log(`📊 Companies researched: ${costs.investigations}`);
+      
+      if (this.verbosity >= 2) {
+        console.log('\n📋 Cost breakdown:');
+        console.log(`   Claude: ${costs.breakdown.claude}`);
+        console.log(`   Perplexity: ${costs.breakdown.perplexity}`);
+        console.log(`   PhantomBuster: ${costs.breakdown.phantombuster}`);
+      }
+    } catch (error) {
+      console.error('❌ Failed to get cost summary:', error.message);
+    }
   }
 
   /**

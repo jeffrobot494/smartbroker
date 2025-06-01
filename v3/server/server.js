@@ -269,7 +269,7 @@ app.get('/api/template/active', async (req, res) => {
 // Save research result
 app.post('/api/research', async (req, res) => {
   try {
-    const { companyName, criterionId, result, companyData } = req.body;
+    const { companyName, criterionId, result, companyData, costs } = req.body;
 
     if (!companyName || !criterionId || !result) {
       return res.status(400).json({ 
@@ -281,7 +281,8 @@ app.post('/api/research', async (req, res) => {
       companyName, 
       criterionId, 
       result, 
-      companyData || {}
+      companyData || {},
+      costs || {}
     );
 
     res.json({ 
@@ -389,6 +390,22 @@ app.delete('/api/research/clear', async (req, res) => {
     console.error('Error clearing research data:', error);
     res.status(500).json({
       error: 'Failed to clear research data',
+      details: error.message
+    });
+  }
+});
+
+// Get cost summary
+app.get('/api/research/costs', async (req, res) => {
+  try {
+    const { templateId } = req.query;
+    const summary = await researchDAO.getCostSummary(templateId ? parseInt(templateId) : null);
+    
+    res.json(summary);
+  } catch (error) {
+    console.error('Error getting cost summary:', error);
+    res.status(500).json({
+      error: 'Failed to get cost summary',
       details: error.message
     });
   }

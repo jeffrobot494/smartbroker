@@ -1,5 +1,6 @@
 const { ClaudeClient, PerplexityClient, ResearchClient, TemplateClient, PhantomBusterClient } = require('./api-clients');
 const CompanyLoader = require('./company-loader');
+const CostCalculator = require('./cost-calculator');
 
 const CONFIDENCE_LEVELS = {
   1: { label: 'guess', description: '0-60% chance this is true' },
@@ -15,9 +16,11 @@ class ResearchEngine {
     this.research = new ResearchClient();
     this.template = new TemplateClient();
     this.companyLoader = new CompanyLoader();
+    this.costCalculator = new CostCalculator();
     this.maxIterations = 5;
     this.currentTemplate = null;
     this.currentCriteria = [];
+    this.investigationCosts = {}; // Track costs for current investigation
   }
 
   /**
@@ -294,11 +297,19 @@ class ResearchEngine {
         const response = await this.claude.sendMessage(conversation, this.currentTemplate.systemPrompt);
         console.log(`[DEBUG] Claude API call successful - Response length: ${response.content.length} chars`);
         
+        // Calculate and track Claude costs
+        const claudeCost = this.costCalculator.calculateClaudeCost(
+          response.usage.input_tokens,
+          response.usage.output_tokens
+        );
+        this.investigationCosts.claude = claudeCost;
+        
         if (progressCallback) {
           progressCallback({
             type: 'claude_response',
             content: verbosity >= 3 ? response.content : null,
-            tokens: response.usage.output_tokens
+            tokens: response.usage.output_tokens,
+            cost: claudeCost
           });
         }
         
@@ -385,7 +396,11 @@ class ResearchEngine {
               other: company.other
             };
             
-            await this.research.saveResult(company.name, criterion.id, result, companyData);
+            // Include cost data when saving result
+            const totalCost = this.costCalculator.aggregateCosts(this.investigationCosts);
+            const costsData = { ...this.investigationCosts, total: totalCost.grand_total };
+            
+            await this.research.saveResult(company.name, criterion.id, result, companyData, costsData);
           } catch (error) {
             console.error(`Error saving research result for ${company.name}: ${error.message}`);
           }
@@ -598,6 +613,9 @@ class ResearchEngine {
       switch (toolName.toLowerCase()) {
         case 'perplexity_search':
           const result = await this.perplexity.search(query);
+          // Track Perplexity cost
+          const perplexityCost = this.costCalculator.calculateToolCost('perplexity', 1);
+          this.investigationCosts.perplexity = perplexityCost;
           return result.content;
           
         case 'phantombuster_linkedin':
@@ -605,6 +623,9 @@ class ResearchEngine {
             return 'Error: PhantomBuster requires a valid LinkedIn URL (must contain "linkedin.com")';
           }
           const phantomResult = await this.phantombuster.scrapeLinkedIn(query.trim());
+          // Track PhantomBuster cost
+          const phantombusterCost = this.costCalculator.calculateToolCost('phantombuster', 1);
+          this.investigationCosts.phantombuster = phantombusterCost;
           return phantomResult.content;
           
         default:
@@ -798,6 +819,34 @@ Expected answer format: ${criterion.answerFormat}`;
         return acc;
       }, {})
     };
+  }
+
+  /**
+   * Get session cost summary
+   * @returns {Promise<Object>} Cost summary for display
+   */
+  async getSessionCostSummary() {
+    const dbSummary = await this.research.getCostSummary();
+    const investigations = dbSummary.investigations || 1; // Avoid division by zero
+    const total = dbSummary.total || 0;
+    
+    return {
+      total_cost: this.costCalculator.formatCost(total),
+      cost_per_company: this.costCalculator.formatCost(total / investigations),
+      investigations: investigations,
+      breakdown: {
+        claude: this.costCalculator.formatCost(dbSummary.claude || 0),
+        perplexity: this.costCalculator.formatCost(dbSummary.perplexity || 0),
+        phantombuster: this.costCalculator.formatCost(dbSummary.phantombuster || 0)
+      }
+    };
+  }
+
+  /**
+   * Reset investigation costs for new research session
+   */
+  resetInvestigationCosts() {
+    this.investigationCosts = {};
   }
 }
 

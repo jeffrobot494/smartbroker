@@ -73,9 +73,11 @@ class ResearchDAO {
    * @param {string} companyName - Company name
    * @param {number} criterionId - Criterion ID
    * @param {Object} result - Research result object
+   * @param {Object} companyData - Company data
+   * @param {Object} costs - Cost data from APIs
    * @returns {Promise<number>} Research result ID
    */
-  async saveResearchResult(companyName, criterionId, result, companyData = {}) {
+  async saveResearchResult(companyName, criterionId, result, companyData = {}, costs = {}) {
     const companyId = await this.findOrCreateCompany(companyName, companyData);
     
     // Get template ID from criterion
@@ -86,8 +88,10 @@ class ResearchDAO {
 
     const insertResult = await this.db.run(`
       INSERT OR REPLACE INTO research_results 
-      (template_id, company_id, criterion_id, answer, explanation, confidence_score, result_type, iterations, tool_calls, tokens_used, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      (template_id, company_id, criterion_id, answer, explanation, confidence_score, result_type, iterations, tool_calls, tokens_used,
+       claude_input_tokens, claude_output_tokens, claude_cost, perplexity_calls, perplexity_cost, 
+       phantombuster_calls, phantombuster_cost, total_cost, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
     `, [
       criterion.template_id,
       companyId,
@@ -98,7 +102,15 @@ class ResearchDAO {
       result.type || 'unknown',
       result.iterations || 0,
       result.toolCalls || 0,
-      result.usage?.output_tokens || 0
+      result.usage?.output_tokens || 0,
+      costs.claude?.input_tokens || 0,
+      costs.claude?.output_tokens || 0,
+      costs.claude?.total_cost || 0,
+      costs.perplexity?.calls || 0,
+      costs.perplexity?.cost || 0,
+      costs.phantombuster?.calls || 0,
+      costs.phantombuster?.cost || 0,
+      costs.total || 0
     ]);
 
     return insertResult.id;
@@ -572,6 +584,29 @@ class ResearchDAO {
     }
     
     return { success: true, normalizedCount: criteria.length };
+  }
+}
+
+  /**
+   * Get cost summary from database
+   * @param {number|null} templateId - Optional template ID filter
+   * @returns {Promise<Object>} Cost summary
+   */
+  async getCostSummary(templateId = null) {
+    const whereClause = templateId ? 'WHERE template_id = ?' : '';
+    const query = `
+      SELECT 
+        SUM(total_cost) as total,
+        SUM(claude_cost) as claude,
+        SUM(perplexity_cost) as perplexity,
+        SUM(phantombuster_cost) as phantombuster,
+        COUNT(*) as investigations
+      FROM research_results ${whereClause}
+    `;
+    
+    return templateId ? 
+      await this.db.get(query, [templateId]) : 
+      await this.db.get(query);
   }
 }
 

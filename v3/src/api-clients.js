@@ -59,7 +59,7 @@ class ResearchClient {
     this.serverURL = serverURL;
   }
 
-  async saveResult(companyName, criterionId, result, companyData = {}) {
+  async saveResult(companyName, criterionId, result, companyData = {}, costs = {}) {
     try {
       const response = await axios.post(
         `${this.serverURL}/api/research`,
@@ -67,7 +67,8 @@ class ResearchClient {
           companyName,
           criterionId,
           result,
-          companyData
+          companyData,
+          costs
         }
       );
 
@@ -145,6 +146,21 @@ class ResearchClient {
     } catch (error) {
       console.error('Clear results API Error:', error.response?.data || error.message);
       throw new Error(`Clear results failed: ${error.response?.data?.details || error.message}`);
+    }
+  }
+
+  async getCostSummary(templateId = null) {
+    try {
+      let url = `${this.serverURL}/api/research/costs`;
+      if (templateId) {
+        url += `?templateId=${templateId}`;
+      }
+      
+      const response = await axios.get(url);
+      return response.data;
+    } catch (error) {
+      console.error('Cost summary API Error:', error.response?.data || error.message);
+      throw new Error(`Cost summary failed: ${error.response?.data?.details || error.message}`);
     }
   }
 }
