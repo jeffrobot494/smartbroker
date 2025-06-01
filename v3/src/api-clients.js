@@ -7,6 +7,9 @@ class ClaudeClient {
 
   async sendMessage(messages, systemPrompt = '', model = 'claude-sonnet-4-20250514', maxTokens = 4000) {
     try {
+      console.log(`[DEBUG] ClaudeClient making request to ${this.serverURL}/api/claude`);
+      console.log(`[DEBUG] Request payload size: ${JSON.stringify({messages, systemPrompt, model, maxTokens}).length} chars`);
+      
       const response = await axios.post(
         `${this.serverURL}/api/claude`,
         {
@@ -17,8 +20,11 @@ class ClaudeClient {
         }
       );
 
+      console.log(`[DEBUG] ClaudeClient received response: ${response.status} ${response.statusText}`);
       return response.data;
     } catch (error) {
+      console.error(`[DEBUG] ClaudeClient error type: ${error.code || 'unknown'}`);
+      console.error(`[DEBUG] ClaudeClient error message: ${error.message}`);
       console.error('Claude API Error:', error.response?.data || error.message);
       throw new Error(`Claude API request failed: ${error.response?.data?.details || error.message}`);
     }
@@ -139,6 +145,26 @@ class ResearchClient {
     } catch (error) {
       console.error('Clear results API Error:', error.response?.data || error.message);
       throw new Error(`Clear results failed: ${error.response?.data?.details || error.message}`);
+    }
+  }
+}
+
+class PhantomBusterClient {
+  constructor(serverURL = 'http://localhost:3000') {
+    this.serverURL = serverURL;
+  }
+
+  async scrapeLinkedIn(linkedinUrl) {
+    try {
+      const response = await axios.post(
+        `${this.serverURL}/api/phantombuster`,
+        { url: linkedinUrl },
+        { timeout: 300000 } // 5 minute timeout
+      );
+      return response.data;
+    } catch (error) {
+      console.error('PhantomBuster API Error:', error.response?.data || error.message);
+      throw new Error(`PhantomBuster LinkedIn scrape failed: ${error.response?.data?.details || error.message}`);
     }
   }
 }
@@ -284,5 +310,6 @@ module.exports = {
   ClaudeClient,
   PerplexityClient,
   ResearchClient,
-  TemplateClient
+  TemplateClient,
+  PhantomBusterClient
 };

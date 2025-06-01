@@ -47,7 +47,7 @@ class DatabaseWrapper {
           template_id INTEGER NOT NULL,
           name TEXT NOT NULL,
           description TEXT NOT NULL,
-          first_query_template TEXT NOT NULL,
+          first_query_template TEXT,
           answer_format TEXT NOT NULL,
           disqualifying BOOLEAN DEFAULT 0,
           order_index INTEGER NOT NULL,

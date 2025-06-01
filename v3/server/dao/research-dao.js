@@ -32,7 +32,8 @@ class ResearchDAO {
         description: c.description,
         firstQueryTemplate: c.first_query_template,
         answerFormat: c.answer_format,
-        disqualifying: !!c.disqualifying
+        disqualifying: !!c.disqualifying,
+        order_index: c.order_index
       }))
     };
   }

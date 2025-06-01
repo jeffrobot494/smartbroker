@@ -14,8 +14,20 @@ Perplexity is your general-purpose web search tool. It can be used to ask a ques
 To use a perplexity search, use the following format:
 <<perplexity_search: {query}>>
 
-Each tool use has a cost. Perplexity search costs $0.01.
-Your goal is to complete your research while minimizing costs. Only request additional searches if the initial research is insufficient to make a determination.
+PhantomBuster LinkedIn Scraper
+PhantomBuster extracts detailed information from LinkedIn personal profiles with a PRIMARY FOCUS on finding graduation dates for age estimation. This tool takes 60-300 seconds to complete and costs significantly more than other tools.
+To use PhantomBuster, use the following format:
+<<phantombuster_linkedin: {linkedin_profile_url}>>
+
+Tool Costs and Usage Guidelines:
+- Perplexity search: $0.01 per search
+- PhantomBuster LinkedIn: $0.15 per profile (15x more expensive)
+
+IMPORTANT: Use PhantomBuster ONLY as a last resort when:
+1. Perplexity search cannot find graduation dates for age estimation
+2. You have a specific LinkedIn URL and need detailed education history
+
+Always try Perplexity search first. PhantomBuster should be used sparingly due to its high cost and long execution time.
 
 You should respond in one of three ways:
 1. With a tool use request if you need more information beyond what was initially provided

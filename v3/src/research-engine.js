@@ -1,4 +1,4 @@
-const { ClaudeClient, PerplexityClient, ResearchClient, TemplateClient } = require('./api-clients');
+const { ClaudeClient, PerplexityClient, ResearchClient, TemplateClient, PhantomBusterClient } = require('./api-clients');
 const CompanyLoader = require('./company-loader');
 
 const CONFIDENCE_LEVELS = {
@@ -11,6 +11,7 @@ class ResearchEngine {
   constructor() {
     this.claude = new ClaudeClient();
     this.perplexity = new PerplexityClient();
+    this.phantombuster = new PhantomBusterClient();
     this.research = new ResearchClient();
     this.template = new TemplateClient();
     this.companyLoader = new CompanyLoader();
@@ -243,8 +244,19 @@ class ResearchEngine {
       console.warn(`Error getting previous results for ${company.name}: ${error.message}`);
     }
 
-    // Execute automatic first query
-    const automaticSearchResults = await this.executeAutomaticFirstQuery(company, criterion, progressCallback);
+    // Execute automatic first query only if template exists
+    let automaticSearchResults = '';
+    if (criterion.firstQueryTemplate && criterion.firstQueryTemplate.trim()) {
+      automaticSearchResults = await this.executeAutomaticFirstQuery(company, criterion, progressCallback);
+    } else {
+      if (progressCallback) {
+        progressCallback({
+          type: 'automatic_query_skipped',
+          criterionName: criterion.name,
+          reason: 'No first query template defined'
+        });
+      }
+    }
     
     const initialPrompt = this.createEnhancedPrompt(criterion, companyInfo, automaticSearchResults, previousResults);
 
@@ -261,6 +273,11 @@ class ResearchEngine {
       iterations++;
 
       try {
+        // DEBUG: Log before Claude API call
+        const conversationSize = JSON.stringify(conversation).length;
+        const systemPromptSize = this.currentTemplate.systemPrompt.length;
+        console.log(`[DEBUG] About to call Claude API - Conversation: ${conversationSize} chars, System Prompt: ${systemPromptSize} chars, Total messages: ${conversation.length}`);
+        
         // Show complete Claude API payload at verbosity 4
         if (progressCallback && verbosity >= 4) {
           progressCallback({
@@ -275,6 +292,7 @@ class ResearchEngine {
         }
 
         const response = await this.claude.sendMessage(conversation, this.currentTemplate.systemPrompt);
+        console.log(`[DEBUG] Claude API call successful - Response length: ${response.content.length} chars`);
         
         if (progressCallback) {
           progressCallback({
@@ -320,6 +338,12 @@ class ResearchEngine {
           const toolResult = await this.executeTool(parsed.toolName, finalQuery);
           toolCalls++;
           
+          // DEBUG: Log tool result details
+          console.log(`[DEBUG] Tool ${parsed.toolName} completed. Result length: ${toolResult.length} chars`);
+          if (parsed.toolName === 'phantombuster_linkedin') {
+            console.log(`[DEBUG] PhantomBuster result preview: ${toolResult.substring(0, 200)}...`);
+          }
+          
           if (progressCallback) {
             progressCallback({
               type: 'tool_result',
@@ -330,6 +354,10 @@ class ResearchEngine {
 
           conversation.push({ role: 'assistant', content: response.content });
           conversation.push({ role: 'user', content: `Tool result:\n${toolResult}` });
+          
+          // DEBUG: Log conversation size before next Claude call
+          const conversationSize = JSON.stringify(conversation).length;
+          console.log(`[DEBUG] Conversation size after tool result: ${conversationSize} chars, ${conversation.length} messages`);
           
         } else {
           // Final answer
@@ -571,6 +599,14 @@ class ResearchEngine {
         case 'perplexity_search':
           const result = await this.perplexity.search(query);
           return result.content;
+          
+        case 'phantombuster_linkedin':
+          if (!query.includes('linkedin.com')) {
+            return 'Error: PhantomBuster requires a valid LinkedIn URL (must contain "linkedin.com")';
+          }
+          const phantomResult = await this.phantombuster.scrapeLinkedIn(query.trim());
+          return phantomResult.content;
+          
         default:
           throw new Error(`Unknown tool: ${toolName}`);
       }
@@ -714,10 +750,16 @@ ${companyInfo}`;
       });
     }
 
-    prompt += `\n\nInitial Research Results:
+    if (searchResults && searchResults.trim()) {
+      prompt += `\n\nInitial Research Results:
 ${searchResults}
 
-Based on the initial research results${previousResults.length > 0 ? ', previous research findings,' : ''} and company information above, please determine your answer for the criterion: ${criterion.name}
+Based on the initial research results${previousResults.length > 0 ? ', previous research findings,' : ''} and company information above, please determine your answer for the criterion: ${criterion.name}`;
+    } else {
+      prompt += `\n\nBased on${previousResults.length > 0 ? ' the previous research findings and' : ''} the company information above, please determine your answer for the criterion: ${criterion.name}`;
+    }
+
+    prompt += `
 
 Expected answer format: ${criterion.answerFormat}`;
 

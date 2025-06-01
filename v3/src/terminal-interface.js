@@ -234,9 +234,21 @@ class TerminalInterface {
           console.error(`❌ Automatic search error: ${progress.error}`);
           break;
 
+        case 'automatic_query_skipped':
+          if (this.verbosity >= 1) {
+            console.log(`ℹ️  Skipping automatic search - no first query template defined`);
+          }
+          break;
+
         case 'tool_request':
           if (this.verbosity >= 1) {
-            console.log(`🔧 Additional tool use: ${progress.toolName} - "${progress.query}"`);
+            if (progress.toolName === 'phantombuster_linkedin') {
+              console.log(`⏳ ${progress.toolName} starting - this will take 60-300 seconds...`);
+              console.log(`🔗 LinkedIn URL: ${progress.query}`);
+              console.log(`💰 Cost: ~$0.15 (15x more than Perplexity)`);
+            } else {
+              console.log(`🔧 Additional tool use: ${progress.toolName} - "${progress.query}"`);
+            }
           }
           break;
 
@@ -257,8 +269,13 @@ class TerminalInterface {
 
         case 'tool_result':
           if (this.verbosity >= 2 && progress.result) {
-            console.log('\n📊 Tool Result:');
-            console.log(progress.result.substring(0, 300) + '...');
+            if (progress.toolName === 'phantombuster_linkedin') {
+              console.log('\n📊 PhantomBuster LinkedIn Results:');
+              console.log(progress.result.substring(0, 800) + (progress.result.length > 800 ? '...' : ''));
+            } else {
+              console.log('\n📊 Tool Result:');
+              console.log(progress.result.substring(0, 300) + '...');
+            }
           }
           if (progress.userOverride) {
             console.log(`🔄 Used alternate query: "${progress.userOverride}"`);
@@ -760,7 +777,7 @@ class TerminalInterface {
         return;
       }
       
-      const firstQueryTemplate = await this.promptUser('First query template (optional, use {company_name}, {city}, etc.): ');
+      const firstQueryTemplate = await this.promptUser('First query template (optional - leave empty to skip automatic search, use {company_name}, {city}, etc.): ');
       
       const disqualifyingStr = await this.promptUser('Is this disqualifying? (y/n): ');
       const disqualifying = disqualifyingStr.toLowerCase() === 'y';

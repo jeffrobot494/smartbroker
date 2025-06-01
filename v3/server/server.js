@@ -22,10 +22,14 @@ app.post('/api/claude', async (req, res) => {
   try {
     const { messages, systemPrompt, model = 'claude-sonnet-4-20250514', maxTokens = 4000 } = req.body;
 
+    console.log(`[DEBUG] Server received Claude API request - Messages: ${messages.length}, System prompt: ${systemPrompt.length} chars`);
+    console.log(`[DEBUG] Total request size: ${JSON.stringify(req.body).length} chars`);
+
     if (!process.env.ANTHROPIC_API_KEY) {
       return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });
     }
 
+    console.log(`[DEBUG] Making request to Anthropic API...`);
     const response = await axios.post(
       'https://api.anthropic.com/v1/messages',
       {
@@ -43,12 +47,17 @@ app.post('/api/claude', async (req, res) => {
       }
     );
 
+    console.log(`[DEBUG] Anthropic API response received: ${response.status} ${response.statusText}`);
+    console.log(`[DEBUG] Response content length: ${response.data.content[0].text.length} chars`);
+
     res.json({
       content: response.data.content[0].text,
       usage: response.data.usage
     });
 
   } catch (error) {
+    console.error(`[DEBUG] Server-side Claude API error type: ${error.code || 'unknown'}`);
+    console.error(`[DEBUG] Server-side Claude API error message: ${error.message}`);
     console.error('Claude API Error:', error.response?.data || error.message);
     res.status(500).json({ 
       error: 'Claude API request failed',
@@ -103,6 +112,141 @@ app.post('/api/perplexity', async (req, res) => {
     });
   }
 });
+
+// PhantomBuster LinkedIn Scraper Endpoint
+app.post('/api/phantombuster', async (req, res) => {
+  try {
+    const { url } = req.body;
+    
+    if (!url || !url.includes('linkedin.com')) {
+      return res.status(400).json({ error: 'Valid LinkedIn URL required' });
+    }
+
+    if (!process.env.PHANTOMBUSTER_API_KEY || !process.env.LINKEDIN_SESSION_COOKIE) {
+      return res.status(500).json({ error: 'PhantomBuster credentials not configured' });
+    }
+
+    // Launch phantom
+    const launchResponse = await axios.post(
+      `https://api.phantombuster.com/api/v1/agent/${process.env.PHANTOMBUSTER_PHANTOM_ID}/launch`,
+      {
+        argument: JSON.stringify({
+          profileUrls: [url],
+          sessionCookie: process.env.LINKEDIN_SESSION_COOKIE
+        })
+      },
+      {
+        headers: {
+          'X-Phantombuster-Key': process.env.PHANTOMBUSTER_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        timeout: 120000
+      }
+    );
+
+    // Poll for completion (max 15 attempts = 7.5 minutes)
+    let attempts = 0;
+    const maxAttempts = 15;
+    
+    while (attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 30000)); // Wait 30 seconds
+      
+      const statusResponse = await axios.get(
+        `https://api.phantombuster.com/api/v1/agent/${process.env.PHANTOMBUSTER_PHANTOM_ID}/output`,
+        {
+          headers: { 'X-Phantombuster-Key': process.env.PHANTOMBUSTER_API_KEY }
+        }
+      );
+      
+      const containerStatus = statusResponse.data?.data?.containerStatus;
+      const agentStatus = statusResponse.data?.data?.agentStatus;
+      attempts++;
+      
+      // Check if completed
+      if (containerStatus === 'not running' && agentStatus === 'not running') {
+        const results = statusResponse.data?.data?.resultObject;
+        if (results && results.length > 0) {
+          const formattedData = formatLinkedInResults(statusResponse.data, url);
+          return res.json({
+            content: formattedData,
+            executionTime: attempts * 30
+          });
+        }
+      }
+    }
+    
+    // Timeout
+    return res.status(408).json({
+      error: 'PhantomBuster execution timed out',
+      details: `Phantom did not complete after ${attempts * 30} seconds`
+    });
+
+  } catch (error) {
+    console.error('PhantomBuster API Error:', error.response?.data || error.message);
+    res.status(500).json({
+      error: 'PhantomBuster request failed',
+      details: error.response?.data?.error || error.message
+    });
+  }
+});
+
+// Helper function for formatting LinkedIn results
+function formatLinkedInResults(rawData, originalUrl) {
+  // Parse the JSON string from resultObject
+  let resultArray = [];
+  try {
+    const resultString = rawData?.data?.resultObject;
+    if (resultString && typeof resultString === 'string') {
+      resultArray = JSON.parse(resultString);
+    } else if (Array.isArray(resultString)) {
+      resultArray = resultString; // Already parsed
+    }
+  } catch (error) {
+    console.error('Error parsing PhantomBuster resultObject:', error.message);
+  }
+  
+  const profile = resultArray[0] || {};
+  const general = profile.general || {};
+  const schools = profile.schools || [];
+  
+  // Extract graduation dates for age estimation (PRIMARY USE CASE)
+  const educationInfo = schools.map(school => {
+    const dateRange = school.dateRange || '';
+    const graduationYear = dateRange.match(/(\d{4})\s*-\s*(\d{4})/)?.[2] || 
+                          dateRange.match(/(\d{4})$/)?.[0];
+    return {
+      school: school.schoolName,
+      degree: school.degree,
+      dateRange: dateRange,
+      graduationYear: graduationYear
+    };
+  });
+  
+  const graduationYears = educationInfo
+    .map(edu => edu.graduationYear)
+    .filter(year => year)
+    .sort((a, b) => b - a);
+  
+  const latestGraduation = graduationYears[0];
+  const estimatedAge = latestGraduation ? new Date().getFullYear() - parseInt(latestGraduation) + 22 : null;
+  
+  return `LinkedIn Profile Information:
+Name: ${general.fullName || 'Not found'}
+Location: ${general.location || 'Not found'}
+
+*** CRITICAL FOR AGE ESTIMATION ***
+Education History:
+${educationInfo.map(edu => 
+  `- ${edu.school}: ${edu.degree} (${edu.dateRange})${edu.graduationYear ? ` → Graduated: ${edu.graduationYear}` : ''}`
+).join('\n') || 'No education information found'}
+
+Age Estimation:
+${latestGraduation ? `Latest Graduation: ${latestGraduation} → Estimated Age: ~${estimatedAge} years old` : 'Cannot estimate age - no graduation dates found'}
+
+Contact Information:
+- LinkedIn: ${general.profileUrl || originalUrl}
+- Location: ${general.location || 'Not specified'}`;
+}
 
 // Template API endpoints
 
