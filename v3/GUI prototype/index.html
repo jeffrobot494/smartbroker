@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBroker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SmartBroker</h1>
+            <p>Intelligent Company Compatibility Research</p>
+        </div>
+        
+        <div class="main-window">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('research')">Research</button>
+                <button class="tab" onclick="showTab('output')">Output</button>
+                <button class="tab" onclick="showTab('options')">Options</button>
+            </div>
+            
+            <!-- Research Tab -->
+            <div class="tab-content active" id="research-tab">
+                <div class="research-controls">
+                    <div class="file-upload">
+                        <label for="csv-upload">Upload Company Data (CSV):</label>
+                        <input type="file" id="csv-upload" accept=".csv" style="margin-bottom: 10px;">
+                        <div class="file-info" style="font-size: 12px; color: #6c757d;">No file selected</div>
+                    </div>
+                    
+                    <div class="range-input">
+                        <label for="company-range">Company Range:</label>
+                        <input type="text" id="company-range" placeholder="e.g., A1:A100 or CompanyName1,CompanyName2" value="A1:A50">
+                    </div>
+                    
+                    <div class="criteria-selection">
+                        <h3>Research Criteria</h3>
+                        <div class="criteria-grid">
+                            <div class="criteria-item">
+                                <input type="checkbox" id="product-service" checked>
+                                <label for="product-service">Product vs Service</label>
+                            </div>
+                            <div class="criteria-item">
+                                <input type="checkbox" id="us-employees" checked>
+                                <label for="us-employees">US Based Employees</label>
+                            </div>
+                            <div class="criteria-item">
+                                <input type="checkbox" id="vertical-market" checked>
+                                <label for="vertical-market">Vertical Market Software</label>
+                            </div>
+                            <div class="criteria-item">
+                                <input type="checkbox" id="bootstrapped" checked>
+                                <label for="bootstrapped">Bootstrapped Funding</label>
+                            </div>
+                            <div class="criteria-item">
+                                <input type="checkbox" id="owner-age" checked>
+                                <label for="owner-age">Owner Age</label>
+                            </div>
+                            <div class="criteria-item">
+                                <input type="checkbox" id="phone-active" checked>
+                                <label for="phone-active">Active Phone Line</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="research-actions">
+                    <button class="btn btn-start" id="start-btn">▶ Start Research</button>
+                    <button class="btn btn-stop" id="stop-btn" style="display: none;">⏸ Stop Research</button>
+                    <button class="btn btn-secondary" id="export-btn">📊 Export Results</button>
+                </div>
+                
+                <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px; border-left: 4px solid #dc3545;">
+                    <strong>Companies Eliminated: 18</strong>
+                </div>
+                
+                <div class="table-container">
+                    <table class="progress-table">
+                        <thead>
+                            <tr>
+                                <th>Company Name</th>
+                                <th>Product/Service</th>
+                                <th>US Employees</th>
+                                <th>Vertical Market</th>
+                                <th>Bootstrapped</th>
+                                <th>Owner Age</th>
+                                <th>Phone Active</th>
+                            </tr>
+                        </thead>
+                        <tbody>                            <tr>
+                                <td>Acme Software Inc</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 15</td>
+                                <td class="progress-cell status-running">⏳ Researching...</td>
+                                <td class="progress-cell"></td>
+                                <td class="progress-cell"></td>
+                                <td class="progress-cell"></td>
+                            </tr>
+                            <tr>
+                                <td>Beta Technologies</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 8</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-error">✗ VC Funded</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Gamma Solutions</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 22</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 45</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Delta Corp</td>
+                                <td class="progress-cell"></td>
+                                <td class="progress-cell"></td>
+                                <td class="progress-cell"></td>
+                                <td class="progress-cell"></td>
+                                <td class="progress-cell"></td>
+                                <td class="progress-cell"></td>
+                            </tr>
+                            <tr>
+                                <td>Echo Systems LLC</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 12</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 38</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Foxtrot Digital</td>
+                                <td class="progress-cell status-complete">✓ Service</td>
+                                <td class="progress-cell status-complete">✓ 25</td>
+                                <td class="progress-cell status-error">✗ No</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Golf Analytics Pro</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 7</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 52</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Hotel Insights Co</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 18</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-error">✗ VC Funded</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>India Software Works</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-error">✗ 3</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Juliet Manufacturing</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 45</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 48</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>                            <tr>
+                                <td>Kilo Tech Solutions</td>
+                                <td class="progress-cell status-complete">✓ Service</td>
+                                <td class="progress-cell status-complete">✓ 35</td>
+                                <td class="progress-cell status-error">✗ No</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Lima Logistics</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 28</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 41</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Mike's Maintenance</td>
+                                <td class="progress-cell status-complete">✓ Service</td>
+                                <td class="progress-cell status-complete">✓ 15</td>
+                                <td class="progress-cell status-error">✗ No</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>November Networks</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 9</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-error">✗ VC Funded</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Oscar's Optimization</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 14</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 37</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Papa's Pizza Tech</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 6</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 44</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Quebec Quality Control</td>
+                                <td class="progress-cell status-complete">✓ Service</td>
+                                <td class="progress-cell status-complete">✓ 22</td>
+                                <td class="progress-cell status-error">✗ No</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Romeo Robotics</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 31</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-error">✗ VC Funded</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>                            <tr>
+                                <td>Sierra Security</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 19</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 46</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Tango Transportation</td>
+                                <td class="progress-cell status-complete">✓ Service</td>
+                                <td class="progress-cell status-complete">✓ 42</td>
+                                <td class="progress-cell status-error">✗ No</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Uniform Utilities</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 16</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 39</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Victor's Veterinary</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 11</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 43</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Whiskey Warehouse</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 23</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-error">✗ VC Funded</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Xray X-cellence</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 8</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 51</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Yankee Yacht Management</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 13</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 40</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Zulu Zone Solutions</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 21</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 47</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>                            <tr>
+                                <td>Alpha Analytics</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 17</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-error">✗ VC Funded</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Bravo Business Tools</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 26</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 42</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Charlie's Cleaning</td>
+                                <td class="progress-cell status-complete">✓ Service</td>
+                                <td class="progress-cell status-complete">✓ 33</td>
+                                <td class="progress-cell status-error">✗ No</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Delta Development</td>
+                                <td class="progress-cell status-complete">✓ Service</td>
+                                <td class="progress-cell status-complete">✓ 48</td>
+                                <td class="progress-cell status-error">✗ No</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Eagle Engineering</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 29</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 49</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Falcon Financial</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 34</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-error">✗ VC Funded</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Ghost Gaming</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 12</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 35</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Hunter Healthcare</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 37</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-error">✗ VC Funded</td>
+                                <td class="progress-cell">-</td>
+                                <td class="progress-cell">-</td>
+                            </tr>
+                            <tr>
+                                <td>Ice Cream Innovations</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 9</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 36</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Jaguar Jewelry</td>
+                                <td class="progress-cell status-complete">✓ Product</td>
+                                <td class="progress-cell status-complete">✓ 24</td>
+                                <td class="progress-cell status-complete">✓ Yes</td>
+                                <td class="progress-cell status-complete">✓ Bootstrapped</td>
+                                <td class="progress-cell status-complete">✓ 50</td>
+                                <td class="progress-cell status-complete">✓ Active</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div> 
+            
+            <!-- Output Tab -->
+            <div class="tab-content" id="output-tab">
+                <div class="output-controls">
+                    <h3>Output Filters</h3>
+                    <div class="output-checkboxes">
+                        <div class="output-item">
+                            <input type="checkbox" id="system-prompt" checked>
+                            <label for="system-prompt">System Prompt</label>
+                        </div>
+                        <div class="output-item">
+                            <input type="checkbox" id="criterion-prompt" checked>
+                            <label for="criterion-prompt">Criterion Prompt</label>
+                        </div>
+                        <div class="output-item">
+                            <input type="checkbox" id="tool-response" checked>
+                            <label for="tool-response">Tool Response</label>
+                        </div>
+                        <div class="output-item">
+                            <input type="checkbox" id="claude-tool-request" checked>
+                            <label for="claude-tool-request">Claude Tool Request</label>
+                        </div>
+                        <div class="output-item">
+                            <input type="checkbox" id="claude-analysis" checked>
+                            <label for="claude-analysis">Claude Analysis</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="clear-output-btn" style="margin-top: 10px;">🗑️ Clear Output</button>
+                </div>
+                
+                <div class="terminal" id="terminal">
+                    <div class="terminal-line expandable" onclick="toggleExpand(this)">
+                        <span class="terminal-timestamp">[14:23:15]</span> <span class="terminal-system">Starting research for Acme Software Inc...</span>
+                        <span class="expand-indicator">▼</span>
+                        <div class="terminal-details" style="display: none;">
+                            <div>Company: Acme Software Inc</div>
+                            <div>Website: https://acmesoftware.com</div>
+                            <div>LinkedIn: https://linkedin.com/company/acme-software</div>
+                            <div>Research Template: Software Companies</div>
+                            <div>Estimated Cost: $0.15</div>
+                        </div>
+                    </div>
+                    <div class="terminal-line expandable" onclick="toggleExpand(this)">
+                        <span class="terminal-timestamp">[14:23:16]</span> <span class="terminal-claude">Claude:</span> I'll research Acme Software Inc. Starting with basic company information...
+                        <span class="expand-indicator">▼</span>
+                        <div class="terminal-details" style="display: none;">
+                            <div>Full prompt: "Research Acme Software Inc using the following criteria: Product vs Service, US Based Employees, Vertical Market Software, Bootstrapped Funding, Owner Age, Active Phone Line. Start with their website and basic company information."</div>
+                            <div>Tokens used: 145</div>
+                            <div>Cost: $0.003</div>
+                        </div>
+                    </div>
+                    <div class="terminal-line expandable" onclick="toggleExpand(this)">
+                        <span class="terminal-timestamp">[14:23:17]</span> <span class="terminal-tool">Perplexity:</span> Searching for "Acme Software Inc company information products services"
+                        <span class="expand-indicator">▼</span>
+                        <div class="terminal-details" style="display: none;">
+                            <div>Search query: "Acme Software Inc company information products services"</div>
+                            <div>Sources found: 8</div>
+                            <div>API call cost: $0.05</div>
+                            <div>Response time: 3.2s</div>
+                        </div>
+                    </div>
+                    <div class="terminal-line expandable" onclick="toggleExpand(this)">
+                        <span class="terminal-timestamp">[14:23:20]</span> <span class="terminal-tool">Perplexity Response:</span> Found company website. Acme Software Inc develops CRM software for small businesses. Founded in 2018...
+                        <span class="expand-indicator">▼</span>
+                        <div class="terminal-details" style="display: none;">
+                            <div>Full response: "Acme Software Inc is a software development company founded in 2018, specializing in customer relationship management (CRM) solutions for small to medium-sized businesses. The company's flagship product, AcmeCRM, is designed specifically for service-based businesses including consulting firms, marketing agencies, and professional services. The software includes features for contact management, project tracking, invoicing, and automated follow-up campaigns. According to their website, they serve over 500 clients across the United States and have a team of 15 employees based in Austin, Texas."</div>
+                            <div>Confidence: High</div>
+                            <div>Sources: acmesoftware.com, crunchbase.com, linkedin.com</div>
+                        </div>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="terminal-timestamp">[14:23:21]</span> <span class="terminal-claude">Claude:</span> ✓ Product vs Service: PRODUCT (CRM software)
+                    </div>
+                    <div class="terminal-line">
+                        <span class="terminal-timestamp">[14:23:22]</span> <span class="terminal-tool">Web Scraper:</span> Scraping https://acmesoftware.com/about for employee information...
+                    </div>
+                    <div class="terminal-line">
+                        <span class="terminal-timestamp">[14:23:25]</span> <span class="terminal-claude">Claude:</span> ✓ US Employees: 15 (found on About page)
+                    </div>
+                    <div class="terminal-line">
+                        <span class="terminal-timestamp">[14:23:26]</span> <span class="terminal-tool">Perplexity:</span> Searching for "Acme Software Inc vertical market CRM industry specific"
+                    </div>
+                    <div class="terminal-line">
+                        <span class="terminal-timestamp">[14:23:29]</span> <span class="terminal-claude">Claude:</span> ⏳ Analyzing vertical market positioning...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Options Tab -->
+            <div class="tab-content" id="options-tab">
+                <div class="options-grid">
+                    <div class="options-section">
+                        <h3>Research Criteria</h3>
+                        <div class="form-group">
+                            <label>Select Criterion:</label>
+                            <select id="criterion-select">
+                                <option value="product-service">Product vs Service</option>
+                                <option value="us-employees">US Based Employees</option>
+                                <option value="vertical-market">Vertical Market Software</option>
+                                <option value="bootstrapped">Bootstrapped Funding</option>
+                                <option value="owner-age">Owner Age</option>
+                                <option value="phone-active">Active Phone Line</option>
+                                <option value="add-new">+ Add New Criterion</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Criterion Name:</label>
+                            <input type="text" id="criterion-name" value="Product vs Service">
+                        </div>
+                        <div class="form-group">
+                            <label>Order (in research sequence):</label>
+                            <input type="number" id="criterion-order" value="1" min="1" max="20">
+                        </div>
+                        <div class="form-group">
+                            <label>Research Prompt:</label>
+                            <textarea id="criterion-prompt">Determine if this company primarily sells products or services. Look for software products, physical products, or service offerings.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Perplexity Pre-Query (optional):</label>
+                            <input type="text" id="perplexity-query" placeholder="e.g., 'CompanyName products services business model'">
+                        </div>
+                        <div class="form-group">
+                            <label>Answer Format:</label>
+                            <select id="answer-format">
+                                <option value="string">String</option>
+                                <option value="yes-no">Yes/No</option>
+                                <option value="number">Number</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="qualifying-criterion">
+                                <label for="qualifying-criterion">Qualifying Criterion (negative result excludes company)</label>
+                            </div>
+                        </div>
+                        <button class="btn">Update Criterion</button>
+                        <button class="btn btn-secondary">Delete Criterion</button>
+                    </div>                    
+                    <div class="options-section">
+                        <h3>Research Templates</h3>
+                        <div class="form-group">
+                            <label>Current Template:</label>
+                            <select>
+                                <option>Software Companies</option>
+                                <option>Service Businesses</option>
+                                <option>Manufacturing</option>
+                                <option>Custom Template</option>
+                            </select>
+                        </div>
+                        <button class="btn">Load Template</button>
+                        <button class="btn btn-secondary">Save Current as Template</button>
+                    </div>
+                    
+                    <div class="options-section delete-results-section">
+                        <h3>Delete Research Results</h3>
+                        <div class="delete-checkboxes">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="delete-product-service">
+                                <label for="delete-product-service">Product vs Service</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="delete-us-employees">
+                                <label for="delete-us-employees">US Based Employees</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="delete-vertical-market">
+                                <label for="delete-vertical-market">Vertical Market Software</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="delete-bootstrapped">
+                                <label for="delete-bootstrapped">Bootstrapped Funding</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="delete-owner-age">
+                                <label for="delete-owner-age">Owner Age</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="delete-phone-active">
+                                <label for="delete-phone-active">Active Phone Line</label>
+                            </div>
+                        </div>
+                        <button class="btn btn-danger" id="delete-results-btn">🗑️ Delete Selected Results</button>
+                    </div>
+                    
+                    <div class="options-section">
+                        <h3>System Prompts</h3>
+                        <div class="form-group">
+                            <label>Main Research Prompt:</label>
+                            <textarea>You are an expert business researcher. Your job is to thoroughly investigate companies using available tools and provide accurate assessments based on specific criteria.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Cost Management:</label>
+                            <input type="text" value="Keep costs under $0.50 per company. Use free tools first.">
+                        </div>
+                        <button class="btn">Update Prompts</button>
+                    </div>
+                    
+                    <div class="options-section">
+                        <h3>API Cost Tracking</h3>
+                        <div class="cost-display">
+                            <div class="cost-item">
+                                <label>Total API Cost (Current Template):</label>
+                                <div class="cost-value">$12.47</div>
+                            </div>
+                            <div class="cost-breakdown">
+                                <div>Perplexity: $8.20</div>
+                                <div>Claude: $3.15</div>
+                                <div>PhantomBuster: $1.12</div>
+                                <div>Other APIs: $0.00</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" id="reset-costs">🔄 Reset Costs</button>
+                    </div>                    
+                    <div class="options-section">
+                        <h3>API Settings</h3>
+                        <div class="form-group">
+                            <label>Max Perplexity Calls per Company:</label>
+                            <input type="number" value="5" min="1" max="20">
+                        </div>
+                        <div class="form-group">
+                            <label>Enable PhantomBuster:</label>
+                            <input type="checkbox" checked>
+                        </div>
+                        <div class="form-group">
+                            <label>Debug Mode:</label>
+                            <input type="checkbox">
+                        </div>
+                        <button class="btn">Save Settings</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
