@@ -758,6 +758,22 @@ app.get('/api/research/template/:id/results', async (req, res) => {
   }
 });
 
+// Delete all research results for a criterion in a template
+app.delete('/api/research/criterion/:criterionId/template/:templateId', async (req, res) => {
+  try {
+    const criterionId = parseInt(req.params.criterionId);
+    const templateId = parseInt(req.params.templateId);
+    
+    console.log(`[SERVER] Deleting research results for criterion ${criterionId} in template ${templateId}`);
+    const result = await researchDAO.deleteCriterionResults(criterionId, templateId);
+    
+    res.json(result);
+  } catch (error) {
+    console.error('Error deleting criterion research results:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
 // Start research endpoint
 app.post('/api/research/start', async (req, res) => {
   try {

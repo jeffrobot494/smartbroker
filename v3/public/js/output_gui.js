@@ -4,7 +4,7 @@ class OutputGUI {
     this.messages = []; // Store all messages for filtering
     this.filters = {
       'system-prompt': true,
-      'criterion-prompt': true,
+      'criterion-prompt-filter': true,
       'tool-response': true,
       'claude-tool-request': true,
       'claude-analysis': true
@@ -108,7 +108,7 @@ class OutputGUI {
   getFilterKey(messageType) {
     const filterMap = {
       'System Prompt': 'system-prompt',
-      'Criterion Prompt': 'criterion-prompt',
+      'Criterion Prompt': 'criterion-prompt-filter',
       'Tool Response': 'tool-response',
       'Claude Tool Request': 'claude-tool-request',
       'Claude Analysis': 'claude-analysis',

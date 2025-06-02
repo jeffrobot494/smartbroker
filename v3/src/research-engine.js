@@ -740,6 +740,17 @@ class ResearchEngine {
       
       const result = await this.perplexity.search(query);
       
+      // Track Perplexity cost for automatic query
+      const perplexityCost = this.costCalculator.calculateToolCost('perplexity', 1);
+      
+      // Accumulate with existing perplexity costs (in case tool calls also use perplexity)
+      if (this.investigationCosts.perplexity) {
+        this.investigationCosts.perplexity.calls += perplexityCost.calls;
+        this.investigationCosts.perplexity.cost += perplexityCost.cost;
+      } else {
+        this.investigationCosts.perplexity = perplexityCost;
+      }
+      
       if (progressCallback) {
         progressCallback({
           type: 'automatic_query_result',

@@ -213,12 +213,53 @@ body {
     background: #5a6268;
 }
 
+.btn-warning {
+    background: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background: #e0a800;
+    color: #212529;
+}
+
 .status-summary {
     margin-bottom: 15px;
     padding: 10px;
     background: #f8f9fa;
     border-radius: 4px;
     border-left: 4px solid #dc3545;
+}
+
+.cost-summary {
+    margin-bottom: 15px;
+    padding: 12px;
+    background: #e8f5e8;
+    border-radius: 4px;
+    border-left: 4px solid #28a745;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.cost-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+}
+
+.cost-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.cost-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #28a745;
 }
 
 /* Table Container with Scrolling */
@@ -450,6 +491,13 @@ body {
 .form-group textarea {
     height: 100px;
     resize: vertical;
+}
+
+.form-group textarea#system-prompt-textarea {
+    height: 200px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    line-height: 1.4;
 }
 
 .checkbox-group {

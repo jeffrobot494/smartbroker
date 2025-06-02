@@ -21,6 +21,7 @@ class ResearchGUI {
     this.populateCompanyTable();
     this.populateCriteriaCheckboxes();
     this.loadExistingResults();
+    this.loadCostSummary();
   }
 
   setupEventListeners() {
@@ -314,6 +315,10 @@ class ResearchGUI {
       this.app.isResearching = false;
       document.getElementById('start-btn').style.display = 'inline-block';
       document.getElementById('stop-btn').style.display = 'none';
+      
+      // Refresh cost summary after research completes
+      this.loadCostSummary();
+      
       console.log('ResearchGUI: Research UI state reset');
     }
   }
@@ -489,6 +494,44 @@ class ResearchGUI {
     cell.textContent = cellText;
     cell.className = cellClass;
     cell.title = result.explanation || ''; // Tooltip with explanation
+  }
+
+  async loadCostSummary() {
+    if (!this.app.template || !this.app.template.id) {
+      console.log('ResearchGUI: No template available for loading cost summary');
+      return;
+    }
+
+    try {
+      console.log(`ResearchGUI: Loading cost summary for template ${this.app.template.id}`);
+      
+      const response = await fetch(`/api/research/costs?templateId=${this.app.template.id}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const costData = await response.json();
+      console.log('ResearchGUI: Cost data loaded:', costData);
+      
+      this.updateCostDisplay(costData);
+
+    } catch (error) {
+      console.error('ResearchGUI: Error loading cost summary:', error);
+      // Reset display to defaults on error
+      this.updateCostDisplay({ total: 0, investigations: 0 });
+    }
+  }
+
+  updateCostDisplay(costData) {
+    const totalCost = (costData.total || 0).toFixed(2);
+    const investigations = costData.investigations || 0;
+    const averageCost = investigations > 0 ? (costData.total / investigations).toFixed(2) : '0.00';
+    
+    console.log('ResearchGUI: Updating cost display:', { totalCost, averageCost, investigations });
+    
+    document.getElementById('total-cost').textContent = `$${totalCost}`;
+    document.getElementById('average-cost').textContent = `$${averageCost}`;
+    document.getElementById('companies-researched').textContent = investigations;
   }
 
   async loadExistingResults() {

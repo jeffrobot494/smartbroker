@@ -54,8 +54,7 @@ class DatabaseWrapper {
           order_index INTEGER NOT NULL,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (template_id) REFERENCES templates(id) ON DELETE CASCADE,
-          UNIQUE(template_id, name),
-          UNIQUE(template_id, order_index)
+          UNIQUE(template_id, name)
         )
       `;
 

@@ -53,6 +53,21 @@
                     <strong>Companies Eliminated: <span id="eliminated-count">0</span></strong>
                 </div>
                 
+                <div class="cost-summary" id="cost-summary">
+                    <div class="cost-item">
+                        <span class="cost-label">Total Spent:</span>
+                        <span class="cost-value" id="total-cost">$0.00</span>
+                    </div>
+                    <div class="cost-item">
+                        <span class="cost-label">Average per Company:</span>
+                        <span class="cost-value" id="average-cost">$0.00</span>
+                    </div>
+                    <div class="cost-item">
+                        <span class="cost-label">Companies Researched:</span>
+                        <span class="cost-value" id="companies-researched">0</span>
+                    </div>
+                </div>
+                
                 <div class="table-container">
                     <table class="progress-table">
                         <thead>
@@ -83,8 +98,8 @@
                             <label for="system-prompt">System Prompt</label>
                         </div>
                         <div class="output-item">
-                            <input type="checkbox" id="criterion-prompt" checked>
-                            <label for="criterion-prompt">Criterion Prompt</label>
+                            <input type="checkbox" id="criterion-prompt-filter" checked>
+                            <label for="criterion-prompt-filter">Criterion Prompt</label>
                         </div>
                         <div class="output-item">
                             <input type="checkbox" id="tool-response" checked>
@@ -118,13 +133,54 @@
                                 <!-- Populated dynamically from database -->
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label>System Prompt:</label>
+                            <textarea id="system-prompt-textarea" placeholder="Enter the system prompt for Claude..." rows="8"></textarea>
+                        </div>
                         <button class="btn" id="save-template-btn">Save Template</button>
                     </div>
                     
-                    <!-- Placeholder for other sections -->
                     <div class="options-section">
                         <h3>Research Criteria</h3>
-                        <p>Coming soon...</p>
+                        <div class="form-group">
+                            <label>Select Criterion:</label>
+                            <select id="criterion-select">
+                                <!-- Populated dynamically from current template -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Criterion Name:</label>
+                            <input type="text" id="criterion-name" placeholder="Enter criterion name">
+                        </div>
+                        <div class="form-group">
+                            <label>Order (in research sequence):</label>
+                            <input type="number" id="criterion-order" min="1" max="20" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Research Prompt:</label>
+                            <textarea id="criterion-prompt" placeholder="Describe what this criterion should research..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Perplexity Pre-Query (optional):</label>
+                            <input type="text" id="perplexity-query" placeholder="e.g., 'CompanyName products services business model'">
+                        </div>
+                        <div class="form-group">
+                            <label>Answer Format:</label>
+                            <select id="answer-format">
+                                <option value="string">String</option>
+                                <option value="yes-no">Yes/No</option>
+                                <option value="number">Number</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="qualifying-criterion">
+                                <label for="qualifying-criterion">Qualifying Criterion (negative result excludes company)</label>
+                            </div>
+                        </div>
+                        <button class="btn" id="update-criterion-btn">Update Criterion</button>
+                        <button class="btn btn-secondary" id="delete-criterion-btn">Delete Criterion</button>
+                        <button class="btn btn-warning" id="delete-research-btn">Delete Research Results</button>
                     </div>
                 </div>
             </div>

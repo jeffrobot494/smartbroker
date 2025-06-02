@@ -490,13 +490,7 @@ class ResearchDAO {
       throw new Error('Answer format cannot be empty');
     }
 
-    // Check for duplicate order_index if changing
-    if (order_index !== undefined && order_index !== criterion.order_index) {
-      const existing = await this.db.get('SELECT id FROM criteria WHERE template_id = ? AND order_index = ?', [criterion.template_id, order_index]);
-      if (existing) {
-        throw new Error(`Order index ${order_index} already exists. Use a different order index.`);
-      }
-    }
+    // Order changes are allowed - normalizeOrderIndexes() will clean up any conflicts
 
     const fields = [];
     const values = [];
@@ -515,7 +509,7 @@ class ResearchDAO {
     values.push(criterionId);
     await this.db.run(`UPDATE criteria SET ${fields.join(', ')} WHERE id = ?`, values);
     
-    // Auto-normalize order indexes only if order_index was changed
+    // Normalize order indexes if order was changed
     if (order_index !== undefined) {
       await this.normalizeOrderIndexes(criterion.template_id);
     }
@@ -559,15 +553,10 @@ class ResearchDAO {
       return { success: true, message: 'Order index unchanged' };
     }
 
-    // Check for duplicate order_index
-    const existing = await this.db.get('SELECT id FROM criteria WHERE template_id = ? AND order_index = ?', [criterion.template_id, newOrderIndex]);
-    if (existing) {
-      throw new Error(`Order index ${newOrderIndex} already exists. Use a different order index.`);
-    }
-
+    // Simple reorder: set new position and let normalize fix conflicts
     await this.db.run('UPDATE criteria SET order_index = ? WHERE id = ?', [newOrderIndex, criterionId]);
     
-    // Auto-normalize order indexes after reordering
+    // Clean up any duplicate positions
     await this.normalizeOrderIndexes(criterion.template_id);
     
     return { success: true, templateId: criterion.template_id };
@@ -727,6 +716,36 @@ class ResearchDAO {
       },
       created_at: result.created_at
     }));
+  }
+
+  /**
+   * Delete all research results for a specific criterion in a template
+   * @param {number} criterionId - Criterion ID
+   * @param {number} templateId - Template ID
+   * @returns {Promise<Object>} Deletion result
+   */
+  async deleteCriterionResults(criterionId, templateId) {
+    const criterion = await this.db.get('SELECT id FROM criteria WHERE id = ?', [criterionId]);
+    if (!criterion) {
+      throw new Error('Criterion not found');
+    }
+
+    const template = await this.db.get('SELECT id FROM templates WHERE id = ?', [templateId]);
+    if (!template) {
+      throw new Error('Template not found');
+    }
+
+    const result = await this.db.run(
+      'DELETE FROM research_results WHERE criterion_id = ? AND template_id = ?',
+      [criterionId, templateId]
+    );
+    
+    return { 
+      success: true, 
+      deletedCount: result.changes,
+      criterionId,
+      templateId 
+    };
   }
 }
 
