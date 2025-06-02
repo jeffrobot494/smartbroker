@@ -90,11 +90,6 @@ app.use(express.json());
 // Serve static files from public directory
 app.use(express.static('../public'));
 
-// Root route - serve main application
-app.get('/', (req, res) => {
-  res.sendFile(require('path').join(__dirname, '../public/index.html'));
-});
-
 // Claude API endpoint
 app.post('/api/claude', async (req, res) => {
   try {
