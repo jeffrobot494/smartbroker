@@ -87,6 +87,11 @@ const researchDAO = new ResearchDAO(database);
 app.use(cors());
 app.use(express.json());
 
+// Debug: Log current working directory and paths
+console.log('Current working directory:', process.cwd());
+console.log('__dirname:', __dirname);
+console.log('Resolved public path:', require('path').resolve(__dirname, '../public'));
+
 // Serve static files from public directory
 app.use(express.static('../public'));
 
