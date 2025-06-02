@@ -21,6 +21,24 @@ class ResearchEngine {
     this.currentTemplate = null;
     this.currentCriteria = [];
     this.investigationCosts = {}; // Track costs for current investigation
+    this.stopChecker = null; // Function to check if research should stop
+  }
+
+  /**
+   * Set a function to check if research should stop
+   * @param {Function} stopChecker - Function that returns true if research should stop
+   */
+  setStopChecker(stopChecker) {
+    this.stopChecker = stopChecker;
+  }
+
+  /**
+   * Check if research should stop and throw error if so
+   */
+  checkIfStopped() {
+    if (this.stopChecker && this.stopChecker()) {
+      throw new Error('Research stopped by user');
+    }
   }
 
   /**
@@ -96,6 +114,9 @@ class ResearchEngine {
     let totalDisqualified = 0;
 
     for (const criterion of criteriaToResearch) {
+      // Check if research should stop before starting each criterion
+      this.checkIfStopped();
+      
       if (progressCallback) {
         progressCallback({
           type: 'criterion_start',
@@ -105,6 +126,9 @@ class ResearchEngine {
       }
 
       for (let i = 0; i < companiesInRange.length; i++) {
+        // Check if research should stop before each company
+        this.checkIfStopped();
+        
         const company = companiesInRange[i];
         const globalIndex = startIndex + i + 1;
 

@@ -27,6 +27,7 @@
                         <label for="csv-upload">Upload Company Data (CSV):</label>
                         <input type="file" id="csv-upload" accept=".csv">
                         <div class="file-info">No file selected</div>
+                        <button class="btn btn-secondary" id="import-btn">📤 Import</button>
                     </div>
                     
                     <div class="range-input">
@@ -66,7 +67,7 @@
                             </tr>
                         </thead>
                         <tbody id="progress-table-body">
-                            <!-- Progress table rows will be populated by JavaScript -->
+                            <!-- Table rows will be populated dynamically by JavaScript -->
                         </tbody>
                     </table>
                 </div>
@@ -74,6 +75,9 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="js/main_gui.js"></script>
+    <script src="js/research_gui.js"></script>
+    <script src="js/output_gui.js"></script>
+    <script src="js/options_gui.js"></script>
 </body>
 </html>

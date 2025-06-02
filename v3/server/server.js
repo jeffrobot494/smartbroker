@@ -1,13 +1,82 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const multer = require('multer');
 require('dotenv').config();
 
 const Database = require('./database');
 const ResearchDAO = require('./dao/research-dao');
 
+// Configure multer for file uploads
+const upload = multer({ storage: multer.memoryStorage() });
+
+// CSV parsing function (reused from csv-to-json.js)
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    const nextChar = line[i + 1];
+    
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        current += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  
+  result.push(current.trim());
+  return result;
+}
+
+function parseCSVData(csvString) {
+  const lines = csvString.split('\n').filter(line => line.trim());
+  if (lines.length === 0) return [];
+  
+  const headers = parseCSVLine(lines[0]);
+  const companies = [];
+  
+  for (let i = 1; i < lines.length; i++) {
+    const values = parseCSVLine(lines[i]);
+    const company = {};
+    
+    headers.forEach((header, index) => {
+      // Only keep company name, website, and company location
+      if (header === 'Company') {
+        company.name = values[index] || '';
+      } else if (header === 'Website') {
+        company.website = values[index] || '';
+      } else if (header === 'Company City') {
+        company.city = values[index] || '';
+      } else if (header === 'Company State') {
+        company.state = values[index] || '';
+      }
+    });
+    
+    // Only add company if it has at least a name
+    if (company.name && company.name.trim()) {
+      companies.push(company);
+    }
+  }
+  
+  return companies;
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Global research state
+let isResearchStopped = false;
 
 // Initialize database
 const database = new Database();
@@ -16,6 +85,9 @@ const researchDAO = new ResearchDAO(database);
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from public directory
+app.use(express.static('../public'));
 
 // Claude API endpoint
 app.post('/api/claude', async (req, res) => {
@@ -570,6 +642,174 @@ app.get('/api/templates/:id/next-order', async (req, res) => {
   } catch (error) {
     console.error('Error getting next order index:', error);
     res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Company Data Management Endpoints
+
+// Upload and save company CSV data to template
+app.post('/api/template/:id/companies', upload.single('csvFile'), async (req, res) => {
+  try {
+    const templateId = parseInt(req.params.id);
+    console.log(`[SERVER] CSV upload request for template ID: ${templateId}`);
+    
+    if (!req.file) {
+      console.log('[SERVER] No CSV file provided in request');
+      return res.status(400).json({ error: 'No CSV file provided' });
+    }
+
+    console.log(`[SERVER] Processing CSV file: ${req.file.originalname}, size: ${req.file.size} bytes`);
+
+    // Parse CSV data
+    const csvString = req.file.buffer.toString('utf8');
+    console.log(`[SERVER] CSV content length: ${csvString.length} characters`);
+    
+    const companies = parseCSVData(csvString);
+    console.log(`[SERVER] Parsed ${companies.length} companies from CSV`);
+
+    if (companies.length === 0) {
+      console.log('[SERVER] No valid company data found in CSV');
+      return res.status(400).json({ error: 'No valid company data found in CSV' });
+    }
+
+    // Log first company as sample
+    if (companies.length > 0) {
+      console.log('[SERVER] Sample company data:', JSON.stringify(companies[0], null, 2));
+    }
+
+    // Save to database
+    console.log(`[SERVER] Saving company data to template ${templateId}...`);
+    const result = await researchDAO.saveCompanyData(templateId, companies);
+    console.log('[SERVER] Company data saved successfully:', result);
+    
+    res.json({
+      success: true,
+      message: `Imported ${companies.length} companies`,
+      count: companies.length
+    });
+
+  } catch (error) {
+    console.error('[SERVER] Error uploading company data:', error);
+    res.status(500).json({
+      error: 'Failed to import company data',
+      details: error.message
+    });
+  }
+});
+
+// Get company data for template
+app.get('/api/template/:id/companies', async (req, res) => {
+  try {
+    const templateId = parseInt(req.params.id);
+    const companies = await researchDAO.getCompanyData(templateId);
+    
+    res.json({
+      companies: companies,
+      count: companies.length
+    });
+  } catch (error) {
+    console.error('Error getting company data:', error);
+    res.status(500).json({
+      error: 'Failed to get company data',
+      details: error.message
+    });
+  }
+});
+
+// Clear company data for template
+app.delete('/api/template/:id/companies', async (req, res) => {
+  try {
+    const templateId = parseInt(req.params.id);
+    await researchDAO.clearCompanyData(templateId);
+    
+    res.json({
+      success: true,
+      message: 'Company data cleared'
+    });
+  } catch (error) {
+    console.error('Error clearing company data:', error);
+    res.status(500).json({
+      error: 'Failed to clear company data',
+      details: error.message
+    });
+  }
+});
+
+// Start research endpoint
+app.post('/api/research/start', async (req, res) => {
+  try {
+    const { companies, startIndex, endIndex, criteriaNames, options } = req.body;
+    
+    // Reset stop flag when starting new research
+    isResearchStopped = false;
+    console.log('[SERVER] Research request received (stop flag reset):', {
+      companiesCount: companies.length,
+      range: `${startIndex}-${endIndex}`,
+      criteria: criteriaNames,
+      options
+    });
+
+    // Import and initialize research engine
+    const ResearchEngine = require('../src/research-engine');
+    const engine = new ResearchEngine();
+    await engine.initialize();
+
+    // Pass stop flag checker to research engine
+    engine.setStopChecker(() => isResearchStopped);
+
+    // Progress callback to log updates
+    const progressCallback = (progress) => {
+      console.log('[SERVER] Research progress:', progress);
+      // Later we can implement real-time updates via WebSocket/SSE
+    };
+
+    // Start research
+    console.log('[SERVER] Starting research engine...');
+    await engine.researchCompanyRange(
+      companies,
+      startIndex,
+      endIndex,
+      criteriaNames,
+      options,
+      progressCallback
+    );
+
+    console.log('[SERVER] Research completed successfully');
+    res.json({ success: true, message: 'Research completed' });
+
+  } catch (error) {
+    console.error('[SERVER] Research error:', error);
+    
+    // Check if it was stopped by user
+    if (isResearchStopped) {
+      console.log('[SERVER] Research was stopped by user');
+      res.json({ success: true, message: 'Research stopped by user' });
+    } else {
+      res.status(500).json({
+        error: 'Research failed',
+        details: error.message
+      });
+    }
+  }
+});
+
+// Stop research endpoint
+app.post('/api/research/stop', async (req, res) => {
+  try {
+    console.log('[SERVER] Stop research request received');
+    isResearchStopped = true;
+    console.log('[SERVER] Research stop flag set to true');
+    
+    res.json({ 
+      success: true, 
+      message: 'Research stop requested - will terminate at next checkpoint' 
+    });
+  } catch (error) {
+    console.error('[SERVER] Error stopping research:', error);
+    res.status(500).json({
+      error: 'Failed to stop research',
+      details: error.message
+    });
   }
 });
 

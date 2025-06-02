@@ -36,6 +36,7 @@ class DatabaseWrapper {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT UNIQUE NOT NULL,
           system_prompt TEXT NOT NULL,
+          company_data TEXT DEFAULT NULL,
           is_active BOOLEAN DEFAULT 0,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )

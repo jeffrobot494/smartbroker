@@ -8,13 +8,17 @@ class ResearchDAO {
    * @returns {Promise<Object>} Template with criteria array
    */
   async getActiveTemplate() {
+    console.log('[DAO] Getting active template...');
     const template = await this.db.get(`
       SELECT * FROM templates WHERE is_active = 1 LIMIT 1
     `);
 
     if (!template) {
+      console.log('[DAO] No active template found');
       throw new Error('No active template found');
     }
+
+    console.log(`[DAO] Found active template: ${template.name} (ID: ${template.id})`);
 
     const criteria = await this.db.all(`
       SELECT * FROM criteria 
@@ -22,10 +26,27 @@ class ResearchDAO {
       ORDER BY order_index
     `, [template.id]);
 
+    console.log(`[DAO] Found ${criteria.length} criteria for template`);
+
+    // Parse company data if it exists
+    let companies = [];
+    if (template.company_data) {
+      console.log('[DAO] Template has company data, parsing...');
+      try {
+        companies = JSON.parse(template.company_data);
+        console.log(`[DAO] Parsed ${companies.length} companies from template`);
+      } catch (error) {
+        console.warn('[DAO] Failed to parse company data:', error.message);
+      }
+    } else {
+      console.log('[DAO] No company data found in template');
+    }
+
     return {
       id: template.id,
       name: template.name,
       systemPrompt: template.system_prompt,
+      companies: companies,
       criteria: criteria.map(c => ({
         id: c.id,
         name: c.name,
@@ -606,6 +627,69 @@ class ResearchDAO {
     return templateId ? 
       await this.db.get(query, [templateId]) : 
       await this.db.get(query);
+  }
+
+  /**
+   * Save company data to template
+   * @param {number} templateId - Template ID
+   * @param {Array} companies - Array of company objects
+   * @returns {Promise<Object>} Success result
+   */
+  async saveCompanyData(templateId, companies) {
+    const template = await this.db.get('SELECT id FROM templates WHERE id = ?', [templateId]);
+    if (!template) {
+      throw new Error('Template not found');
+    }
+
+    const companyJson = JSON.stringify(companies);
+    await this.db.run(
+      'UPDATE templates SET company_data = ? WHERE id = ?',
+      [companyJson, templateId]
+    );
+    
+    return { success: true, count: companies.length };
+  }
+
+  /**
+   * Get company data for template
+   * @param {number} templateId - Template ID
+   * @returns {Promise<Array>} Array of company objects
+   */
+  async getCompanyData(templateId) {
+    const template = await this.db.get(
+      'SELECT company_data FROM templates WHERE id = ?',
+      [templateId]
+    );
+    
+    if (!template || !template.company_data) {
+      return [];
+    }
+    
+    try {
+      return JSON.parse(template.company_data);
+    } catch (error) {
+      console.warn('Failed to parse company data:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Clear company data for template
+   * @param {number} templateId - Template ID
+   * @returns {Promise<Object>} Success result
+   */
+  async clearCompanyData(templateId) {
+    const template = await this.db.get('SELECT id FROM templates WHERE id = ?', [templateId]);
+    if (!template) {
+      throw new Error('Template not found');
+    }
+
+    await this.db.run(
+      'UPDATE templates SET company_data = NULL WHERE id = ?',
+      [templateId]
+    );
+    
+    return { success: true };
   }
 }
 
