@@ -75,17 +75,57 @@
             
             <!-- Output Tab -->
             <div class="tab-content" id="output-tab">
-                <div class="output-container">
-                    <!-- Output tab content will be populated by JavaScript -->
-                    <p>Output tab - Coming soon!</p>
+                <div class="output-controls">
+                    <h3>Output Filters</h3>
+                    <div class="output-checkboxes">
+                        <div class="output-item">
+                            <input type="checkbox" id="system-prompt" checked>
+                            <label for="system-prompt">System Prompt</label>
+                        </div>
+                        <div class="output-item">
+                            <input type="checkbox" id="criterion-prompt" checked>
+                            <label for="criterion-prompt">Criterion Prompt</label>
+                        </div>
+                        <div class="output-item">
+                            <input type="checkbox" id="tool-response" checked>
+                            <label for="tool-response">Tool Response</label>
+                        </div>
+                        <div class="output-item">
+                            <input type="checkbox" id="claude-tool-request" checked>
+                            <label for="claude-tool-request">Claude Tool Request</label>
+                        </div>
+                        <div class="output-item">
+                            <input type="checkbox" id="claude-analysis" checked>
+                            <label for="claude-analysis">Claude Analysis</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="clear-output-btn" style="margin-top: 10px;">🗑️ Clear Output</button>
+                </div>
+                
+                <div class="terminal" id="terminal">
+                    <!-- Messages will be dynamically added here -->
                 </div>
             </div>
             
             <!-- Options Tab -->
             <div class="tab-content" id="options-tab">
-                <div class="options-container">
-                    <!-- Options tab content will be populated by JavaScript -->
-                    <p>Options tab - Coming soon!</p>
+                <div class="options-grid">
+                    <div class="options-section">
+                        <h3>Research Templates</h3>
+                        <div class="form-group">
+                            <label>Current Template:</label>
+                            <select id="template-select">
+                                <!-- Populated dynamically from database -->
+                            </select>
+                        </div>
+                        <button class="btn" id="save-template-btn">Save Template</button>
+                    </div>
+                    
+                    <!-- Placeholder for other sections -->
+                    <div class="options-section">
+                        <h3>Research Criteria</h3>
+                        <p>Coming soon...</p>
+                    </div>
                 </div>
             </div>
         </div>

@@ -438,12 +438,16 @@ class ResearchGUI {
       return;
     }
     
+    // Send all messages to OutputGUI for terminal display
+    if (this.app.outputGUI) {
+      this.app.outputGUI.addMessage(update);
+    }
+    
     // Handle different progress update types - the spread operation overwrites the outer type
     if (update.type === 'final_result') {
       // This is a final result - update the table
       this.updateTableProgress(update.company, update.criterion, update.result);
     }
-    // Other progress types are logged for future Output tab implementation
   }
 
   updateTableProgress(companyName, criterionName, result) {
