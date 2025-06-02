@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBroker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SmartBroker</h1>
+            <p>Intelligent Company Compatibility Research</p>
+        </div>
+        
+        <div class="main-window">
+            <div class="tabs">
+                <button class="tab active" data-tab="research">Research</button>
+                <button class="tab" data-tab="output">Output</button>
+                <button class="tab" data-tab="options">Options</button>
+            </div>
+            
+            <!-- Research Tab -->
+            <div class="tab-content active" id="research-tab">
+                <div class="research-controls">
+                    <div class="file-upload">
+                        <label for="csv-upload">Upload Company Data (CSV):</label>
+                        <input type="file" id="csv-upload" accept=".csv">
+                        <div class="file-info">No file selected</div>
+                    </div>
+                    
+                    <div class="range-input">
+                        <label for="company-range">Company Range:</label>
+                        <input type="text" id="company-range" placeholder="e.g., 1-10 or 50-100" value="1-50">
+                    </div>
+                    
+                    <div class="criteria-selection">
+                        <h3>Research Criteria</h3>
+                        <div class="criteria-grid" id="criteria-grid">
+                            <!-- Criteria checkboxes will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="research-actions">
+                    <button class="btn btn-start" id="start-btn">▶ Start Research</button>
+                    <button class="btn btn-stop" id="stop-btn" style="display: none;">⏸ Stop Research</button>
+                    <button class="btn btn-secondary" id="export-btn">📊 Export Results</button>
+                </div>
+                
+                <div class="status-summary">
+                    <strong>Companies Eliminated: <span id="eliminated-count">0</span></strong>
+                </div>
+                
+                <div class="table-container">
+                    <table class="progress-table">
+                        <thead>
+                            <tr>
+                                <th>Company Name</th>
+                                <th>Placeholder 1</th>
+                                <th>Placeholder 2</th>
+                                <th>Placeholder 3</th>
+                                <th>Placeholder 4</th>
+                                <th>Placeholder 5</th>
+                                <th>Placeholder 6</th>
+                            </tr>
+                        </thead>
+                        <tbody id="progress-table-body">
+                            <!-- Progress table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

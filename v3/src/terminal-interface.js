@@ -99,24 +99,22 @@ class TerminalInterface {
       return;
     }
 
-    // Ask to choose criterion
-    console.log('\n📋 Available Criteria:');
+    // Ask to choose criteria (multi-select)
+    console.log('\n📋 Select criteria to research (comma-separated numbers):');
     template.criteria.forEach((criterion, index) => {
       const flag = criterion.disqualifying ? '🚫' : '📊';
       console.log(`${index + 1}. ${flag} ${criterion.name}`);
     });
 
-    const criterionChoice = await this.promptUser('Choose criterion number: ');
-    const criterionIndex = parseInt(criterionChoice) - 1;
-    if (criterionIndex < 0 || criterionIndex >= template.criteria.length) {
-      console.log('❌ Invalid criterion number.');
+    const criteriaSelection = await this.promptUser('Enter criterion numbers (e.g., 1,3,5 or "all"): ');
+    const criteriaNames = this.parseCriteriaSelection(criteriaSelection, template.criteria);
+    
+    if (criteriaNames.length === 0) {
+      console.log('❌ No valid criteria selected.');
       return;
     }
-    const selectedCriterion = template.criteria[criterionIndex];
 
-    // Ask about remaining criteria
-    const doRemaining = await this.promptUser('Do remaining criteria after this one? (y/n): ');
-    const continueWithRemaining = doRemaining.toLowerCase() === 'y';
+    console.log(`\n✅ Selected ${criteriaNames.length} criteria: ${criteriaNames.join(', ')}`);
 
     // Ask about verbosity (default 1)
     const verbosityStr = await this.promptUser('Verbosity level (1-4, default 1): ');
@@ -125,11 +123,6 @@ class TerminalInterface {
     // Ask about waiting between tool uses
     const waitStr = await this.promptUser('Wait between tool uses? (nothing for no, 1 for yes): ');
     this.waitBetweenTools = waitStr.trim() === '1';
-
-    // Determine criteria to run
-    const criteriaNames = continueWithRemaining 
-      ? template.criteria.slice(criterionIndex).map(c => c.name)
-      : [selectedCriterion.name];
 
     console.log('\n🚀 Starting research...');
     console.log('='.repeat(60));
@@ -143,8 +136,7 @@ class TerminalInterface {
         criteriaNames,
         {
           verbosity: this.verbosity,
-          waitBetweenTools: this.waitBetweenTools,
-          continueWithRemaining
+          waitBetweenTools: this.waitBetweenTools
         },
         this.createProgressCallback()
       );
@@ -326,6 +318,37 @@ class TerminalInterface {
     }
 
     return { start, end };
+  }
+
+  /**
+   * Parse criteria selection string into array of criterion names
+   */
+  parseCriteriaSelection(selection, allCriteria) {
+    if (!selection || !selection.trim()) {
+      return [];
+    }
+
+    const trimmedSelection = selection.trim().toLowerCase();
+    
+    // Handle "all" selection
+    if (trimmedSelection === 'all') {
+      return allCriteria.map(c => c.name);
+    }
+    
+    // Parse comma-separated numbers
+    const numbers = selection.split(',')
+      .map(n => parseInt(n.trim()))
+      .filter(n => !isNaN(n));
+    
+    const selectedCriteria = [];
+    
+    for (const num of numbers) {
+      if (num >= 1 && num <= allCriteria.length) {
+        selectedCriteria.push(allCriteria[num - 1].name);
+      }
+    }
+    
+    return selectedCriteria;
   }
 
   /**
