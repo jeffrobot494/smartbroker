@@ -46,6 +46,11 @@ class ResearchGUI {
     document.getElementById('stop-btn').addEventListener('click', () => {
       this.stopResearch();
     });
+
+    // Export button
+    document.getElementById('export-btn').addEventListener('click', () => {
+      this.handleExportClick();
+    });
   }
 
   onFileSelected(e) {
@@ -559,6 +564,57 @@ class ResearchGUI {
     } catch (error) {
       console.error('ResearchGUI: Error loading existing results:', error);
       // Don't show alert for this - just log the error
+    }
+  }
+
+  handleExportClick() {
+    console.log('ResearchGUI: Export button clicked');
+    
+    try {
+      // Find the results table
+      const resultsTable = document.querySelector('.progress-table');
+      
+      if (!resultsTable) {
+        console.log('ResearchGUI: No results table found');
+        alert('No results table found to export');
+        return;
+      }
+      
+      // Check if table has data beyond headers
+      const dataRows = resultsTable.querySelectorAll('tbody tr');
+      if (dataRows.length === 0) {
+        console.log('ResearchGUI: No data rows found in table');
+        alert('No data available to export');
+        return;
+      }
+      
+      // Check if we actually have results (not just empty cells)
+      const hasResults = Array.from(dataRows).some(row => {
+        const cells = row.querySelectorAll('td');
+        return Array.from(cells).slice(1).some(cell => cell.textContent.trim() !== '');
+      });
+      
+      if (!hasResults) {
+        console.log('ResearchGUI: No research results found in table');
+        alert('No research results available to export. Please run research first.');
+        return;
+      }
+      
+      console.log('ResearchGUI: Converting table to CSV...');
+      
+      // Convert to CSV and download
+      const csvContent = CSVExporter.convertTableToCSV(resultsTable);
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+      const templateName = this.app.template?.name || 'unknown';
+      const filename = `research_results_${templateName}_${timestamp}.csv`;
+      
+      CSVExporter.downloadCSV(csvContent, filename);
+      
+      console.log('ResearchGUI: CSV export completed successfully');
+      
+    } catch (error) {
+      console.error('ResearchGUI: Error exporting CSV:', error);
+      alert('Failed to export CSV. Please try again.');
     }
   }
 }
