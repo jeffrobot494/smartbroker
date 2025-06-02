@@ -585,7 +585,6 @@ class ResearchDAO {
     
     return { success: true, normalizedCount: criteria.length };
   }
-}
 
   /**
    * Get cost summary from database
