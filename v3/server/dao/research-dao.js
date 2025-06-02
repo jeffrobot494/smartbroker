@@ -691,6 +691,43 @@ class ResearchDAO {
     
     return { success: true };
   }
+
+  /**
+   * Get all research results for a template
+   * @param {number} templateId - Template ID
+   * @returns {Promise<Array>} Array of research results with company and criterion info
+   */
+  async getTemplateResults(templateId) {
+    const query = `
+      SELECT 
+        c.name as company_name,
+        cr.name as criterion_name,
+        rr.answer,
+        rr.explanation,
+        rr.confidence_score,
+        rr.result_type,
+        rr.created_at
+      FROM research_results rr
+      JOIN companies c ON rr.company_id = c.id  
+      JOIN criteria cr ON rr.criterion_id = cr.id
+      WHERE rr.template_id = ?
+      ORDER BY c.name, cr.order_index
+    `;
+
+    const results = await this.db.all(query, [templateId]);
+
+    return results.map(result => ({
+      company: result.company_name,
+      criterion: result.criterion_name,
+      result: {
+        type: result.result_type,
+        answer: result.answer,
+        explanation: result.explanation,
+        confidence_score: result.confidence_score
+      },
+      created_at: result.created_at
+    }));
+  }
 }
 
 module.exports = ResearchDAO;

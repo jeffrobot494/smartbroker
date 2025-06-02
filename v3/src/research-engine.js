@@ -432,10 +432,14 @@ class ResearchEngine {
           if (progressCallback) {
             progressCallback({
               type: 'final_result',
-              answer: parsed.answer,
-              explanation: parsed.explanation,
-              confidence_score: parsed.confidence_score,
-              result_type: parsed.type
+              company: company.name,
+              criterion: criterion.name,
+              result: {
+                type: parsed.type,
+                answer: parsed.answer,
+                explanation: parsed.explanation,
+                confidence_score: parsed.confidence_score
+              }
             });
           }
           

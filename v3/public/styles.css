@@ -293,3 +293,21 @@ body {
     padding: 20px;
     grid-column: 1 / -1; /* Span full width */
 }
+
+/* Research result styling */
+.result-positive-disqualifying {
+    background-color: #d4edda;
+    color: #155724;
+    font-weight: 600;
+}
+
+.result-negative-disqualifying {
+    background-color: #f8d7da;
+    color: #721c24;
+    font-weight: 600;
+}
+
+.result-unknown {
+    color: #6c757d;
+    font-style: italic;
+}

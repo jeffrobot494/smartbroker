@@ -77,6 +77,7 @@ const PORT = process.env.PORT || 3000;
 
 // Global research state
 let isResearchStopped = false;
+let sseClient = null;
 
 // Initialize database
 const database = new Database();
@@ -735,6 +736,28 @@ app.delete('/api/template/:id/companies', async (req, res) => {
   }
 });
 
+// Get all research results for a template
+app.get('/api/research/template/:id/results', async (req, res) => {
+  try {
+    const templateId = parseInt(req.params.id);
+    
+    console.log(`[SERVER] Getting all research results for template ${templateId}`);
+    const results = await researchDAO.getTemplateResults(templateId);
+    
+    res.json({
+      templateId: templateId,
+      results: results,
+      count: results.length
+    });
+  } catch (error) {
+    console.error('Error getting template results:', error);
+    res.status(500).json({
+      error: 'Failed to get template results',
+      details: error.message
+    });
+  }
+});
+
 // Start research endpoint
 app.post('/api/research/start', async (req, res) => {
   try {
@@ -757,10 +780,25 @@ app.post('/api/research/start', async (req, res) => {
     // Pass stop flag checker to research engine
     engine.setStopChecker(() => isResearchStopped);
 
-    // Progress callback to log updates
+    // Progress callback to log updates and send to SSE client
     const progressCallback = (progress) => {
       console.log('[SERVER] Research progress:', progress);
-      // Later we can implement real-time updates via WebSocket/SSE
+      
+      // Send to SSE client if connected
+      if (sseClient) {
+        try {
+          const update = {
+            type: 'research_progress',
+            timestamp: Date.now(),
+            ...progress
+          };
+          
+          sseClient.write(`data: ${JSON.stringify(update)}\n\n`);
+        } catch (error) {
+          console.error('[SERVER] Error sending SSE update:', error);
+          sseClient = null; // Clear broken connection
+        }
+      }
     };
 
     // Start research
@@ -811,6 +849,40 @@ app.post('/api/research/stop', async (req, res) => {
       details: error.message
     });
   }
+});
+
+// SSE endpoint for real-time progress updates
+app.get('/api/research/stream', (req, res) => {
+  console.log('[SERVER] SSE client connected');
+  
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Cache-Control'
+  });
+  
+  // Store the single client connection
+  sseClient = res;
+  
+  // Send initial connection confirmation
+  res.write(`data: ${JSON.stringify({
+    type: 'connection',
+    message: 'Connected to research progress stream',
+    timestamp: Date.now()
+  })}\n\n`);
+  
+  // Handle client disconnect
+  req.on('close', () => {
+    console.log('[SERVER] SSE client disconnected');
+    sseClient = null;
+  });
+  
+  req.on('error', (error) => {
+    console.error('[SERVER] SSE request error:', error);
+    sseClient = null;
+  });
 });
 
 // Health check endpoint

@@ -2,11 +2,17 @@ class ResearchGUI {
   constructor(app) {
     this.app = app;
     this.selectedCriteria = []; // Track selected criteria names
+    this.eventSource = null; // SSE connection
   }
 
   init() {
     console.log('ResearchGUI: Initializing...');
     this.setupEventListeners();
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      this.stopProgressStream();
+    });
   }
 
   onDataChanged() {
@@ -14,6 +20,7 @@ class ResearchGUI {
     this.updateTableHeaders();
     this.populateCompanyTable();
     this.populateCriteriaCheckboxes();
+    this.loadExistingResults();
   }
 
   setupEventListeners() {
@@ -290,6 +297,9 @@ class ResearchGUI {
     document.getElementById('start-btn').style.display = 'none';
     document.getElementById('stop-btn').style.display = 'inline-block';
 
+    // Start SSE connection before starting research
+    this.startProgressStream();
+
     try {
       // Call the research engine via API
       await this.callResearchEngine(range, this.selectedCriteria);
@@ -299,7 +309,8 @@ class ResearchGUI {
       console.error('ResearchGUI: Research failed:', error);
       alert('Research failed: ' + error.message);
     } finally {
-      // Reset UI state
+      // Stop SSE connection and reset UI state
+      this.stopProgressStream();
       this.app.isResearching = false;
       document.getElementById('start-btn').style.display = 'inline-block';
       document.getElementById('stop-btn').style.display = 'none';
@@ -387,6 +398,120 @@ class ResearchGUI {
     } catch (error) {
       console.error('ResearchGUI: Stop request failed:', error);
       alert('Failed to stop research: ' + error.message);
+    }
+  }
+
+  startProgressStream() {
+    console.log('ResearchGUI: Starting SSE progress stream...');
+    
+    this.eventSource = new EventSource('/api/research/stream');
+    
+    this.eventSource.onopen = () => {
+      console.log('ResearchGUI: SSE connection opened');
+    };
+    
+    this.eventSource.onmessage = (event) => {
+      try {
+        const update = JSON.parse(event.data);
+        this.handleProgressUpdate(update);
+      } catch (error) {
+        console.error('ResearchGUI: Error parsing SSE message:', error);
+      }
+    };
+    
+    this.eventSource.onerror = (error) => {
+      console.error('ResearchGUI: SSE connection error:', error);
+    };
+  }
+
+  stopProgressStream() {
+    if (this.eventSource) {
+      console.log('ResearchGUI: Closing SSE connection');
+      this.eventSource.close();
+      this.eventSource = null;
+    }
+  }
+
+  handleProgressUpdate(update) {
+    // Handle connection confirmation
+    if (update.type === 'connection') {
+      return;
+    }
+    
+    // Handle different progress update types - the spread operation overwrites the outer type
+    if (update.type === 'final_result') {
+      // This is a final result - update the table
+      this.updateTableProgress(update.company, update.criterion, update.result);
+    }
+    // Other progress types are logged for future Output tab implementation
+  }
+
+  updateTableProgress(companyName, criterionName, result) {
+    // Find the company row and criterion column
+    const companyIndex = this.app.companies.findIndex(c => c.name === companyName);
+    const criterion = this.app.template.criteria.find(c => c.name === criterionName);
+    const criterionIndex = this.app.template.criteria.findIndex(c => c.name === criterionName);
+    
+    if (companyIndex === -1 || criterionIndex === -1) {
+      console.warn('ResearchGUI: Could not find company or criterion for table update');
+      return;
+    }
+    
+    // Find the specific table cell
+    const tableBody = document.getElementById('progress-table-body');
+    const row = tableBody.children[companyIndex];
+    if (!row) return;
+    
+    const cell = row.children[criterionIndex + 1]; // +1 because first column is company name
+    if (!cell) return;
+    
+    // Determine styling based on result and criterion type
+    let cellClass = 'progress-cell';
+    let cellText = '?';
+    
+    if (result.type === 'error' || !result.answer) {
+      cellClass += ' result-unknown';
+      cellText = '?';
+    } else if (criterion.disqualifying) {
+      // Disqualifying criteria: green for positive, red for negative
+      cellClass += result.type === 'positive' ? ' result-positive-disqualifying' : ' result-negative-disqualifying';
+      cellText = result.answer;
+    } else {
+      // Non-disqualifying: just use default black text
+      cellText = result.answer;
+    }
+    
+    // Update the cell
+    cell.textContent = cellText;
+    cell.className = cellClass;
+    cell.title = result.explanation || ''; // Tooltip with explanation
+  }
+
+  async loadExistingResults() {
+    if (!this.app.template || !this.app.template.id) {
+      console.log('ResearchGUI: No template available for loading results');
+      return;
+    }
+
+    try {
+      console.log(`ResearchGUI: Loading existing results for template ${this.app.template.id}`);
+      
+      const response = await fetch(`/api/research/template/${this.app.template.id}/results`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log(`ResearchGUI: Loaded ${data.count} existing research results`);
+
+      // Populate table with existing results
+      data.results.forEach(result => {
+        this.updateTableProgress(result.company, result.criterion, result.result);
+      });
+
+    } catch (error) {
+      console.error('ResearchGUI: Error loading existing results:', error);
+      // Don't show alert for this - just log the error
     }
   }
 }
