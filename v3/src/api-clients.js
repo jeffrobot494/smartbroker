@@ -192,12 +192,35 @@ class TemplateClient {
 
   async getActiveTemplate() {
     try {
+      console.log(`[DEBUG] TemplateClient attempting to fetch from: ${this.serverURL}/api/template/active`);
+      console.log(`[DEBUG] Request timestamp: ${new Date().toISOString()}`);
+      
       const response = await axios.get(
         `${this.serverURL}/api/template/active`
       );
 
+      console.log(`[DEBUG] TemplateClient received response:`, {
+        status: response.status,
+        dataLength: JSON.stringify(response.data).length,
+        hasData: !!response.data
+      });
+      
       return response.data;
     } catch (error) {
+      console.error(`[DEBUG] TemplateClient error details:`, {
+        message: error.message,
+        code: error.code,
+        response: {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data
+        },
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          timeout: error.config?.timeout
+        }
+      });
       console.error('Template API Error:', error.response?.data || error.message);
       throw new Error(`Template fetch failed: ${error.response?.data?.details || error.message}`);
     }

@@ -46,10 +46,27 @@ class ResearchEngine {
    */
   async initialize() {
     try {
+      console.log(`[DEBUG] ResearchEngine.initialize() starting...`);
+      console.log(`[DEBUG] TemplateClient serverURL:`, this.template.serverURL);
+      
       const templateData = await this.template.getActiveTemplate();
+      
+      console.log(`[DEBUG] ResearchEngine.initialize() got template data:`, {
+        id: templateData?.id,
+        name: templateData?.name,
+        criteriaCount: templateData?.criteria?.length,
+        companiesCount: templateData?.companies?.length
+      });
+      
       this.currentTemplate = templateData;
       this.currentCriteria = templateData.criteria;
+      
+      console.log(`[DEBUG] ResearchEngine.initialize() completed successfully`);
     } catch (error) {
+      console.error(`[DEBUG] ResearchEngine.initialize() failed:`, {
+        message: error.message,
+        stack: error.stack
+      });
       console.error('Error loading template:', error.message);
       throw error;
     }

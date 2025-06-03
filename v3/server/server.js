@@ -794,8 +794,11 @@ app.post('/api/research/start', async (req, res) => {
     });
 
     // Import and initialize research engine
+    console.log(`[DEBUG] Creating ResearchEngine for research request...`);
     const ResearchEngine = require('../src/research-engine');
     const engine = new ResearchEngine();
+    
+    console.log(`[DEBUG] Initializing ResearchEngine...`);
     await engine.initialize();
 
     // Pass stop flag checker to research engine
