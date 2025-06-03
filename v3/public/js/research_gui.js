@@ -356,7 +356,7 @@ class ResearchGUI {
       endIndex: range.end,
       criteriaNames: criteriaNames,
       options: {
-        verbosity: 1,
+        verbosity: 4,
         waitBetweenTools: false
       }
     };
@@ -484,6 +484,9 @@ class ResearchGUI {
     let cellText = '?';
     
     if (result.type === 'error' || !result.answer) {
+      cellClass += ' result-error';
+      cellText = '✗';
+    } else if (result.type === 'unknown') {
       cellClass += ' result-unknown';
       cellText = '?';
     } else if (criterion.disqualifying) {
@@ -523,20 +526,30 @@ class ResearchGUI {
     } catch (error) {
       console.error('ResearchGUI: Error loading cost summary:', error);
       // Reset display to defaults on error
-      this.updateCostDisplay({ total: 0, investigations: 0 });
+      this.updateCostDisplay({ total: 0, investigations: 0, unique_companies: 0 });
     }
   }
 
   updateCostDisplay(costData) {
     const totalCost = (costData.total || 0).toFixed(2);
-    const investigations = costData.investigations || 0;
-    const averageCost = investigations > 0 ? (costData.total / investigations).toFixed(2) : '0.00';
+    const investigations = costData.investigations || 0;  // Total queries
+    const uniqueCompanies = costData.unique_companies || 0;  // Unique companies
+    const averageCostPerCompany = uniqueCompanies > 0 ? (costData.total / uniqueCompanies).toFixed(2) : '0.00';
+    const averageCostPerQuery = investigations > 0 ? (costData.total / investigations).toFixed(2) : '0.00';
     
-    console.log('ResearchGUI: Updating cost display:', { totalCost, averageCost, investigations });
+    console.log('ResearchGUI: Updating cost display:', { 
+      totalCost, 
+      averageCostPerCompany, 
+      averageCostPerQuery, 
+      investigations, 
+      uniqueCompanies 
+    });
     
     document.getElementById('total-cost').textContent = `$${totalCost}`;
-    document.getElementById('average-cost').textContent = `$${averageCost}`;
-    document.getElementById('companies-researched').textContent = investigations;
+    document.getElementById('average-cost').textContent = `$${averageCostPerCompany}`;
+    document.getElementById('average-query-cost').textContent = `$${averageCostPerQuery}`;
+    document.getElementById('queries-researched').textContent = investigations;
+    document.getElementById('companies-researched').textContent = uniqueCompanies;
   }
 
   async loadExistingResults() {

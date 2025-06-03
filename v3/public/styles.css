@@ -349,8 +349,18 @@ body {
 }
 
 .result-unknown {
-    color: #6c757d;
+    background-color: #fff3cd;
+    color: #856404;
+    text-align: center;
+    font-weight: bold;
     font-style: italic;
+}
+
+.result-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-align: center;
+    font-weight: bold;
 }
 
 /* Output Tab Styles */

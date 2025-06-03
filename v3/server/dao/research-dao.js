@@ -609,7 +609,8 @@ class ResearchDAO {
         SUM(claude_cost) as claude,
         SUM(perplexity_cost) as perplexity,
         SUM(phantombuster_cost) as phantombuster,
-        COUNT(*) as investigations
+        COUNT(*) as investigations,
+        COUNT(DISTINCT company_id) as unique_companies
       FROM research_results ${whereClause}
     `;
     

@@ -100,7 +100,7 @@ class ResearchEngine {
    */
   async researchCompanyRange(companies, startIndex, endIndex, criteriaNames, options = {}, progressCallback = null) {
     const {
-      verbosity = 1,
+      verbosity = 4,
       waitBetweenTools = false,
       continueWithRemaining = false
     } = options;
@@ -255,7 +255,7 @@ class ResearchEngine {
    * @returns {Object} Research result
    */
   async researchCompanyCriterion(company, criterion, options = {}, progressCallback = null) {
-    const { verbosity = 1, waitBetweenTools = false } = options;
+    const { verbosity = 4, waitBetweenTools = false } = options;
     
     const companyInfo = this.companyLoader.formatCompanyInfo(company);
     const conversation = [];
@@ -318,7 +318,15 @@ class ResearchEngine {
           });
         }
 
-        const response = await this.claude.sendMessage(conversation, this.currentTemplate.systemPrompt);
+        // Build system prompt with iteration context
+        const remainingAttempts = this.maxIterations - iterations;
+        const iterationContext = remainingAttempts === 0 
+          ? `\n\nCRITICAL: Final iteration (${iterations}/${this.maxIterations}). You must provide a definitive answer or use TYPE: unknown_result if insufficient information exists.`
+          : `\n\nResearch Status: Iteration ${iterations}/${this.maxIterations} - ${remainingAttempts} more attempts remaining.`;
+        
+        const systemPromptWithContext = this.currentTemplate.systemPrompt + iterationContext;
+        
+        const response = await this.claude.sendMessage(conversation, systemPromptWithContext);
         console.log(`[DEBUG] Claude API call successful - Response length: ${response.content.length} chars`);
         
         // Calculate and track Claude costs
@@ -467,7 +475,7 @@ class ResearchEngine {
     const lines = content.trim().split('\n');
     const typeLine = lines[0];
     
-    const typeMatch = typeLine.match(/TYPE:\s*(tool_use|positive_result|negative_result)/i);
+    const typeMatch = typeLine.match(/TYPE:\s*(tool_use|positive_result|negative_result|unknown_result)/i);
     if (!typeMatch) {
       throw new Error('Could not parse response type from Claude');
     }
@@ -493,8 +501,14 @@ class ResearchEngine {
       const answer = lines[1] ? lines[1].trim() : '';
       const explanation = lines.slice(2).join('\n').trim();
       
+      const typeMap = {
+        'positive_result': 'positive',
+        'negative_result': 'negative',
+        'unknown_result': 'unknown'
+      };
+      
       return {
-        type: type === 'positive_result' ? 'positive' : 'negative',
+        type: typeMap[type],
         answer: answer,
         explanation: explanation,
         confidence_score: confidence_score
