@@ -356,7 +356,7 @@ class ResearchGUI {
       endIndex: range.end,
       criteriaNames: criteriaNames,
       options: {
-        verbosity: 1,
+        verbosity: 4,
         waitBetweenTools: false
       }
     };

@@ -100,7 +100,7 @@ class ResearchEngine {
    */
   async researchCompanyRange(companies, startIndex, endIndex, criteriaNames, options = {}, progressCallback = null) {
     const {
-      verbosity = 1,
+      verbosity = 4,
       waitBetweenTools = false,
       continueWithRemaining = false
     } = options;
@@ -255,7 +255,7 @@ class ResearchEngine {
    * @returns {Object} Research result
    */
   async researchCompanyCriterion(company, criterion, options = {}, progressCallback = null) {
-    const { verbosity = 1, waitBetweenTools = false } = options;
+    const { verbosity = 4, waitBetweenTools = false } = options;
     
     const companyInfo = this.companyLoader.formatCompanyInfo(company);
     const conversation = [];
