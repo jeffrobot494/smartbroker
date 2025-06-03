@@ -10,11 +10,14 @@ const CONFIDENCE_LEVELS = {
 
 class ResearchEngine {
   constructor() {
-    this.claude = new ClaudeClient();
-    this.perplexity = new PerplexityClient();
-    this.phantombuster = new PhantomBusterClient();
-    this.research = new ResearchClient();
-    this.template = new TemplateClient();
+    // Use same port logic as server
+    const serverURL = `http://localhost:${process.env.PORT || 3000}`;
+    
+    this.claude = new ClaudeClient(serverURL);
+    this.perplexity = new PerplexityClient(serverURL);
+    this.phantombuster = new PhantomBusterClient(serverURL);
+    this.research = new ResearchClient(serverURL);
+    this.template = new TemplateClient(serverURL);
     this.companyLoader = new CompanyLoader();
     this.costCalculator = new CostCalculator();
     this.maxIterations = 5;
