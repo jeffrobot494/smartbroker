@@ -262,6 +262,40 @@ class ResearchDAO {
   }
 
   /**
+   * Delete all research results for a specific company in a template
+   * @param {string} companyName - Company name
+   * @param {number} templateId - Template ID
+   * @returns {Promise<Object>} Deletion result
+   */
+  async deleteCompanyResults(companyName, templateId) {
+    // Get company ID
+    const company = await this.db.get('SELECT id FROM companies WHERE name = ?', [companyName]);
+    if (!company) {
+      throw new Error('Company not found');
+    }
+
+    // Count existing results before deletion
+    const existingCount = await this.db.get(`
+      SELECT COUNT(*) as count 
+      FROM research_results 
+      WHERE template_id = ? AND company_id = ?
+    `, [templateId, company.id]);
+
+    // Delete all research results for this company in this template
+    const result = await this.db.run(`
+      DELETE FROM research_results 
+      WHERE template_id = ? AND company_id = ?
+    `, [templateId, company.id]);
+
+    return { 
+      success: true, 
+      deletedCount: result.changes,
+      companyName: companyName,
+      templateId: templateId
+    };
+  }
+
+  /**
    * Clear all research results from the database
    * @returns {Promise<Object>} Summary of deleted records
    */
@@ -382,9 +416,21 @@ class ResearchDAO {
       throw new Error('Cannot delete the last template');
     }
 
-    // Check not active
+    // If deleting active template, activate another template first
     if (template.is_active) {
-      throw new Error('Cannot delete active template. Switch to another template first.');
+      // Find another template to activate
+      const otherTemplate = await this.db.get(
+        'SELECT id FROM templates WHERE id != ? ORDER BY id ASC LIMIT 1', 
+        [templateId]
+      );
+      
+      if (otherTemplate) {
+        // Set all templates to inactive first
+        await this.db.run('UPDATE templates SET is_active = 0');
+        // Activate the other template
+        await this.db.run('UPDATE templates SET is_active = 1 WHERE id = ?', [otherTemplate.id]);
+        console.log(`[DAO] Switched active template from ${templateId} to ${otherTemplate.id} before deletion`);
+      }
     }
 
     // Delete (CASCADE will handle criteria and research results)

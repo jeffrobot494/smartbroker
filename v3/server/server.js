@@ -779,6 +779,22 @@ app.delete('/api/research/criterion/:criterionId/template/:templateId', async (r
   }
 });
 
+// Delete all research results for a company in a template
+app.delete('/api/research/company/:companyName/template/:templateId', async (req, res) => {
+  try {
+    const companyName = decodeURIComponent(req.params.companyName);
+    const templateId = parseInt(req.params.templateId);
+    
+    console.log(`[SERVER] Deleting research results for company "${companyName}" in template ${templateId}`);
+    const result = await researchDAO.deleteCompanyResults(companyName, templateId);
+    
+    res.json(result);
+  } catch (error) {
+    console.error('Error deleting company research results:', error);
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
 // Start research endpoint
 app.post('/api/research/start', async (req, res) => {
   try {

@@ -190,10 +190,35 @@ class ResearchGUI {
   createCompanyRow(company, index) {
     const row = document.createElement('tr');
     
-    // Company name cell with index
+    // Company name cell with index and delete button
     const nameCell = document.createElement('td');
-    nameCell.textContent = `${index + 1}. ${company.name}`;
     nameCell.className = 'company-name-cell';
+    
+    const nameSpan = document.createElement('span');
+    nameSpan.textContent = `${index + 1}. ${company.name}`;
+    nameCell.appendChild(nameSpan);
+    
+    // Add delete button
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = '🗑️';
+    deleteBtn.className = 'btn-delete-company';
+    deleteBtn.title = `Delete all research results for ${company.name}`;
+    deleteBtn.style.marginLeft = '10px';
+    deleteBtn.style.fontSize = '12px';
+    deleteBtn.style.padding = '2px 6px';
+    deleteBtn.style.border = 'none';
+    deleteBtn.style.background = 'transparent';
+    deleteBtn.style.cursor = 'pointer';
+    deleteBtn.style.opacity = '0.6';
+    
+    deleteBtn.addEventListener('mouseover', () => deleteBtn.style.opacity = '1');
+    deleteBtn.addEventListener('mouseout', () => deleteBtn.style.opacity = '0.6');
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.deleteCompanyResults(company.name);
+    });
+    
+    nameCell.appendChild(deleteBtn);
     row.appendChild(nameCell);
     
     // Progress cells for each criterion
@@ -628,6 +653,71 @@ class ResearchGUI {
     } catch (error) {
       console.error('ResearchGUI: Error exporting CSV:', error);
       alert('Failed to export CSV. Please try again.');
+    }
+  }
+
+  clearCompanyResultsFromTable(companyName) {
+    // Find the company row and clear all result cells
+    const companyIndex = this.app.companies.findIndex(c => c.name === companyName);
+    if (companyIndex === -1) return;
+    
+    const tableBody = document.getElementById('progress-table-body');
+    const row = tableBody.children[companyIndex];
+    if (!row) return;
+    
+    // Clear all result cells (skip first cell which is company name)
+    for (let i = 1; i < row.children.length; i++) {
+      const cell = row.children[i];
+      cell.textContent = '';
+      cell.className = 'progress-cell'; // Reset to default class
+      cell.title = ''; // Clear tooltip
+    }
+  }
+
+  async deleteCompanyResults(companyName) {
+    if (!this.app.template || !this.app.template.id) {
+      console.log('ResearchGUI: No template available for deletion');
+      return;
+    }
+
+    const confirmed = confirm(
+      `Delete ALL research results for "${companyName}" in template "${this.app.template.name}"?\n\n` +
+      `This will remove all research data for this company but keep the company in the list.\n\n` +
+      `This action cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    try {
+      console.log(`ResearchGUI: Deleting research results for company "${companyName}"`);
+      
+      const response = await fetch(
+        `/api/research/company/${encodeURIComponent(companyName)}/template/${this.app.template.id}`,
+        { method: 'DELETE' }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('ResearchGUI: Company research results deleted successfully:', result);
+      
+      // Refresh the research table to show cleared results
+      this.clearCompanyResultsFromTable(companyName);
+      this.loadExistingResults();
+      
+      // Refresh cost summary
+      this.loadCostSummary();
+
+      this.app.showNotification(
+        `Deleted ${result.deletedCount} research results for "${companyName}"`, 
+        'info'
+      );
+
+    } catch (error) {
+      console.error('ResearchGUI: Failed to delete company research results:', error);
+      this.app.showNotification('Failed to delete company research results: ' + error.message, 'error');
     }
   }
 }

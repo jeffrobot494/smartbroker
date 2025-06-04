@@ -39,6 +39,14 @@ class OptionsGUI {
       });
     }
 
+    // Delete template button
+    const deleteTemplateBtn = document.getElementById('delete-template-btn');
+    if (deleteTemplateBtn) {
+      deleteTemplateBtn.addEventListener('click', () => {
+        this.deleteTemplate();
+      });
+    }
+
     // Criteria dropdown change
     const criterionSelect = document.getElementById('criterion-select');
     if (criterionSelect) {
@@ -576,6 +584,51 @@ class OptionsGUI {
     } catch (error) {
       console.error('OptionsGUI: Failed to delete research results:', error);
       this.app.showNotification('Failed to delete research results: ' + error.message, 'error');
+    }
+  }
+
+  async deleteTemplate() {
+    if (!this.currentTemplateId) return;
+
+    const currentTemplate = this.templates.find(t => t.id === this.currentTemplateId);
+    if (!currentTemplate) return;
+
+    const confirmed = confirm(
+      `Are you sure you want to delete the template "${currentTemplate.name}"?\n\n` +
+      `This will permanently delete:\n` +
+      `• The template and system prompt\n` +
+      `• All research criteria\n` +
+      `• All research results\n` +
+      `• All company data\n\n` +
+      `This action cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    try {
+      console.log('OptionsGUI: Deleting template:', this.currentTemplateId);
+      
+      const response = await fetch(`/api/templates/${this.currentTemplateId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      console.log('OptionsGUI: Template deleted successfully');
+
+      // Reload templates list
+      await this.loadTemplates();
+      
+      // Load the new active template (backend will have switched to another template)
+      await this.app.loadTemplate();
+
+      this.app.showNotification(`Template "${currentTemplate.name}" deleted successfully!`, 'info');
+
+    } catch (error) {
+      console.error('OptionsGUI: Failed to delete template:', error);
+      this.app.showNotification('Failed to delete template: ' + error.message, 'error');
     }
   }
 }
