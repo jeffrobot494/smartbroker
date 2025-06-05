@@ -968,6 +968,26 @@ app.get('/api/research/stream', (req, res) => {
   });
 });
 
+// Instructions endpoint
+app.get('/api/instructions', (req, res) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const instructionsPath = path.resolve(__dirname, '../docs/instructions.txt');
+    
+    console.log('[SERVER] Reading instructions from:', instructionsPath);
+    const content = fs.readFileSync(instructionsPath, 'utf8');
+    
+    res.json({ content });
+  } catch (error) {
+    console.error('[SERVER] Error reading instructions file:', error);
+    res.status(500).json({ 
+      error: 'Failed to load instructions',
+      details: error.message
+    });
+  }
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ 

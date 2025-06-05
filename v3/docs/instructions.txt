@@ -1,0 +1,47 @@
+**Research**
+*Upload Company Data*
+Upload a CSV file here. Uploading a new CSV file in the same template will replace the companies in the research table, but not delete them from the database. You can reupload the previous csv file to view those results.
+Only "Company" is a required field. If there are fields named "Website", "City", and "State", those fields will be imported into the app and can be used for search. The order of these columns isn't 	important, but exact spelling and case is.
+*Company Range*
+Specify the range to research in the list of companies.
+*Research Criteria*
+Choose which criteria you want to research. You can come back to hit new ones later.
+*Start/Stop research*
+Starts the research process. You can press the "Stop" research button to tell the app to stop after it finishes its current query.
+*Export results*
+Export the full company list and their research results (if any) from the table to a csv file. There are a few options you can specify in the options menu.
+*API Cost Calculator*
+*Research Table*
+Mouse over a result to Claude's final analysis of that query.
+
+**Output**
+*Output filters*
+*Clear Output*
+*Terminal window*
+
+**Options**
+*Research Templates*
+A template is the main object in the application. The system prompt, the criteria, and all the research results are all tied to the template. If you did the delete, all those things will be deleted as well. 
+*Current Template*
+*System Prompt*
+*Save Template*
+*Delete Template*
+
+*Research Criteria*
+*Select Criterion*
+*Criterion Name*
+*Order*
+*Research Prompt*
+If you're getting too many "unknown" results, you can instruct Claude that it doesn't need to be absolutely sure. Rather, that an 80% likelihood is acceptable, for example.
+*Perplexity Pre-query*
+If the first perplexity query that Claude will make is going to be the same for every company, you can insert it here and the app will make the perplexity call immediately when the query begins, rather than asking Claude first, thus saving a call to Claude.
+*Answer Format*
+*Qualifying criterion*
+*Update Criterion*
+*Delete Criterion*
+*Delete Research Results*
+*Export Options*
+*Output Format*
+*Data Columns*
+Choose which pieces of identifying data about the company will be included in the exported file.
+*Show eliminated companies*

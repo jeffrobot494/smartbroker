@@ -8,6 +8,7 @@ class SmartBrokerApp {
     this.researchGUI = null;
     this.outputGUI = null;
     this.optionsGUI = null;
+    this.instructionsGUI = null;
   }
 
   async init() {
@@ -17,6 +18,7 @@ class SmartBrokerApp {
     this.researchGUI = new ResearchGUI(this);
     this.outputGUI = new OutputGUI(this);
     this.optionsGUI = new OptionsGUI(this);
+    this.instructionsGUI = new InstructionsGUI(this);
     
     // Load template and company data
     await this.loadTemplate();
@@ -28,6 +30,7 @@ class SmartBrokerApp {
     this.researchGUI.init();
     this.outputGUI.init();
     this.optionsGUI.init();
+    this.instructionsGUI.init();
     
     console.log('SmartBroker GUI initialized successfully');
   }
@@ -80,6 +83,7 @@ class SmartBrokerApp {
     if (this.researchGUI) this.researchGUI.onDataChanged();
     if (this.outputGUI) this.outputGUI.onDataChanged();
     if (this.optionsGUI) this.optionsGUI.onDataChanged();
+    if (this.instructionsGUI) this.instructionsGUI.onDataChanged();
   }
 
   // Shared utilities for all tabs
