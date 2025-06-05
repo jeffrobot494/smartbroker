@@ -609,42 +609,40 @@ class ResearchGUI {
     console.log('ResearchGUI: Export button clicked');
     
     try {
-      // Find the results table
-      const resultsTable = document.querySelector('.progress-table');
+      // Validate companies are loaded
+      if (!this.app.companies || this.app.companies.length === 0) {
+        console.log('ResearchGUI: No companies loaded');
+        alert('No companies available to export');
+        return;
+      }
+
+      // Get export options from Options tab
+      const exportOptions = this.app.optionsGUI.getExportOptions();
+      console.log('ResearchGUI: Export options:', exportOptions);
       
-      if (!resultsTable) {
-        console.log('ResearchGUI: No results table found');
-        alert('No results table found to export');
+      // Filter companies based on elimination status
+      let companiesToExport = this.app.companies;
+      if (!exportOptions.showEliminated) {
+        companiesToExport = this.app.companies.filter(company => 
+          !this.isCompanyEliminated(company.name)
+        );
+      }
+      
+      if (companiesToExport.length === 0) {
+        alert('No companies match the export criteria.');
         return;
       }
       
-      // Check if table has data beyond headers
-      const dataRows = resultsTable.querySelectorAll('tbody tr');
-      if (dataRows.length === 0) {
-        console.log('ResearchGUI: No data rows found in table');
-        alert('No data available to export');
-        return;
-      }
+      console.log(`ResearchGUI: Exporting ${companiesToExport.length} companies`);
       
-      // Check if we actually have results (not just empty cells)
-      const hasResults = Array.from(dataRows).some(row => {
-        const cells = row.querySelectorAll('td');
-        return Array.from(cells).slice(1).some(cell => cell.textContent.trim() !== '');
-      });
+      // Build custom CSV with selected options
+      const csvContent = this.buildCustomCSV(companiesToExport, exportOptions);
       
-      if (!hasResults) {
-        console.log('ResearchGUI: No research results found in table');
-        alert('No research results available to export. Please run research first.');
-        return;
-      }
-      
-      console.log('ResearchGUI: Converting table to CSV...');
-      
-      // Convert to CSV and download
-      const csvContent = CSVExporter.convertTableToCSV(resultsTable);
+      // Generate filename
       const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
       const templateName = this.app.template?.name || 'unknown';
-      const filename = `research_results_${templateName}_${timestamp}.csv`;
+      const eliminatedText = exportOptions.showEliminated ? 'all' : 'qualified';
+      const filename = `research_results_${templateName}_${eliminatedText}_${timestamp}.csv`;
       
       CSVExporter.downloadCSV(csvContent, filename);
       
@@ -719,5 +717,82 @@ class ResearchGUI {
       console.error('ResearchGUI: Failed to delete company research results:', error);
       this.app.showNotification('Failed to delete company research results: ' + error.message, 'error');
     }
+  }
+
+  isCompanyEliminated(companyName) {
+    if (!this.app.template?.criteria) return false;
+    
+    const disqualifyingCriteria = this.app.template.criteria.filter(c => c.disqualifying);
+    if (disqualifyingCriteria.length === 0) return false;
+    
+    // Check if any disqualifying criterion has a negative result
+    return disqualifyingCriteria.some(criterion => {
+      const companyIndex = this.app.companies.findIndex(c => c.name === companyName);
+      const criterionIndex = this.app.template.criteria.findIndex(c => c.name === criterion.name);
+      
+      if (companyIndex === -1 || criterionIndex === -1) return false;
+      
+      const tableBody = document.getElementById('progress-table-body');
+      const row = tableBody.children[companyIndex];
+      if (!row) return false;
+      
+      const cell = row.children[criterionIndex + 1]; // +1 because first column is company name
+      return cell && cell.classList.contains('result-negative-disqualifying');
+    });
+  }
+
+  buildCustomCSV(companies, exportOptions) {
+    // Build headers based on selected columns
+    const headers = ['Company Name'];
+    if (exportOptions.columns.website) headers.push('Website');
+    if (exportOptions.columns.city) headers.push('City');
+    if (exportOptions.columns.state) headers.push('State');
+    
+    // Add criterion headers (research results)
+    if (this.app.template?.criteria) {
+      headers.push(...this.app.template.criteria.map(c => c.name));
+    }
+    
+    const rows = [headers];
+    
+    // Build data rows
+    companies.forEach(company => {
+      const row = [company.name]; // Always included
+      
+      // Add selected company data columns
+      if (exportOptions.columns.website) row.push(company.website || '');
+      if (exportOptions.columns.city) row.push(company.city || '');
+      if (exportOptions.columns.state) row.push(company.state || '');
+      
+      // Add research results for each criterion
+      if (this.app.template?.criteria) {
+        this.app.template.criteria.forEach(criterion => {
+          const result = this.getCompanyResult(company.name, criterion.name);
+          row.push(result);
+        });
+      }
+      
+      rows.push(row);
+    });
+    
+    // Convert to CSV
+    return rows.map(row => 
+      row.map(cell => `"${(cell || '').toString().replace(/"/g, '""')}"`).join(',')
+    ).join('\n');
+  }
+
+  getCompanyResult(companyName, criterionName) {
+    // Get result from the existing table cell
+    const companyIndex = this.app.companies.findIndex(c => c.name === companyName);
+    const criterionIndex = this.app.template.criteria.findIndex(c => c.name === criterionName);
+    
+    if (companyIndex === -1 || criterionIndex === -1) return '';
+    
+    const tableBody = document.getElementById('progress-table-body');
+    const row = tableBody.children[companyIndex];
+    if (!row) return '';
+    
+    const cell = row.children[criterionIndex + 1]; // +1 because first column is company name
+    return cell ? cell.textContent.trim() : '';
   }
 }

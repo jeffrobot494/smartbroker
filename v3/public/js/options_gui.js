@@ -11,6 +11,7 @@ class OptionsGUI {
     console.log('OptionsGUI: Initializing...');
     this.setupEventListeners();
     this.loadTemplates();
+    this.initExportOptions();
   }
 
   onDataChanged() {
@@ -630,5 +631,31 @@ class OptionsGUI {
       console.error('OptionsGUI: Failed to delete template:', error);
       this.app.showNotification('Failed to delete template: ' + error.message, 'error');
     }
+  }
+
+  // ===== EXPORT OPTIONS METHODS =====
+
+  initExportOptions() {
+    console.log('OptionsGUI: Initializing export options...');
+    
+    // Set defaults
+    document.getElementById('export-format').value = 'csv';
+    document.getElementById('export-website').checked = true;
+    document.getElementById('export-city').checked = true;
+    document.getElementById('export-state').checked = true;
+    document.getElementById('export-show-eliminated').checked = false;
+  }
+
+  getExportOptions() {
+    return {
+      format: document.getElementById('export-format').value,
+      columns: {
+        companyName: true, // Always true
+        website: document.getElementById('export-website').checked,
+        city: document.getElementById('export-city').checked,
+        state: document.getElementById('export-state').checked
+      },
+      showEliminated: document.getElementById('export-show-eliminated').checked
+    };
   }
 }

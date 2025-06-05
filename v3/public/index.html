@@ -187,6 +187,46 @@
                         <button class="btn btn-secondary" id="delete-criterion-btn">Delete Criterion</button>
                         <button class="btn btn-warning" id="delete-research-btn">Delete Research Results</button>
                     </div>
+                    
+                    <div class="options-section">
+                        <h3>Export Options</h3>
+                        <div class="form-group">
+                            <label>Output Format:</label>
+                            <select id="export-format">
+                                <option value="csv">CSV</option>
+                                <option value="excel" disabled>Excel (Coming Soon)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Data Columns:</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="export-company-name" checked disabled>
+                                    <label for="export-company-name">Company Name</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="export-website" checked>
+                                    <label for="export-website">Website</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="export-city" checked>
+                                    <label for="export-city">City</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="export-state" checked>
+                                    <label for="export-state">State</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="export-show-eliminated">
+                                    <label for="export-show-eliminated">Show Eliminated Companies</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

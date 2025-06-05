@@ -39,12 +39,37 @@ function parseCSVLine(line) {
   return result;
 }
 
+// Helper functions for duplicate detection within CSV
+function normalizeCompanyData(company) {
+  return {
+    name: (company.name || '').trim().toLowerCase(),
+    website: normalizeWebsite(company.website || '')
+  };
+}
+
+function normalizeWebsite(website) {
+  if (!website) return '';
+  return website.trim().toLowerCase()
+    .replace(/^https?:\/\//, '')  // Remove protocol
+    .replace(/^www\./, '')        // Remove www
+    .replace(/\/$/, '');          // Remove trailing slash
+}
+
+function isDuplicate(company1, company2) {
+  const norm1 = normalizeCompanyData(company1);
+  const norm2 = normalizeCompanyData(company2);
+  
+  return norm1.name === norm2.name && norm1.website === norm2.website;
+}
+
 function parseCSVData(csvString) {
   const lines = csvString.split('\n').filter(line => line.trim());
-  if (lines.length === 0) return [];
+  if (lines.length === 0) return { companies: [], duplicatesSkipped: 0 };
   
   const headers = parseCSVLine(lines[0]);
   const companies = [];
+  const seen = new Set();
+  let duplicatesSkipped = 0;
   
   for (let i = 1; i < lines.length; i++) {
     const values = parseCSVLine(lines[i]);
@@ -65,11 +90,21 @@ function parseCSVData(csvString) {
     
     // Only add company if it has at least a name
     if (company.name && company.name.trim()) {
-      companies.push(company);
+      // Check for duplicates within this CSV file
+      const normalized = normalizeCompanyData(company);
+      const key = `${normalized.name}|${normalized.website}`;
+      
+      if (!seen.has(key)) {
+        seen.add(key);
+        companies.push(company);
+      } else {
+        duplicatesSkipped++;
+        console.log(`[SERVER] Skipping duplicate company in CSV: ${company.name} (${company.website})`);
+      }
     }
   }
   
-  return companies;
+  return { companies, duplicatesSkipped };
 }
 
 const app = express();
@@ -670,8 +705,9 @@ app.post('/api/template/:id/companies', upload.single('csvFile'), async (req, re
     const csvString = req.file.buffer.toString('utf8');
     console.log(`[SERVER] CSV content length: ${csvString.length} characters`);
     
-    const companies = parseCSVData(csvString);
-    console.log(`[SERVER] Parsed ${companies.length} companies from CSV`);
+    const parseResult = parseCSVData(csvString);
+    const { companies, duplicatesSkipped } = parseResult;
+    console.log(`[SERVER] Parsed ${companies.length} companies from CSV, skipped ${duplicatesSkipped} duplicates`);
 
     if (companies.length === 0) {
       console.log('[SERVER] No valid company data found in CSV');
@@ -688,10 +724,17 @@ app.post('/api/template/:id/companies', upload.single('csvFile'), async (req, re
     const result = await researchDAO.saveCompanyData(templateId, companies);
     console.log('[SERVER] Company data saved successfully:', result);
     
+    // Build response message
+    let message = `Imported ${companies.length} companies`;
+    if (duplicatesSkipped > 0) {
+      message += `, skipped ${duplicatesSkipped} duplicates`;
+    }
+    
     res.json({
       success: true,
-      message: `Imported ${companies.length} companies`,
-      count: companies.length
+      message: message,
+      count: companies.length,
+      duplicatesSkipped: duplicatesSkipped
     });
 
   } catch (error) {
