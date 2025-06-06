@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBroker v3 - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2d2d2d 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            color: #ffffff;
+        }
+
+        /* Neural network background animation */
+        .neural-network {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff88;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .connection {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #00ff88, transparent);
+            opacity: 0.3;
+            animation: dataFlow 4s linear infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.4;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        @keyframes dataFlow {
+            0% {
+                opacity: 0;
+                transform: scaleX(0);
+            }
+            50% {
+                opacity: 0.6;
+                transform: scaleX(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scaleX(0);
+            }
+        }
+
+        /* Matrix-style code rain */
+        .code-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .code-column {
+            position: absolute;
+            top: -100%;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #00ff88;
+            opacity: 0.1;
+            animation: codefall 8s linear infinite;
+        }
+
+        @keyframes codefall {
+            0% {
+                top: -100%;
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.1;
+            }
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
+        }
+
+        /* Login container */
+        .login-container {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 12px;
+            padding: 50px 40px;
+            width: 420px;
+            max-width: 90vw;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        /* AI Claude Face Icon */
+        .ai-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .claude-face {
+            width: 100%;
+            height: 100%;
+            border: 3px solid #00ff88;
+            border-radius: 50%;
+            position: relative;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(78, 205, 196, 0.1));
+            animation: facePulse 3s ease-in-out infinite;
+        }
+
+        /* Eyes */
+        .claude-face::before,
+        .claude-face::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 8px;
+            background: #00ff88;
+            border-radius: 50%;
+            top: 25%;
+            animation: blink 4s ease-in-out infinite;
+        }
+
+        .claude-face::before {
+            left: 25%;
+        }
+
+        .claude-face::after {
+            right: 25%;
+        }
+
+        /* Mouth/smile indicator */
+        .mouth {
+            position: absolute;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 10px;
+            border: 2px solid #00ff88;
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            animation: speak 2s ease-in-out infinite;
+        }
+
+        /* Neural activity indicators */
+        .neural-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            animation: neuralActivity 2s ease-in-out infinite;
+        }
+
+        .neural-dot:nth-child(1) {
+            top: 15%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .neural-dot:nth-child(2) {
+            top: 15%;
+            right: 15%;
+            animation-delay: 0.3s;
+        }
+
+        .neural-dot:nth-child(3) {
+            bottom: 45%;
+            left: 20%;
+            animation-delay: 0.6s;
+        }
+
+        .neural-dot:nth-child(4) {
+            bottom: 45%;
+            right: 20%;
+            animation-delay: 0.9s;
+        }
+
+        .neural-dot:nth-child(5) {
+            top: 50%;
+            left: 10%;
+            animation-delay: 1.2s;
+        }
+
+        .neural-dot:nth-child(6) {
+            top: 50%;
+            right: 10%;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes facePulse {
+            0%, 100% {
+                border-color: #00ff88;
+                box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+                transform: scale(1);
+            }
+            50% {
+                border-color: #4ecdc4;
+                box-shadow: 0 0 30px rgba(78, 205, 196, 0.4);
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes blink {
+            0%, 90%, 100% {
+                opacity: 1;
+                transform: scaleY(1);
+            }
+            95% {
+                opacity: 0.3;
+                transform: scaleY(0.1);
+            }
+        }
+
+        @keyframes speak {
+            0%, 100% {
+                transform: translateX(-50%) scaleY(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translateX(-50%) scaleY(1.2);
+                opacity: 1;
+            }
+        }
+
+        @keyframes neuralActivity {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.5);
+                box-shadow: 0 0 8px #4ecdc4;
+            }
+        }
+
+        /* Title styling */
+        .app-title {
+            color: #ffffff;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            background: linear-gradient(135deg, #00ff88, #4ecdc4, #ff6b35);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: aiGradient 3s ease-in-out infinite;
+        }
+
+        @keyframes aiGradient {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .version-tag {
+            color: #00ff88;
+            font-size: 0.9rem;
+            font-weight: 400;
+            opacity: 0.8;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .ai-subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            margin-bottom: 35px;
+            font-style: italic;
+        }
+
+        /* Form styling */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 18px 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .password-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .password-input:focus {
+            border-color: #00ff88;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 
+                0 0 20px rgba(0, 255, 136, 0.3),
+                inset 0 0 10px rgba(0, 255, 136, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .login-btn {
+            padding: 18px 20px;
+            background: linear-gradient(135deg, #00ff88, #4ecdc4);
+            border: none;
+            border-radius: 8px;
+            color: #000000;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-btn:hover::before {
+            left: 100%;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 255, 136, 0.4);
+            background: linear-gradient(135deg, #4ecdc4, #00ff88);
+        }
+
+        .login-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Processing indicator */
+        .processing {
+            display: none;
+            margin-top: 15px;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .processing.active {
+            display: block;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        /* Responsive design */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 40px 30px;
+            }
+            
+            .app-title {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* Circuit pattern overlay */
+        .circuit-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            background-image: 
+                linear-gradient(90deg, #00ff88 1px, transparent 1px),
+                linear-gradient(#00ff88 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 3;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="neural-network" id="neuralNetwork"></div>
+    <div class="code-rain" id="codeRain"></div>
+    <div class="circuit-overlay"></div>
+    
+    <div class="login-container">
+        <div class="ai-icon">
+            <div class="claude-face">
+                <div class="neural-dot"></div>
+                <div class="neural-dot"></div>
+                <div class="neural-dot"></div>
+                <div class="neural-dot"></div>
+                <div class="neural-dot"></div>
+                <div class="neural-dot"></div>
+                <div class="mouth"></div>
+            </div>
+        </div>
+        
+        <h1 class="app-title">SmartBroker</h1>
+        <div class="version-tag">VERSION 3.0</div>
+        <div class="ai-subtitle">AI-Powered Company Intelligence</div>
+        
+        <form class="login-form" onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <input 
+                    type="password" 
+                    class="password-input" 
+                    placeholder="Enter Access Code"
+                    id="password"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+            <button type="submit" class="login-btn">
+                Initialize System
+            </button>
+            <div class="processing" id="processing">
+                > Authenticating neural pathways...
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Create neural network nodes and connections
+        function createNeuralNetwork() {
+            const container = document.getElementById('neuralNetwork');
+            const nodeCount = 30;
+            const nodes = [];
+            
+            // Create nodes
+            for (let i = 0; i < nodeCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'node';
+                const x = Math.random() * window.innerWidth;
+                const y = Math.random() * window.innerHeight;
+                node.style.left = x + 'px';
+                node.style.top = y + 'px';
+                node.style.animationDelay = Math.random() * 3 + 's';
+                container.appendChild(node);
+                nodes.push({element: node, x, y});
+            }
+            
+            // Create connections between nearby nodes
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const distance = Math.sqrt(
+                        Math.pow(nodes[i].x - nodes[j].x, 2) + 
+                        Math.pow(nodes[i].y - nodes[j].y, 2)
+                    );
+                    
+                    if (distance < 200 && Math.random() > 0.7) {
+                        const connection = document.createElement('div');
+                        connection.className = 'connection';
+                        connection.style.left = Math.min(nodes[i].x, nodes[j].x) + 'px';
+                        connection.style.top = nodes[i].y + 'px';
+                        connection.style.width = distance + 'px';
+                        connection.style.animationDelay = Math.random() * 4 + 's';
+                        
+                        const angle = Math.atan2(nodes[j].y - nodes[i].y, nodes[j].x - nodes[i].x);
+                        connection.style.transform = `rotate(${angle}rad)`;
+                        
+                        container.appendChild(connection);
+                    }
+                }
+            }
+        }
+
+        // Create falling code effect
+        function createCodeRain() {
+            const container = document.getElementById('codeRain');
+            const codeChars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const columnCount = Math.floor(window.innerWidth / 20);
+            
+            for (let i = 0; i < columnCount; i++) {
+                const column = document.createElement('div');
+                column.className = 'code-column';
+                column.style.left = (i * 20) + 'px';
+                column.style.animationDelay = Math.random() * 8 + 's';
+                column.style.animationDuration = (8 + Math.random() * 4) + 's';
+                
+                let columnText = '';
+                for (let j = 0; j < 20; j++) {
+                    columnText += codeChars[Math.floor(Math.random() * codeChars.length)] + '<br>';
+                }
+                column.innerHTML = columnText;
+                
+                container.appendChild(column);
+            }
+        }
+
+        // Handle login form submission
+        async function handleLogin(event) {
+            event.preventDefault();
+            const password = document.getElementById('password').value;
+            const processing = document.getElementById('processing');
+            const btn = event.target.querySelector('.login-btn');
+            
+            if (!password) {
+                alert('Please enter the access code');
+                return;
+            }
+            
+            // Update UI to show processing
+            btn.textContent = 'Processing...';
+            btn.style.background = 'linear-gradient(135deg, #4ecdc4, #ff6b35)';
+            processing.classList.add('active');
+            processing.textContent = '> Authenticating neural pathways...';
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({ password })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    // Success sequence
+                    setTimeout(() => {
+                        processing.textContent = '> Neural networks synchronized...';
+                    }, 800);
+                    
+                    setTimeout(() => {
+                        processing.textContent = '> Access granted. Initializing AI core...';
+                    }, 1600);
+                    
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2400);
+                    
+                } else {
+                    throw new Error(result.error || 'Authentication failed');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                
+                // Reset UI on error
+                btn.textContent = 'Access Denied';
+                btn.style.background = 'linear-gradient(135deg, #ff6b35, #ff4757)';
+                processing.textContent = '> Authentication failed. Access denied.';
+                
+                // Reset after delay
+                setTimeout(() => {
+                    btn.textContent = 'Initialize System';
+                    btn.style.background = 'linear-gradient(135deg, #00ff88, #4ecdc4)';
+                    processing.classList.remove('active');
+                    document.getElementById('password').value = '';
+                    document.getElementById('password').focus();
+                }, 2000);
+            }
+        }
+
+        // Initialize effects when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createNeuralNetwork();
+            createCodeRain();
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && event.ctrlKey) {
+                document.getElementById('password').focus();
+            }
+        });
+
+        // Regenerate neural network on window resize
+        window.addEventListener('resize', function() {
+            document.getElementById('neuralNetwork').innerHTML = '';
+            document.getElementById('codeRain').innerHTML = '';
+            setTimeout(() => {
+                createNeuralNetwork();
+                createCodeRain();
+            }, 100);
+        });
+    </script>
+</body>
+</html>

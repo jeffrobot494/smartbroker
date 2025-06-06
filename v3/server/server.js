@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const multer = require('multer');
+const crypto = require('crypto');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const Database = require('./database');
@@ -121,11 +123,64 @@ const researchDAO = new ResearchDAO(database);
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 // Debug: Log current working directory and paths
 console.log('Current working directory:', process.cwd());
 console.log('__dirname:', __dirname);
 console.log('Resolved public path:', require('path').resolve(__dirname, '../public'));
+
+// Session management and authentication
+const activeSessions = new Set();
+const APP_PASSWORD = process.env.APP_PASSWORD || 'changeme123';
+
+// Login endpoint
+app.post('/api/login', (req, res) => {
+  try {
+    if (req.body.password === APP_PASSWORD) {
+      const sessionToken = crypto.randomUUID();
+      activeSessions.add(sessionToken);
+      
+      // Set secure session cookie
+      res.cookie('sessionToken', sessionToken, { 
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        sameSite: 'strict'
+      });
+      
+      console.log(`[AUTH] New session created: ${sessionToken.substring(0, 8)}...`);
+      res.json({ success: true });
+    } else {
+      console.log('[AUTH] Invalid password attempt');
+      res.status(401).json({ success: false, error: 'Invalid password' });
+    }
+  } catch (error) {
+    console.error('[AUTH] Login error:', error);
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
+});
+
+// Authentication middleware - MUST be before existing routes
+app.use((req, res, next) => {
+  // Allow access to login page and login API
+  if (req.path === '/login.html' || req.path === '/api/login' || req.path.startsWith('/login.html')) {
+    return next();
+  }
+  
+  // Check for valid session
+  const sessionToken = req.cookies?.sessionToken;
+  if (sessionToken && activeSessions.has(sessionToken)) {
+    return next(); // Valid session - continue
+  }
+  
+  // No valid session - redirect or deny
+  if (req.path === '/' || req.path === '/index.html' || req.accepts('html')) {
+    return res.redirect('/login.html');
+  } else {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+});
 
 // Serve static files from public directory
 app.use(express.static('../public'));

@@ -34,7 +34,11 @@ A template is the main object in the application. The system prompt, the criteri
 *Research Prompt*
 If you're getting too many "unknown" results, you can instruct Claude that it doesn't need to be absolutely sure. Rather, that an 80% likelihood is acceptable, for example.
 *Perplexity Pre-query*
-If the first perplexity query that Claude will make is going to be the same for every company, you can insert it here and the app will make the perplexity call immediately when the query begins, rather than asking Claude first, thus saving a call to Claude.
+If the first perplexity query that Claude will make is going to be the same for every company, 
+you can insert it here and the app will make the perplexity call immediately when the query begins, rather than asking Claude first, thus saving a call to Claude.
+{company_name}, {website}, {city}, and {state} can be written in the query and will be substituted for their values for each company. You must specify the company name this way. 
+I recommend using the city and state values to prevent confusion with similarly-named companies. For example:
+"Does {company_name}, headquartered in {city}, {state} employ more than 500 people?"
 *Answer Format*
 *Qualifying criterion*
 *Update Criterion*
