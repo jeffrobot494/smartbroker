@@ -3,6 +3,7 @@ class ResearchGUI {
     this.app = app;
     this.selectedCriteria = []; // Track selected criteria names
     this.eventSource = null; // SSE connection
+    this.wakeLock = null; // Wake lock to prevent sleep during research
   }
 
   init() {
@@ -12,6 +13,7 @@ class ResearchGUI {
     // Cleanup on page unload
     window.addEventListener('beforeunload', () => {
       this.stopProgressStream();
+      this.allowSleep(); // Release wake lock on page unload
     });
   }
 
@@ -328,6 +330,9 @@ class ResearchGUI {
     document.getElementById('start-btn').style.display = 'none';
     document.getElementById('stop-btn').style.display = 'inline-block';
 
+    // Prevent computer from sleeping
+    await this.preventSleep();
+
     // Start SSE connection before starting research
     this.startProgressStream();
 
@@ -345,6 +350,9 @@ class ResearchGUI {
       this.app.isResearching = false;
       document.getElementById('start-btn').style.display = 'inline-block';
       document.getElementById('stop-btn').style.display = 'none';
+      
+      // Allow computer to sleep again
+      this.allowSleep();
       
       // Refresh cost summary after research completes
       this.loadCostSummary();
@@ -428,6 +436,10 @@ class ResearchGUI {
       this.app.isResearching = false;
       document.getElementById('start-btn').style.display = 'inline-block';
       document.getElementById('stop-btn').style.display = 'none';
+      
+      // Allow computer to sleep again
+      this.allowSleep();
+      
       console.log('ResearchGUI: Research UI state reset after stop');
       
     } catch (error) {
@@ -794,5 +806,26 @@ class ResearchGUI {
     
     const cell = row.children[criterionIndex + 1]; // +1 because first column is company name
     return cell ? cell.textContent.trim() : '';
+  }
+
+  async preventSleep() {
+    try {
+      if ('wakeLock' in navigator) {
+        this.wakeLock = await navigator.wakeLock.request('screen');
+        console.log('ResearchGUI: Wake lock active - computer will not sleep during research');
+      } else {
+        console.log('ResearchGUI: Wake lock not supported by this browser');
+      }
+    } catch (err) {
+      console.error('ResearchGUI: Wake lock failed:', err);
+    }
+  }
+
+  allowSleep() {
+    if (this.wakeLock) {
+      this.wakeLock.release();
+      this.wakeLock = null;
+      console.log('ResearchGUI: Wake lock released - computer can sleep normally');
+    }
   }
 }

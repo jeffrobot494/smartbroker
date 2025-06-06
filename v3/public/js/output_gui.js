@@ -98,6 +98,7 @@ class OutputGUI {
       
       // Errors & Connection
       'research_error': 'System Prompt',
+      'fatal_api_error': 'System Prompt',
       'error': 'System Prompt',
       'connection': 'System Prompt'
     };
@@ -178,6 +179,9 @@ class OutputGUI {
       case 'research_error':
       case 'error':
         return `Error: ${messageData.error}`;
+        
+      case 'fatal_api_error':
+        return `🚨 RESEARCH STOPPED: ${messageData.message || messageData.error}`;
         
       case 'connection':
         return messageData.message || 'Connected to research stream';

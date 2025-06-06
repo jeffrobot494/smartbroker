@@ -25,6 +25,7 @@ class ResearchEngine {
     this.currentCriteria = [];
     this.investigationCosts = {}; // Track costs for current investigation
     this.stopChecker = null; // Function to check if research should stop
+    this.hasFatalAPIError = false; // Track fatal API errors
   }
 
   /**
@@ -42,6 +43,31 @@ class ResearchEngine {
     if (this.stopChecker && this.stopChecker()) {
       throw new Error('Research stopped by user');
     }
+    if (this.hasFatalAPIError) {
+      throw new Error('Research stopped due to API failure');
+    }
+  }
+
+  /**
+   * Check if an error is a fatal API error that should stop research
+   * @param {Error} error - The error to check
+   * @returns {boolean} True if this is a fatal API error
+   */
+  isFatalAPIError(error) {
+    const fatalMessages = [
+      'insufficient_quota',
+      'quota_exceeded', 
+      'credits_exhausted',
+      'billing_not_active',
+      'api_key_invalid',
+      'unauthorized',
+      'credit balance is too low',
+      'usage limit exceeded',
+      'account suspended'
+    ];
+    
+    const errorMessage = error.message.toLowerCase();
+    return fatalMessages.some(msg => errorMessage.includes(msg));
   }
 
   /**
@@ -221,6 +247,20 @@ class ResearchEngine {
           }
 
         } catch (error) {
+          // Check if this is a fatal API error that should stop research
+          if (this.isFatalAPIError(error)) {
+            this.hasFatalAPIError = true;
+            if (progressCallback) {
+              progressCallback({
+                type: 'fatal_api_error',
+                error: error.message,
+                message: `Research stopped due to: ${error.message}`
+              });
+            }
+            throw error; // This will stop the research
+          }
+          
+          // Non-fatal errors continue as before
           if (progressCallback) {
             progressCallback({
               type: 'research_error',
