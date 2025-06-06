@@ -1,5 +1,12 @@
 const axios = require('axios');
 
+// Helper function to get internal request headers
+function getInternalHeaders() {
+  return {
+    'X-Internal-Request': process.env.INTERNAL_API_SECRET || 'dev-internal-key'
+  };
+}
+
 class ClaudeClient {
   constructor(serverURL = 'http://localhost:3000') {
     this.serverURL = serverURL;
@@ -17,6 +24,9 @@ class ClaudeClient {
           systemPrompt,
           model,
           maxTokens
+        },
+        {
+          headers: getInternalHeaders()
         }
       );
 
@@ -43,6 +53,9 @@ class PerplexityClient {
         {
           query,
           model
+        },
+        {
+          headers: getInternalHeaders()
         }
       );
 
@@ -69,6 +82,9 @@ class ResearchClient {
           result,
           companyData,
           costs
+        },
+        {
+          headers: getInternalHeaders()
         }
       );
 
@@ -87,7 +103,8 @@ class ResearchClient {
           params: {
             companyName,
             criterionName
-          }
+          },
+          headers: getInternalHeaders()
         }
       );
 
@@ -106,7 +123,8 @@ class ResearchClient {
           params: {
             companyName,
             criterionName
-          }
+          },
+          headers: getInternalHeaders()
         }
       );
 
@@ -127,7 +145,9 @@ class ResearchClient {
         url += `?templateId=${templateId}`;
       }
       
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        headers: getInternalHeaders()
+      });
 
       return response.data.results;
     } catch (error) {
@@ -139,7 +159,10 @@ class ResearchClient {
   async clearAllResults() {
     try {
       const response = await axios.delete(
-        `${this.serverURL}/api/research/clear`
+        `${this.serverURL}/api/research/clear`,
+        {
+          headers: getInternalHeaders()
+        }
       );
 
       return response.data;
@@ -156,7 +179,9 @@ class ResearchClient {
         url += `?templateId=${templateId}`;
       }
       
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        headers: getInternalHeaders()
+      });
       return response.data;
     } catch (error) {
       console.error('Cost summary API Error:', error.response?.data || error.message);
@@ -175,7 +200,10 @@ class PhantomBusterClient {
       const response = await axios.post(
         `${this.serverURL}/api/phantombuster`,
         { url: linkedinUrl },
-        { timeout: 300000 } // 5 minute timeout
+        { 
+          timeout: 300000, // 5 minute timeout
+          headers: getInternalHeaders()
+        }
       );
       return response.data;
     } catch (error) {
@@ -196,7 +224,10 @@ class TemplateClient {
       console.log(`[DEBUG] Request timestamp: ${new Date().toISOString()}`);
       
       const response = await axios.get(
-        `${this.serverURL}/api/template/active`
+        `${this.serverURL}/api/template/active`,
+        {
+          headers: getInternalHeaders()
+        }
       );
 
       console.log(`[DEBUG] TemplateClient received response:`, {
@@ -228,7 +259,9 @@ class TemplateClient {
 
   async getTemplates() {
     try {
-      const response = await axios.get(`${this.serverURL}/api/templates`);
+      const response = await axios.get(`${this.serverURL}/api/templates`, {
+        headers: getInternalHeaders()
+      });
       return response.data;
     } catch (error) {
       console.error('Templates API Error:', error.response?.data || error.message);
@@ -242,6 +275,8 @@ class TemplateClient {
         name,
         basedOnTemplateId,
         makeActive
+      }, {
+        headers: getInternalHeaders()
       });
       return response.data;
     } catch (error) {
@@ -252,7 +287,9 @@ class TemplateClient {
 
   async setActiveTemplate(templateId) {
     try {
-      const response = await axios.put(`${this.serverURL}/api/templates/${templateId}/activate`);
+      const response = await axios.put(`${this.serverURL}/api/templates/${templateId}/activate`, null, {
+        headers: getInternalHeaders()
+      });
       return response.data;
     } catch (error) {
       console.error('Activate Template API Error:', error.response?.data || error.message);
@@ -262,7 +299,9 @@ class TemplateClient {
 
   async deleteTemplate(templateId) {
     try {
-      const response = await axios.delete(`${this.serverURL}/api/templates/${templateId}`);
+      const response = await axios.delete(`${this.serverURL}/api/templates/${templateId}`, {
+        headers: getInternalHeaders()
+      });
       return response.data;
     } catch (error) {
       console.error('Delete Template API Error:', error.response?.data || error.message);
@@ -272,7 +311,9 @@ class TemplateClient {
 
   async getSystemPrompt(templateId) {
     try {
-      const response = await axios.get(`${this.serverURL}/api/template/${templateId}/prompt`);
+      const response = await axios.get(`${this.serverURL}/api/template/${templateId}/prompt`, {
+        headers: getInternalHeaders()
+      });
       return response.data.systemPrompt;
     } catch (error) {
       console.error('Get System Prompt API Error:', error.response?.data || error.message);
@@ -284,6 +325,8 @@ class TemplateClient {
     try {
       const response = await axios.put(`${this.serverURL}/api/template/${templateId}/prompt`, {
         systemPrompt
+      }, {
+        headers: getInternalHeaders()
       });
       return response.data;
     } catch (error) {
@@ -294,7 +337,9 @@ class TemplateClient {
 
   async createCriterion(templateId, criterionData) {
     try {
-      const response = await axios.post(`${this.serverURL}/api/templates/${templateId}/criteria`, criterionData);
+      const response = await axios.post(`${this.serverURL}/api/templates/${templateId}/criteria`, criterionData, {
+        headers: getInternalHeaders()
+      });
       return response.data;
     } catch (error) {
       console.error('Create Criterion API Error:', error.response?.data || error.message);
@@ -304,7 +349,9 @@ class TemplateClient {
 
   async updateCriterion(criterionId, updates) {
     try {
-      const response = await axios.put(`${this.serverURL}/api/criteria/${criterionId}`, updates);
+      const response = await axios.put(`${this.serverURL}/api/criteria/${criterionId}`, updates, {
+        headers: getInternalHeaders()
+      });
       return response.data;
     } catch (error) {
       console.error('Update Criterion API Error:', error.response?.data || error.message);
@@ -314,7 +361,9 @@ class TemplateClient {
 
   async deleteCriterion(criterionId) {
     try {
-      const response = await axios.delete(`${this.serverURL}/api/criteria/${criterionId}`);
+      const response = await axios.delete(`${this.serverURL}/api/criteria/${criterionId}`, {
+        headers: getInternalHeaders()
+      });
       return response.data;
     } catch (error) {
       console.error('Delete Criterion API Error:', error.response?.data || error.message);
@@ -326,6 +375,8 @@ class TemplateClient {
     try {
       const response = await axios.put(`${this.serverURL}/api/criteria/${criterionId}/reorder`, {
         newOrderIndex
+      }, {
+        headers: getInternalHeaders()
       });
       return response.data;
     } catch (error) {
@@ -336,7 +387,9 @@ class TemplateClient {
 
   async getNextOrderIndex(templateId) {
     try {
-      const response = await axios.get(`${this.serverURL}/api/templates/${templateId}/next-order`);
+      const response = await axios.get(`${this.serverURL}/api/templates/${templateId}/next-order`, {
+        headers: getInternalHeaders()
+      });
       return response.data.nextOrderIndex;
     } catch (error) {
       console.error('Get Next Order API Error:', error.response?.data || error.message);

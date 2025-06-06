@@ -87,6 +87,7 @@ class ResearchEngine {
         companiesCount: templateData?.companies?.length
       });
       
+      
       this.currentTemplate = templateData;
       this.currentCriteria = templateData.criteria;
       
