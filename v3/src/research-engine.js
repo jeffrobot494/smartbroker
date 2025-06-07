@@ -71,6 +71,28 @@ class ResearchEngine {
   }
 
   /**
+   * Centralized API call wrapper with consistent error handling
+   * @param {Function} apiFunction - The API function to call
+   * @param {...any} args - Arguments to pass to the API function
+   * @returns {Promise<Object>} { success: boolean, data?: any, error?: string }
+   */
+  async safeAPICall(apiFunction, ...args) {
+    try {
+      const result = await apiFunction(...args);
+      return { success: true, data: result };
+    } catch (error) {
+      if (this.isFatalAPIError(error)) {
+        this.hasFatalAPIError = true;
+        console.log(`[FATAL API ERROR] ${error.message} - Research will stop at next checkpoint`);
+        return { success: false, error: error.message };
+      }
+      
+      console.log(`[API ERROR] ${error.message} - Continuing research`);
+      return { success: false, error: error.message };
+    }
+  }
+
+  /**
    * Initialize engine by loading template from database
    */
   async initialize() {
@@ -248,49 +270,14 @@ class ResearchEngine {
           }
 
         } catch (error) {
-          // Check if this is a fatal API error that should stop research
-          if (this.isFatalAPIError(error)) {
-            this.hasFatalAPIError = true;
-            if (progressCallback) {
-              progressCallback({
-                type: 'fatal_api_error',
-                error: error.message,
-                message: `Research stopped due to: ${error.message}`
-              });
-            }
-            throw error; // This will stop the research
-          }
-          
-          // Non-fatal errors continue as before
+          // Handle errors from researchCompanyCriterion
           if (progressCallback) {
             progressCallback({
               type: 'research_error',
               error: error.message
             });
           }
-          
-          // Store error result
-          try {
-            const companyData = {
-              website: company.website,
-              linkedin: company.linkedin,
-              city: company.city,
-              state: company.state,
-              phone: company.phone,
-              revenue: company.revenue,
-              'president/owner/ceo': company['president/owner/ceo'],
-              other: company.other
-            };
-            
-            await this.research.saveResult(company.name, criterion.id, {
-              error: error.message,
-              answer: 'Error',
-              explanation: `Research failed: ${error.message}`,
-              type: 'error'
-            }, companyData);
-          } catch (saveError) {
-            console.error(`Error saving error result for ${company.name}: ${saveError.message}`);
-          }
+          console.error(`Research error for ${company.name}: ${error.message}`);
         }
       }
     }
@@ -387,7 +374,16 @@ class ResearchEngine {
         
         const systemPromptWithContext = this.currentTemplate.systemPrompt + iterationContext;
         
-        const response = await this.claude.sendMessage(conversation, systemPromptWithContext);
+        const claudeResult = await this.safeAPICall(
+          () => this.claude.sendMessage(conversation, systemPromptWithContext)
+        );
+
+        if (!claudeResult.success) {
+          console.log(`[DEBUG] Claude API failed: ${claudeResult.error}`);
+          break; // Exit iteration loop
+        }
+
+        const response = claudeResult.data;
         console.log(`[DEBUG] Claude API call successful - Response length: ${response.content.length} chars`);
         
         // Calculate and track Claude costs
@@ -712,30 +708,41 @@ class ResearchEngine {
    * Execute a tool request
    */
   async executeTool(toolName, query) {
-    try {
-      switch (toolName.toLowerCase()) {
-        case 'perplexity_search':
-          const result = await this.perplexity.search(query);
-          // Track Perplexity cost
-          const perplexityCost = this.costCalculator.calculateToolCost('perplexity', 1);
-          this.investigationCosts.perplexity = perplexityCost;
-          return result.content;
-          
-        case 'phantombuster_linkedin':
-          if (!query.includes('linkedin.com')) {
-            return 'Error: PhantomBuster requires a valid LinkedIn URL (must contain "linkedin.com")';
-          }
-          const phantomResult = await this.phantombuster.scrapeLinkedIn(query.trim());
-          // Track PhantomBuster cost
-          const phantombusterCost = this.costCalculator.calculateToolCost('phantombuster', 1);
-          this.investigationCosts.phantombuster = phantombusterCost;
-          return phantomResult.content;
-          
-        default:
-          throw new Error(`Unknown tool: ${toolName}`);
-      }
-    } catch (error) {
-      return `Error executing ${toolName}: ${error.message}`;
+    switch (toolName.toLowerCase()) {
+      case 'perplexity_search':
+        const perplexityResult = await this.safeAPICall(
+          () => this.perplexity.search(query)
+        );
+        
+        if (!perplexityResult.success) {
+          return `Error executing ${toolName}: ${perplexityResult.error}`;
+        }
+        
+        // Track Perplexity cost
+        const perplexityCost = this.costCalculator.calculateToolCost('perplexity', 1);
+        this.investigationCosts.perplexity = perplexityCost;
+        return perplexityResult.data.content;
+        
+      case 'phantombuster_linkedin':
+        if (!query.includes('linkedin.com')) {
+          return 'Error: PhantomBuster requires a valid LinkedIn URL (must contain "linkedin.com")';
+        }
+        
+        const phantomResult = await this.safeAPICall(
+          () => this.phantombuster.scrapeLinkedIn(query.trim())
+        );
+        
+        if (!phantomResult.success) {
+          return `Error executing ${toolName}: ${phantomResult.error}`;
+        }
+        
+        // Track PhantomBuster cost
+        const phantombusterCost = this.costCalculator.calculateToolCost('phantombuster', 1);
+        this.investigationCosts.phantombuster = phantombusterCost;
+        return phantomResult.data.content;
+        
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
     }
   }
 
@@ -813,7 +820,16 @@ class ResearchEngine {
         });
       }
       
-      const result = await this.perplexity.search(query);
+      const perplexityResult = await this.safeAPICall(
+        () => this.perplexity.search(query)
+      );
+
+      if (!perplexityResult.success) {
+        console.warn(`Automatic first query failed: ${perplexityResult.error}`);
+        return `Error in automatic query: ${perplexityResult.error}`;
+      }
+
+      const result = perplexityResult.data;
       
       // Track Perplexity cost for automatic query
       const perplexityCost = this.costCalculator.calculateToolCost('perplexity', 1);
