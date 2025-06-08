@@ -343,7 +343,7 @@ class ResearchGUI {
       
     } catch (error) {
       console.error('ResearchGUI: Research failed:', error);
-      alert('Research failed: ' + error.message);
+      alert(error.message);
     } finally {
       // Stop SSE connection and reset UI state
       this.stopProgressStream();
@@ -406,7 +406,8 @@ class ResearchGUI {
     });
     
     if (!response.ok) {
-      throw new Error(`Research failed: ${response.statusText}`);
+      const errorData = await response.json();
+      throw new Error(errorData.details || errorData.error || `Research failed: ${response.statusText}`);
     }
     
     const result = await response.json();

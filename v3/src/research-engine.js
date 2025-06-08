@@ -26,6 +26,7 @@ class ResearchEngine {
     this.investigationCosts = {}; // Track costs for current investigation
     this.stopChecker = null; // Function to check if research should stop
     this.hasFatalAPIError = false; // Track fatal API errors
+    this.lastFatalError = null; // Store original fatal error message
   }
 
   /**
@@ -44,7 +45,7 @@ class ResearchEngine {
       throw new Error('Research stopped by user');
     }
     if (this.hasFatalAPIError) {
-      throw new Error('Research stopped due to API failure');
+      throw new Error(`Research stopped: ${this.lastFatalError || 'API service unavailable'}`);
     }
   }
 
@@ -83,6 +84,7 @@ class ResearchEngine {
     } catch (error) {
       if (this.isFatalAPIError(error)) {
         this.hasFatalAPIError = true;
+        this.lastFatalError = error.message; // Store original error
         console.log(`[FATAL API ERROR] ${error.message} - Research will stop at next checkpoint`);
         return { success: false, error: error.message };
       }
