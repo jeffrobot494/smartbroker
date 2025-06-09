@@ -18,6 +18,7 @@
                 <button class="tab active" data-tab="research">Research</button>
                 <button class="tab" data-tab="output">Output</button>
                 <button class="tab" data-tab="options">Options</button>
+                <button class="tab" data-tab="apikeys">API Keys</button>
                 <button class="tab" data-tab="instructions">Instructions</button>
             </div>
             
@@ -231,6 +232,71 @@
                 </div>
             </div>
             
+            <!-- API Keys Tab -->
+            <div class="tab-content" id="apikeys-tab">
+                <div class="options-section">
+                    <h3>API Configuration</h3>
+                    <p class="api-keys-warning">
+                        ⚠️ API keys are stored as environment variables for security. 
+                        Keys are never displayed after saving.
+                    </p>
+                    
+                    <div class="api-keys-status" id="api-keys-status">
+                        <div class="api-key-status" id="anthropic-status">
+                            <span class="status-icon">⚪</span>
+                            <span class="status-label">Anthropic (Claude):</span>
+                            <span class="status-text">Not configured</span>
+                        </div>
+                        <div class="api-key-status" id="perplexity-status">
+                            <span class="status-icon">⚪</span>
+                            <span class="status-label">Perplexity:</span>
+                            <span class="status-text">Not configured</span>
+                        </div>
+                        <div class="api-key-status" id="phantombuster-status">
+                            <span class="status-icon">⚪</span>
+                            <span class="status-label">PhantomBuster:</span>
+                            <span class="status-text">Not configured</span>
+                        </div>
+                        <div class="api-key-status" id="linkedin-status">
+                            <span class="status-icon">⚪</span>
+                            <span class="status-label">LinkedIn Cookie:</span>
+                            <span class="status-text">Not configured</span>
+                        </div>
+                    </div>
+
+                    <form id="api-keys-form" class="api-keys-form">
+                        <div class="form-group">
+                            <label for="anthropic-key">Anthropic API Key:</label>
+                            <input type="password" id="anthropic-key" placeholder="sk-ant-...">
+                            <small>For Claude AI research analysis</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="perplexity-key">Perplexity API Key:</label>
+                            <input type="password" id="perplexity-key" placeholder="pplx-...">
+                            <small>For web search and information gathering</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phantombuster-key">PhantomBuster API Key:</label>
+                            <input type="password" id="phantombuster-key" placeholder="Your PhantomBuster API key">
+                            <small>For LinkedIn profile scraping</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="linkedin-cookie">LinkedIn Session Cookie:</label>
+                            <input type="password" id="linkedin-cookie" placeholder="Your LinkedIn li_at cookie">
+                            <small>Required for PhantomBuster LinkedIn access</small>
+                        </div>
+                        
+                        <div class="api-keys-actions">
+                            <button type="button" class="btn btn-warning" id="save-keys-btn">💾 Save Keys</button>
+                            <button type="button" class="btn btn-secondary" id="clear-form-btn">🗑️ Clear Form</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
             <!-- Instructions Tab -->
             <div class="tab-content" id="instructions-tab">
                 <div class="instructions-content">
@@ -245,6 +311,7 @@
     <script src="js/research_gui.js"></script>
     <script src="js/output_gui.js"></script>
     <script src="js/options_gui.js"></script>
+    <script src="js/api_keys_gui.js"></script>
     <script src="js/instructions_gui.js"></script>
 </body>
 </html>

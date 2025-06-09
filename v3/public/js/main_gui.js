@@ -8,6 +8,7 @@ class SmartBrokerApp {
     this.researchGUI = null;
     this.outputGUI = null;
     this.optionsGUI = null;
+    this.apiKeysGUI = null;
     this.instructionsGUI = null;
   }
 
@@ -18,6 +19,7 @@ class SmartBrokerApp {
     this.researchGUI = new ResearchGUI(this);
     this.outputGUI = new OutputGUI(this);
     this.optionsGUI = new OptionsGUI(this);
+    this.apiKeysGUI = new ApiKeysGUI(this);
     this.instructionsGUI = new InstructionsGUI(this);
     
     // Load template and company data
@@ -30,6 +32,7 @@ class SmartBrokerApp {
     this.researchGUI.init();
     this.outputGUI.init();
     this.optionsGUI.init();
+    this.apiKeysGUI.init();
     this.instructionsGUI.init();
     
     console.log('SmartBroker GUI initialized successfully');
@@ -83,6 +86,7 @@ class SmartBrokerApp {
     if (this.researchGUI) this.researchGUI.onDataChanged();
     if (this.outputGUI) this.outputGUI.onDataChanged();
     if (this.optionsGUI) this.optionsGUI.onDataChanged();
+    if (this.apiKeysGUI) this.apiKeysGUI.onDataChanged();
     if (this.instructionsGUI) this.instructionsGUI.onDataChanged();
   }
 

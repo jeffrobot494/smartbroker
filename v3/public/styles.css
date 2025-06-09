@@ -526,3 +526,64 @@ body {
     margin: 0;
     font-weight: normal;
 }
+
+/* API Keys Tab */
+.api-keys-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.api-keys-status {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.api-key-status {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.api-key-status:last-child {
+    margin-bottom: 0;
+}
+
+.status-icon {
+    font-size: 16px;
+    margin-right: 8px;
+    min-width: 20px;
+}
+
+.status-label {
+    font-weight: 500;
+    min-width: 140px;
+    margin-right: 8px;
+}
+
+.status-text {
+    font-size: 14px;
+}
+
+.api-keys-form input[type="password"] {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: monospace;
+}
+
+.api-keys-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}

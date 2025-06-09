@@ -116,6 +116,48 @@ const PORT = process.env.PORT || 3000;
 let isResearchStopped = false;
 let sseClient = null;
 
+// Environment variable management utilities
+function updateEnvironmentVariable(key, value) {
+  // Update runtime environment
+  process.env[key] = value;
+  
+  // Update .env file for persistence
+  const envPath = require('path').resolve('.env');
+  let envContent = '';
+  
+  try {
+    if (require('fs').existsSync(envPath)) {
+      envContent = require('fs').readFileSync(envPath, 'utf8');
+    }
+  } catch (error) {
+    console.warn('Could not read .env file:', error.message);
+  }
+  
+  const lines = envContent.split('\n');
+  let keyUpdated = false;
+  
+  // Update existing key or add new one
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].startsWith(`${key}=`)) {
+      lines[i] = `${key}=${value}`;
+      keyUpdated = true;
+      break;
+    }
+  }
+  
+  if (!keyUpdated) {
+    lines.push(`${key}=${value}`);
+  }
+  
+  try {
+    require('fs').writeFileSync(envPath, lines.join('\n'));
+    console.log(`Environment variable ${key} updated successfully`);
+  } catch (error) {
+    console.error(`Failed to update .env file for ${key}:`, error.message);
+    throw error;
+  }
+}
+
 // Initialize database
 const database = new Database();
 const researchDAO = new ResearchDAO(database);
@@ -1044,6 +1086,76 @@ app.get('/api/instructions', (req, res) => {
     console.error('[SERVER] Error reading instructions file:', error);
     res.status(500).json({ 
       error: 'Failed to load instructions',
+      details: error.message
+    });
+  }
+});
+
+// API Key Management Endpoints
+
+// Get API key status (configured status only, not actual keys)
+app.get('/api/settings/api-keys/status', (req, res) => {
+  try {
+    const keyNames = ['ANTHROPIC_API_KEY', 'PERPLEXITY_API_KEY', 'PHANTOMBUSTER_API_KEY', 'LINKEDIN_SESSION_COOKIE'];
+    const serviceNames = ['anthropic', 'perplexity', 'phantombuster', 'linkedin'];
+    
+    const status = {};
+    
+    keyNames.forEach((keyName, index) => {
+      const serviceName = serviceNames[index];
+      const hasKey = !!(process.env[keyName] && process.env[keyName].trim());
+      
+      status[serviceName] = {
+        configured: hasKey
+      };
+    });
+    
+    res.json(status);
+  } catch (error) {
+    console.error('Error getting API key status:', error);
+    res.status(500).json({
+      error: 'Failed to get API key status',
+      details: error.message
+    });
+  }
+});
+
+// Save API keys
+app.post('/api/settings/api-keys', async (req, res) => {
+  try {
+    const allowedKeys = ['ANTHROPIC_API_KEY', 'PERPLEXITY_API_KEY', 'PHANTOMBUSTER_API_KEY', 'LINKEDIN_SESSION_COOKIE'];
+    const keysToSave = {};
+    
+    // Filter to only allowed keys
+    Object.entries(req.body).forEach(([key, value]) => {
+      if (allowedKeys.includes(key) && value && value.trim()) {
+        keysToSave[key] = value.trim();
+      }
+    });
+    
+    if (Object.keys(keysToSave).length === 0) {
+      return res.status(400).json({
+        error: 'No valid API keys provided'
+      });
+    }
+    
+    console.log(`Saving ${Object.keys(keysToSave).length} API keys...`);
+    
+    // Update environment variables
+    for (const [key, value] of Object.entries(keysToSave)) {
+      updateEnvironmentVariable(key, value);
+    }
+    
+    res.json({
+      success: true,
+      message: 'API keys saved successfully',
+      saved: Object.keys(keysToSave).length
+    });
+    
+  } catch (error) {
+    console.error('Error saving API keys:', error);
+    res.status(500).json({
+      error: 'Failed to save API keys',
       details: error.message
     });
   }
