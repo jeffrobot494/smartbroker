@@ -823,12 +823,40 @@ class ResearchGUI {
       if ('wakeLock' in navigator) {
         this.wakeLock = await navigator.wakeLock.request('screen');
         console.log('ResearchGUI: Wake lock active - computer will not sleep during research');
+        
+        // Handle wake lock release events
+        this.wakeLock.addEventListener('release', () => {
+          console.log('ResearchGUI: Wake lock was released automatically');
+          this.wakeLock = null;
+          
+          // Try to re-acquire wake lock if research is still ongoing
+          if (this.app.isResearching) {
+            console.log('ResearchGUI: Attempting to re-acquire wake lock...');
+            setTimeout(() => this.preventSleep(), 1000);
+          }
+        });
+        
+        // Handle page visibility changes
+        this.setupVisibilityHandler();
+        
       } else {
         console.log('ResearchGUI: Wake lock not supported by this browser');
+        console.log('ResearchGUI: Please keep browser tab active and avoid minimizing');
       }
     } catch (err) {
       console.error('ResearchGUI: Wake lock failed:', err);
+      console.log('ResearchGUI: Please keep browser tab active and avoid minimizing');
     }
+  }
+
+  setupVisibilityHandler() {
+    // Re-acquire wake lock when page becomes visible again
+    document.addEventListener('visibilitychange', async () => {
+      if (!document.hidden && this.app.isResearching && !this.wakeLock) {
+        console.log('ResearchGUI: Page visible again, re-acquiring wake lock...');
+        await this.preventSleep();
+      }
+    });
   }
 
   allowSleep() {
