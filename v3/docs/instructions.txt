@@ -49,3 +49,10 @@ I recommend using the city and state values to prevent confusion with similarly-
 *Data Columns*
 Choose which pieces of identifying data about the company will be included in the exported file.
 *Show eliminated companies*
+
+**General Notes**
+The final answer text ("Owner: Victoria Shoemaker", "Owner Age: 52", "Bootstrapped: Yes", etc) from each query is passed on to Claude with each subsequent query. 
+If you want to Claude to be able to use PhantomBuster, you should create a research criterion that finds the LinkedIn profile you want him to scrape. It will
+then pass the LinkedIn profile URL to subsequent queries, and Claude will be able to use it to perform PhantomBuster scrapes. For example, if I want Claude to use
+PhantomBuster to scrape a LinkedIn profile for graduation dates (to help estimate age), I would: 1) Create the "Owner Name" criterion, 2) Create the "Owner LinkedIn
+profile URL" criterion, 3) Create the Owner Age criterion.
