@@ -1,0 +1,2397 @@
+$ npm start
+
+> smartbroker-v3@3.0.0 start
+> cd server && npm start
+
+
+> smartbroker-v3-server@1.0.0 start
+> node server.js
+
+Current working directory: C:\Users\jeffr\OneDrive\Documents\smartbroker\v3\server
+__dirname: C:\Users\jeffr\OneDrive\Documents\smartbroker\v3\server
+Resolved public path: C:\Users\jeffr\OneDrive\Documents\smartbroker\v3\public
+Connected to SQLite database: C:\Users\jeffr\OneDrive\Documents\smartbroker\v3\server\smartbroker.db
+Database tables created successfully
+🚀 SmartBroker API Server running on port 3000
+📋 Health check: http://localhost:3000/health
+💾 Database initialized successfully
+[AUTH] New session created: 2dabcfa4...
+[DAO] Getting active template...
+[DAO] Found active template: Videgame Developers (ID: 2)
+[DAO] Found 6 criteria for template
+[DAO] Template has company data, parsing...
+[DAO] Parsed 578 companies from template
+[SERVER] Getting all research results for template 2
+[COST_DEBUG] Cost summary from DB: total=$0, investigations=0, claude=$0, perplexity=$0, phantombuster=$0
+[SERVER] Reading instructions from: C:\Users\jeffr\OneDrive\Documents\smartbroker\v3\docs\instructions.txt
+[SERVER] Research request received (stop flag reset): {
+  companiesCount: 578,
+  range: '0-24',
+  criteria: [ 'Software Publisher', 'Bootstrapped Status', 'US Employees' ],
+  options: { verbosity: 4, waitBetweenTools: false }
+}
+[DEBUG] Creating ResearchEngine for research request...
+[DEBUG] Initializing ResearchEngine...
+[DEBUG] ResearchEngine.initialize() starting...
+[DEBUG] TemplateClient serverURL: http://localhost:3000
+[DEBUG] TemplateClient attempting to fetch from: http://localhost:3000/api/template/active
+[DEBUG] Request timestamp: 2025-06-13T02:03:39.847Z
+[SERVER] SSE client connected
+[DAO] Getting active template...
+[DAO] Found active template: Videgame Developers (ID: 2)
+[DAO] Found 6 criteria for template
+[DAO] Template has company data, parsing...
+[DAO] Parsed 578 companies from template
+[DEBUG] TemplateClient received response: { status: 200, dataLength: 68935, hasData: true }
+[DEBUG] ResearchEngine.initialize() got template data: {
+  id: 2,
+  name: 'Videgame Developers',
+  criteriaCount: 6,
+  companiesCount: 578
+}
+[DEBUG] ResearchEngine.initialize() completed successfully
+[SERVER] Starting research engine...
+[SERVER] Research progress: { type: 'criterion_start', criterion: 'Software Publisher', total: 3 }
+[SERVER] Research progress: {
+  type: 'company_start',
+  company: 'STN Solutions, INC',
+  index: 1,
+  criterion: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query',
+  query: 'Does STN Solutions, INC, headquartered in San Diego, California, primarily sell software products or software development services? What is their main business model and revenue source?',
+  criterionName: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query_result',
+  result: 'STN Solutions, Inc., headquartered in San Diego, California, primarily operates as a managed IT service provider and IT solutions consultancy, rather than as a company that sells off-the-shelf software products. The company focuses on delivering managed IT services, secure and innovative IT solutions, AI infrastructure, cloud computing, cybersecurity, and technical team augmentation for other businesses[1][2][4].\n' +
+    '\n' +
+    '**Main Business Model and Revenue Source**\n' +
+    '\n' +
+    'STN Solutions’ main business model is based on providing professional IT services and managed solutions to other organizations. Their revenue is primarily generated from:\n' +
+    '\n' +
+    '- Managed IT services\n' +
+    '- IT consulting and solution deployment\n' +
+    '- Technical team augmentation to help clients accelerate their time-to-market\n' +
+    '- Delivering secure, scalable, and tailored technology solutions (including cloud services, cybersecurity, and AI infrastructure)\n' +
+    '\n' +
+    'There is no indication that their core business is selling standalone software products to end-users[1][2][4]. Instead, their business is service-oriented, leveraging partnerships with technology providers to deliver customizable solutions and ongoing IT support to clients.\n' +
+    '\n' +
+    'In summary, STN Solutions, Inc. generates its revenue mainly from IT services and managed solutions, not from selling software products[1][2][4].'
+}
+[SERVER] Research progress: {
+  type: 'prompt_sent',
+  prompt: 'Criterion: Determine if the company primarily publishes and sells software products they own. If the company primarily provides services, but also publishes products, that does not count.\n' +
+    '\n' +
+    'The company you are researching is:\n' +
+    'Company: STN Solutions, INC\n' +
+    'Website: http://www.stnsolutions.com\n' +
+    'Location: San Diego, California\n' +
+    '\n' +
+    'Initial Research Results:\n' +
+    'STN Solutions, Inc., headquartered in San Diego, California, primarily operates as a managed IT service provider and IT solutions consultancy, rather than as a company that sells off-the-shelf software products. The company focuses on delivering managed IT services, secure and innovative IT solutions, AI infrastructure, cloud computing, cybersecurity, and technical team augmentation for other businesses[1][2][4].\n' +
+    '\n' +
+    '**Main Business Model and Revenue Source**\n' +
+    '\n' +
+    'STN Solutions’ main business model is based on providing professional IT services and managed solutions to other organizations. Their revenue is primarily generated from:\n' +
+    '\n' +
+    '- Managed IT services\n' +
+    '- IT consulting and solution deployment\n' +
+    '- Technical team augmentation to help clients accelerate their time-to-market\n' +
+    '- Delivering secure, scalable, and tailored technology solutions (including cloud services, cybersecurity, and AI infrastructure)\n' +
+    '\n' +
+    'There is no indication that their core business is selling standalone software products to end-users[1][2][4]. Instead, their business is service-oriented, leveraging partnerships with technology providers to deliver customizable solutions and ongoing IT support to clients.\n' +
+    '\n' +
+    'In summary, STN Solutions, Inc. generates its revenue mainly from IT services and managed solutions, not from selling software products[1][2][4].\n' +
+    '\n' +
+    'Based on the initial research results and company information above, please determine your answer for the criterion: Software Publisher\n' +
+    '\n' +
+    'Expected answer format: yes-no'
+}
+[DEBUG] About to call Claude API - Conversation: 1899 chars, System Prompt: 3738 chars, Total messages: 1
+[SERVER] Research progress: {
+  type: 'claude_message_sent',
+  payload: {
+    messages: [ [Object] ],
+    systemPrompt: 'You are a business researcher. Your task is to research software development companies to determine whether they fit certain criteria to determine if the owner is likely to want to sell the company.\n' +
+      '\n' +
+      'You will be provided with initial research results from a web search about the company and criterion. Analyze these results first to determine your answer.\n' +
+      '\n' +
+      'You have the following tools at your disposal if you need additional information:\n' +
+      '\n' +
+      'Perplexity Web Search\n' +
+      'Perplexity is your general-purpose web search tool. It can be used to ask a question or for general web search via key terms.\n' +
+      'To use a perplexity search, use the following format:\n' +
+      '<<perplexity_search: {query}>>\n' +
+      '\n' +
+      'PhantomBuster LinkedIn Scraper\n' +
+      "PhantomBuster extracts detailed information from LinkedIn personal profiles. Some LinkedIn profiles contain data useful for approximating the person's age, like graduation dates.\n" +
+      'To use PhantomBuster, use the following format:\n' +
+      '<<phantombuster_linkedin: {linkedin_profile_url}>>\n' +
+      '\n' +
+      'Tool Costs and Usage Guidelines:\n' +
+      '- Perplexity search: $0.01 per search\n' +
+      '- PhantomBuster LinkedIn: $0.10 per profile (15x more expensive)\n' +
+      '\n' +
+      'Always try Perplexity search first. PhantomBuster should be used sparingly due to its high cost and long execution time.\n' +
+      '\n' +
+      'You should respond in one of four ways:\n' +
+      '1. With a tool use request if you need more information beyond what was initially provided\n' +
+      '2. With a positive answer to the criterion \n' +
+      '3. With a negative answer to the criterion\n' +
+      '4. With an unknown answer if insufficient information exists to make a determination\n' +
+      '\n' +
+      '\n' +
+      'Indicate the response type in the first line of your response:\n' +
+      '- "TYPE: tool_use" \n' +
+      '- "TYPE: positive_result"\n' +
+      '- "TYPE: negative_result"\n' +
+      '- "TYPE: unknown_result"\n' +
+      '\n' +
+      'Use unknown_result when:\n' +
+      '- Available information is insufficient, contradictory, or unclear\n' +
+      "- You've exhausted reasonable research avenues without finding definitive information\n" +
+      "- You're at the final iteration and still lack sufficient data for a confident answer\n" +
+      '\n' +
+      'The second line should be your answer, eg: "Yes", "No", "47", "San Francisco, California", etc\n' +
+      'The third line starts your analysis and explanation of your decision.\n' +
+      '\n' +
+      'Additionally, provide a confidence score from 1-3 indicating how certain you are about this assessment:\n' +
+      '- 1: Just a guess (0-60% chance this is true) - Limited or unclear information\n' +
+      '- 2: Probably correct (61-79% chance this is true) - Some evidence but gaps remain  \n' +
+      '- 3: Very likely correct (80-100% chance this is true) - Strong evidence supports conclusion\n' +
+      '\n' +
+      'Format your confidence as "Confidence: [1|2|3]" at the end of your response.\n' +
+      '\n' +
+      'Here are some examples:\n' +
+      '\n' +
+      'EXAMPLE #1 - Sufficient initial research\n' +
+      'Criterion: The company is a software publisher\n' +
+      'Initial Research: "Apple Inc. is primarily a hardware company that designs and manufactures consumer electronics including iPhones, iPads, and Mac computers. While they do develop software like iOS and macOS, their primary revenue comes from hardware sales."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: negative_result\n' +
+      'No\n' +
+      'Although Apple does develop and sell software, their main business is selling hardware in the form of consumer electronics. Their primary revenue source is hardware sales, not software publishing.\n' +
+      '\n' +
+      'Confidence: 3\n' +
+      '\n' +
+      'EXAMPLE #2 - Additional research needed\n' +
+      'Criterion: The company is a software publisher  \n' +
+      'Initial Research: "TechCorp is a technology company founded in 2015. They have offices in San Francisco and employ about 50 people."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: tool_use\n' +
+      '<<perplexity_search: TechCorp software products services revenue model business>>\n' +
+      "The initial research doesn't provide enough detail about TechCorp's business model or whether they primarily sell software products. I need more specific information about their products and revenue sources.",
+    model: 'claude-sonnet-4-20250514',
+    maxTokens: 4000
+  }
+}
+[DEBUG] ClaudeClient making request to http://localhost:3000/api/claude
+[DEBUG] Request payload size: 5875 chars
+[DEBUG] Server received Claude API request - Messages: 1, System prompt: 3799 chars
+[DEBUG] Total request size: 5875 chars
+[DEBUG] Making request to Anthropic API...
+[DEBUG] Anthropic API response received: 200 OK
+[DEBUG] Response content length: 756 chars
+[DEBUG] ClaudeClient received response: 200 OK
+[DEBUG] Claude API call successful - Response length: 756 chars
+[COST_DEBUG] Claude API tokens: input=1271, output=140
+[COST_DEBUG] Claude calculated cost: $0.005913
+[SERVER] Research progress: {
+  type: 'claude_response',
+  content: 'TYPE: negative_result\n' +
+    'No\n' +
+    'Based on the initial research, STN Solutions, Inc. is clearly positioned as a managed IT service provider and IT solutions consultancy, not a software publisher. Their primary business model revolves around providing professional IT services, managed solutions, consulting, and technical team augmentation to other businesses. Their revenue comes from service delivery rather than from selling software products they own and publish. The research explicitly states there is "no indication that their core business is selling standalone software products to end-users" and confirms their business is "service-oriented." This definitively places them outside the software publisher category according to the criterion.\n' +
+    '\n' +
+    'Confidence: 3',
+  tokens: 140,
+  cost: {
+    input_tokens: 1271,
+    output_tokens: 140,
+    input_cost: 0.003813,
+    output_cost: 0.0021,
+    total_cost: 0.005913
+  }
+}
+[COST_DEBUG] Final investigation costs: {
+  "perplexity": {
+    "tool_name": "perplexity",
+    "calls": 1,
+    "cost": 0.01
+  },
+  "claude": {
+    "input_tokens": 1271,
+    "output_tokens": 140,
+    "input_cost": 0.003813,
+    "output_cost": 0.0021,
+    "total_cost": 0.005913
+  }
+}
+[COST_DEBUG] Aggregated total: $0.015913
+[COST_DEBUG] Storing costs to DB: claude=$0.005913, perplexity=$0.01, phantombuster=$0, total=$0.015913
+[SERVER] Research progress: {
+  type: 'final_result',
+  company: 'STN Solutions, INC',
+  criterion: 'Software Publisher',
+  result: {
+    type: 'negative',
+    answer: 'No',
+    explanation: 'Based on the initial research, STN Solutions, Inc. is clearly positioned as a managed IT service provider and IT solutions consultancy, not a software publisher. Their primary business model revolves around providing professional IT services, managed solutions, consulting, and technical team augmentation to other businesses. Their revenue comes from service delivery rather than from selling software products they own and publish. The research explicitly states there is "no indication that their core business is selling standalone software products to end-users" and confirms their business is "service-oriented." This definitively places them outside the software publisher category according to the criterion.\n' +
+      '\n' +
+      'Confidence: 3',
+    confidence_score: 3
+  }
+}
+[SERVER] Research progress: { type: 'company_disqualified', reason: 'Software Publisher' }
+[SERVER] Research progress: {
+  type: 'company_start',
+  company: 'Attra, a Synechron Company',
+  index: 2,
+  criterion: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query',
+  query: 'Does Attra, a Synechron Company, headquartered in Box Hill, Victoria, primarily sell software products or software development services? What is their main business model and revenue source?',
+  criterionName: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query_result',
+  result: 'Attra, now operating as Synechron Payments after its acquisition and integration by Synechron, is headquartered in Melbourne, Australia (specifically Box Hill, Victoria). The company primarily provides software development services, with a main focus on the payments domain within the financial services industry.\n' +
+    '\n' +
+    '## Main Business Model and Revenue Source\n' +
+    '\n' +
+    '**Attra’s core business model centers on offering technology services and solutions to banks, financial institutions, payment processors, and related companies. These services include:**\n' +
+    '\n' +
+    '- Consulting\n' +
+    '- Application development and management\n' +
+    '- Software lifecycle services\n' +
+    '- Quality engineering\n' +
+    '- Digital transformation solutions\n' +
+    '- Maintenance and support for payment and banking platforms[3][5]\n' +
+    '\n' +
+    'Attra does not primarily sell stand-alone software products. Instead, their revenue is generated largely through service engagements, which involve building, customizing, and managing technology platforms for clients in the financial services and payments sectors[5]. The company has a global delivery footprint, with thousands of technology experts providing these services across various regions[3].\n' +
+    '\n' +
+    '**Key highlights of their business model:**\n' +
+    '\n' +
+    '- Focus on services rather than products\n' +
+    '- End-to-end technology solutions spanning consulting, development, integration, and maintenance\n' +
+    '- Deep domain expertise in payments and financial technology\n' +
+    '- Revenue largely derives from project-based or managed service contracts with banks and payment institutions\n' +
+    '\n' +
+    '**Conclusion:**  \n' +
+    'Attra, a Synechron company, primarily earns revenue from software development and technology services, not from selling off-the-shelf software products. Their main business model is service-based, providing consulting, application development, and ongoing technology solutions for clients in the banking and payments industry[3][5].'
+}
+[SERVER] Research progress: {
+  type: 'prompt_sent',
+  prompt: 'Criterion: Determine if the company primarily publishes and sells software products they own. If the company primarily provides services, but also publishes products, that does not count.\n' +
+    '\n' +
+    'The company you are researching is:\n' +
+    'Company: Attra, a Synechron Company\n' +
+    'Website: http://www.attra.com\n' +
+    'Location: Box Hill, Victoria\n' +
+    '\n' +
+    'Initial Research Results:\n' +
+    'Attra, now operating as Synechron Payments after its acquisition and integration by Synechron, is headquartered in Melbourne, Australia (specifically Box Hill, Victoria). The company primarily provides software development services, with a main focus on the payments domain within the financial services industry.\n' +
+    '\n' +
+    '## Main Business Model and Revenue Source\n' +
+    '\n' +
+    '**Attra’s core business model centers on offering technology services and solutions to banks, financial institutions, payment processors, and related companies. These services include:**\n' +
+    '\n' +
+    '- Consulting\n' +
+    '- Application development and management\n' +
+    '- Software lifecycle services\n' +
+    '- Quality engineering\n' +
+    '- Digital transformation solutions\n' +
+    '- Maintenance and support for payment and banking platforms[3][5]\n' +
+    '\n' +
+    'Attra does not primarily sell stand-alone software products. Instead, their revenue is generated largely through service engagements, which involve building, customizing, and managing technology platforms for clients in the financial services and payments sectors[5]. The company has a global delivery footprint, with thousands of technology experts providing these services across various regions[3].\n' +
+    '\n' +
+    '**Key highlights of their business model:**\n' +
+    '\n' +
+    '- Focus on services rather than products\n' +
+    '- End-to-end technology solutions spanning consulting, development, integration, and maintenance\n' +
+    '- Deep domain expertise in payments and financial technology\n' +
+    '- Revenue largely derives from project-based or managed service contracts with banks and payment institutions\n' +
+    '\n' +
+    '**Conclusion:**  \n' +
+    'Attra, a Synechron company, primarily earns revenue from software development and technology services, not from selling off-the-shelf software products. Their main business model is service-based, providing consulting, application development, and ongoing technology solutions for clients in the banking and payments industry[3][5].\n' +
+    '\n' +
+    'Based on the initial research results and company information above, please determine your answer for the criterion: Software Publisher\n' +
+    '\n' +
+    'Expected answer format: yes-no'
+}
+[DEBUG] About to call Claude API - Conversation: 2443 chars, System Prompt: 3738 chars, Total messages: 1
+[SERVER] Research progress: {
+  type: 'claude_message_sent',
+  payload: {
+    messages: [ [Object] ],
+    systemPrompt: 'You are a business researcher. Your task is to research software development companies to determine whether they fit certain criteria to determine if the owner is likely to want to sell the company.\n' +
+      '\n' +
+      'You will be provided with initial research results from a web search about the company and criterion. Analyze these results first to determine your answer.\n' +
+      '\n' +
+      'You have the following tools at your disposal if you need additional information:\n' +
+      '\n' +
+      'Perplexity Web Search\n' +
+      'Perplexity is your general-purpose web search tool. It can be used to ask a question or for general web search via key terms.\n' +
+      'To use a perplexity search, use the following format:\n' +
+      '<<perplexity_search: {query}>>\n' +
+      '\n' +
+      'PhantomBuster LinkedIn Scraper\n' +
+      "PhantomBuster extracts detailed information from LinkedIn personal profiles. Some LinkedIn profiles contain data useful for approximating the person's age, like graduation dates.\n" +
+      'To use PhantomBuster, use the following format:\n' +
+      '<<phantombuster_linkedin: {linkedin_profile_url}>>\n' +
+      '\n' +
+      'Tool Costs and Usage Guidelines:\n' +
+      '- Perplexity search: $0.01 per search\n' +
+      '- PhantomBuster LinkedIn: $0.10 per profile (15x more expensive)\n' +
+      '\n' +
+      'Always try Perplexity search first. PhantomBuster should be used sparingly due to its high cost and long execution time.\n' +
+      '\n' +
+      'You should respond in one of four ways:\n' +
+      '1. With a tool use request if you need more information beyond what was initially provided\n' +
+      '2. With a positive answer to the criterion \n' +
+      '3. With a negative answer to the criterion\n' +
+      '4. With an unknown answer if insufficient information exists to make a determination\n' +
+      '\n' +
+      '\n' +
+      'Indicate the response type in the first line of your response:\n' +
+      '- "TYPE: tool_use" \n' +
+      '- "TYPE: positive_result"\n' +
+      '- "TYPE: negative_result"\n' +
+      '- "TYPE: unknown_result"\n' +
+      '\n' +
+      'Use unknown_result when:\n' +
+      '- Available information is insufficient, contradictory, or unclear\n' +
+      "- You've exhausted reasonable research avenues without finding definitive information\n" +
+      "- You're at the final iteration and still lack sufficient data for a confident answer\n" +
+      '\n' +
+      'The second line should be your answer, eg: "Yes", "No", "47", "San Francisco, California", etc\n' +
+      'The third line starts your analysis and explanation of your decision.\n' +
+      '\n' +
+      'Additionally, provide a confidence score from 1-3 indicating how certain you are about this assessment:\n' +
+      '- 1: Just a guess (0-60% chance this is true) - Limited or unclear information\n' +
+      '- 2: Probably correct (61-79% chance this is true) - Some evidence but gaps remain  \n' +
+      '- 3: Very likely correct (80-100% chance this is true) - Strong evidence supports conclusion\n' +
+      '\n' +
+      'Format your confidence as "Confidence: [1|2|3]" at the end of your response.\n' +
+      '\n' +
+      'Here are some examples:\n' +
+      '\n' +
+      'EXAMPLE #1 - Sufficient initial research\n' +
+      'Criterion: The company is a software publisher\n' +
+      'Initial Research: "Apple Inc. is primarily a hardware company that designs and manufactures consumer electronics including iPhones, iPads, and Mac computers. While they do develop software like iOS and macOS, their primary revenue comes from hardware sales."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: negative_result\n' +
+      'No\n' +
+      'Although Apple does develop and sell software, their main business is selling hardware in the form of consumer electronics. Their primary revenue source is hardware sales, not software publishing.\n' +
+      '\n' +
+      'Confidence: 3\n' +
+      '\n' +
+      'EXAMPLE #2 - Additional research needed\n' +
+      'Criterion: The company is a software publisher  \n' +
+      'Initial Research: "TechCorp is a technology company founded in 2015. They have offices in San Francisco and employ about 50 people."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: tool_use\n' +
+      '<<perplexity_search: TechCorp software products services revenue model business>>\n' +
+      "The initial research doesn't provide enough detail about TechCorp's business model or whether they primarily sell software products. I need more specific information about their products and revenue sources.",
+    model: 'claude-sonnet-4-20250514',
+    maxTokens: 4000
+  }
+}
+[DEBUG] ClaudeClient making request to http://localhost:3000/api/claude
+[DEBUG] Request payload size: 6419 chars
+[DEBUG] Server received Claude API request - Messages: 1, System prompt: 3799 chars
+[DEBUG] Total request size: 6419 chars
+[DEBUG] Making request to Anthropic API...
+[DEBUG] Anthropic API response received: 200 OK
+[DEBUG] Response content length: 863 chars
+[DEBUG] ClaudeClient received response: 200 OK
+[DEBUG] Claude API call successful - Response length: 863 chars
+[COST_DEBUG] Claude API tokens: input=1360, output=158
+[COST_DEBUG] Claude calculated cost: $0.006450000000000001
+[SERVER] Research progress: {
+  type: 'claude_response',
+  content: 'TYPE: negative_result\n' +
+    'No\n' +
+    'Based on the initial research, Attra is clearly a services-based company, not a software publisher. The research explicitly states that "Attra does not primarily sell stand-alone software products" and that "their revenue is generated largely through service engagements." Their business model centers on providing technology services including consulting, application development, software lifecycle services, and digital transformation solutions to clients in the financial services sector. While they may develop software as part of their service offerings, this software is built for clients rather than being owned products that they publish and sell. The research clearly indicates their focus is on services rather than products, which directly contradicts the criterion for being classified as a software publisher.\n' +
+    '\n' +
+    'Confidence: 3',
+  tokens: 158,
+  cost: {
+    input_tokens: 1360,
+    output_tokens: 158,
+    input_cost: 0.00408,
+    output_cost: 0.00237,
+    total_cost: 0.006450000000000001
+  }
+}
+[COST_DEBUG] Final investigation costs: {
+  "perplexity": {
+    "tool_name": "perplexity",
+    "calls": 2,
+    "cost": 0.02
+  },
+  "claude": {
+    "input_tokens": 1360,
+    "output_tokens": 158,
+    "input_cost": 0.00408,
+    "output_cost": 0.00237,
+    "total_cost": 0.006450000000000001
+  }
+}
+[COST_DEBUG] Aggregated total: $0.02645
+[COST_DEBUG] Storing costs to DB: claude=$0.006450000000000001, perplexity=$0.02, phantombuster=$0, total=$0.02645
+[SERVER] Research progress: {
+  type: 'final_result',
+  company: 'Attra, a Synechron Company',
+  criterion: 'Software Publisher',
+  result: {
+    type: 'negative',
+    answer: 'No',
+    explanation: 'Based on the initial research, Attra is clearly a services-based company, not a software publisher. The research explicitly states that "Attra does not primarily sell stand-alone software products" and that "their revenue is generated largely through service engagements." Their business model centers on providing technology services including consulting, application development, software lifecycle services, and digital transformation solutions to clients in the financial services sector. While they may develop software as part of their service offerings, this software is built for clients rather than being owned products that they publish and sell. The research clearly indicates their focus is on services rather than products, which directly contradicts the criterion for being classified as a software publisher.\n' +
+      '\n' +
+      'Confidence: 3',
+    confidence_score: 3
+  }
+}
+[SERVER] Research progress: { type: 'company_disqualified', reason: 'Software Publisher' }
+[SERVER] Research progress: {
+  type: 'company_start',
+  company: 'FirstWatch',
+  index: 3,
+  criterion: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query',
+  query: 'Does FirstWatch, headquartered in Carlsbad, California, primarily sell software products or software development services? What is their main business model and revenue source?',
+  criterionName: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query_result',
+  result: 'FirstWatch, headquartered in Carlsbad, California, primarily sells software products rather than software development services. Their core business is providing a web-based, real-time data analysis and dashboard software system tailored for public safety, healthcare, and public health agencies. These software products enable authorized users to visualize and analyze critical data through dashboards, charts, graphs, and maps, supporting situational awareness, operational performance, and quality improvement initiatives[3][5].\n' +
+    '\n' +
+    '**Main Business Model and Revenue Source**\n' +
+    '\n' +
+    "- FirstWatch's main business model centers on delivering software solutions as products. These are typically deployed through automated, near real-time data analysis platforms and data visualization dashboards for various agencies, including EMS, fire, law enforcement, and public health entities[3][5].\n" +
+    '- The revenue sources for FirstWatch are predominantly from licensing or subscription fees for the use of their software systems. They provide ongoing access to their proprietary dashboards, data analysis, alerting features, and integrations with multiple external data sources (such as CAD systems, records management, and hospital systems)[3][5].\n' +
+    '- While FirstWatch does support agencies with implementation and integration (and may offer some professional services to facilitate initial setup or customization), their primary offering and main source of income is the software platform itself, not bespoke software development services[3][5].\n' +
+    '\n' +
+    '**Summary Table**\n' +
+    '\n' +
+    '| Aspect                      | Description                                                                               |\n' +
+    '|-----------------------------|-------------------------------------------------------------------------------------------|\n' +
+    '| Main Offering               | Real-time data analysis and dashboard software for public safety and health agencies      |\n' +
+    '| Business Model              | Licensing/subscription-based software products                                            |\n' +
+    '| Primary Revenue Source      | Software product subscriptions, not custom development services                          |\n' +
+    '| Typical Clients             | 9-1-1, EMS, Fire, Law Enforcement, Public Health, Hospital systems in the US & Canada    |\n' +
+    '\n' +
+    'In summary, FirstWatch is a software product company focusing on real-time, automated data analytics and visualization platforms for critical infrastructure agencies, with a business model centered on software sales rather than custom software development services[3][5].'
+}
+[SERVER] Research progress: {
+  type: 'prompt_sent',
+  prompt: 'Criterion: Determine if the company primarily publishes and sells software products they own. If the company primarily provides services, but also publishes products, that does not count.\n' +
+    '\n' +
+    'The company you are researching is:\n' +
+    'Company: FirstWatch\n' +
+    'Website: http://www.firstwatch.net\n' +
+    'Location: Carlsbad, California\n' +
+    '\n' +
+    'Initial Research Results:\n' +
+    'FirstWatch, headquartered in Carlsbad, California, primarily sells software products rather than software development services. Their core business is providing a web-based, real-time data analysis and dashboard software system tailored for public safety, healthcare, and public health agencies. These software products enable authorized users to visualize and analyze critical data through dashboards, charts, graphs, and maps, supporting situational awareness, operational performance, and quality improvement initiatives[3][5].\n' +
+    '\n' +
+    '**Main Business Model and Revenue Source**\n' +
+    '\n' +
+    "- FirstWatch's main business model centers on delivering software solutions as products. These are typically deployed through automated, near real-time data analysis platforms and data visualization dashboards for various agencies, including EMS, fire, law enforcement, and public health entities[3][5].\n" +
+    '- The revenue sources for FirstWatch are predominantly from licensing or subscription fees for the use of their software systems. They provide ongoing access to their proprietary dashboards, data analysis, alerting features, and integrations with multiple external data sources (such as CAD systems, records management, and hospital systems)[3][5].\n' +
+    '- While FirstWatch does support agencies with implementation and integration (and may offer some professional services to facilitate initial setup or customization), their primary offering and main source of income is the software platform itself, not bespoke software development services[3][5].\n' +
+    '\n' +
+    '**Summary Table**\n' +
+    '\n' +
+    '| Aspect                      | Description                                                                               |\n' +
+    '|-----------------------------|-------------------------------------------------------------------------------------------|\n' +
+    '| Main Offering               | Real-time data analysis and dashboard software for public safety and health agencies      |\n' +
+    '| Business Model              | Licensing/subscription-based software products                                            |\n' +
+    '| Primary Revenue Source      | Software product subscriptions, not custom development services                          |\n' +
+    '| Typical Clients             | 9-1-1, EMS, Fire, Law Enforcement, Public Health, Hospital systems in the US & Canada    |\n' +
+    '\n' +
+    'In summary, FirstWatch is a software product company focusing on real-time, automated data analytics and visualization platforms for critical infrastructure agencies, with a business model centered on software sales rather than custom software development services[3][5].\n' +
+    '\n' +
+    'Based on the initial research results and company information above, please determine your answer for the criterion: Software Publisher\n' +
+    '\n' +
+    'Expected answer format: yes-no'
+}
+[DEBUG] About to call Claude API - Conversation: 3126 chars, System Prompt: 3738 chars, Total messages: 1
+[SERVER] Research progress: {
+  type: 'claude_message_sent',
+  payload: {
+    messages: [ [Object] ],
+    systemPrompt: 'You are a business researcher. Your task is to research software development companies to determine whether they fit certain criteria to determine if the owner is likely to want to sell the company.\n' +
+      '\n' +
+      'You will be provided with initial research results from a web search about the company and criterion. Analyze these results first to determine your answer.\n' +
+      '\n' +
+      'You have the following tools at your disposal if you need additional information:\n' +
+      '\n' +
+      'Perplexity Web Search\n' +
+      'Perplexity is your general-purpose web search tool. It can be used to ask a question or for general web search via key terms.\n' +
+      'To use a perplexity search, use the following format:\n' +
+      '<<perplexity_search: {query}>>\n' +
+      '\n' +
+      'PhantomBuster LinkedIn Scraper\n' +
+      "PhantomBuster extracts detailed information from LinkedIn personal profiles. Some LinkedIn profiles contain data useful for approximating the person's age, like graduation dates.\n" +
+      'To use PhantomBuster, use the following format:\n' +
+      '<<phantombuster_linkedin: {linkedin_profile_url}>>\n' +
+      '\n' +
+      'Tool Costs and Usage Guidelines:\n' +
+      '- Perplexity search: $0.01 per search\n' +
+      '- PhantomBuster LinkedIn: $0.10 per profile (15x more expensive)\n' +
+      '\n' +
+      'Always try Perplexity search first. PhantomBuster should be used sparingly due to its high cost and long execution time.\n' +
+      '\n' +
+      'You should respond in one of four ways:\n' +
+      '1. With a tool use request if you need more information beyond what was initially provided\n' +
+      '2. With a positive answer to the criterion \n' +
+      '3. With a negative answer to the criterion\n' +
+      '4. With an unknown answer if insufficient information exists to make a determination\n' +
+      '\n' +
+      '\n' +
+      'Indicate the response type in the first line of your response:\n' +
+      '- "TYPE: tool_use" \n' +
+      '- "TYPE: positive_result"\n' +
+      '- "TYPE: negative_result"\n' +
+      '- "TYPE: unknown_result"\n' +
+      '\n' +
+      'Use unknown_result when:\n' +
+      '- Available information is insufficient, contradictory, or unclear\n' +
+      "- You've exhausted reasonable research avenues without finding definitive information\n" +
+      "- You're at the final iteration and still lack sufficient data for a confident answer\n" +
+      '\n' +
+      'The second line should be your answer, eg: "Yes", "No", "47", "San Francisco, California", etc\n' +
+      'The third line starts your analysis and explanation of your decision.\n' +
+      '\n' +
+      'Additionally, provide a confidence score from 1-3 indicating how certain you are about this assessment:\n' +
+      '- 1: Just a guess (0-60% chance this is true) - Limited or unclear information\n' +
+      '- 2: Probably correct (61-79% chance this is true) - Some evidence but gaps remain  \n' +
+      '- 3: Very likely correct (80-100% chance this is true) - Strong evidence supports conclusion\n' +
+      '\n' +
+      'Format your confidence as "Confidence: [1|2|3]" at the end of your response.\n' +
+      '\n' +
+      'Here are some examples:\n' +
+      '\n' +
+      'EXAMPLE #1 - Sufficient initial research\n' +
+      'Criterion: The company is a software publisher\n' +
+      'Initial Research: "Apple Inc. is primarily a hardware company that designs and manufactures consumer electronics including iPhones, iPads, and Mac computers. While they do develop software like iOS and macOS, their primary revenue comes from hardware sales."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: negative_result\n' +
+      'No\n' +
+      'Although Apple does develop and sell software, their main business is selling hardware in the form of consumer electronics. Their primary revenue source is hardware sales, not software publishing.\n' +
+      '\n' +
+      'Confidence: 3\n' +
+      '\n' +
+      'EXAMPLE #2 - Additional research needed\n' +
+      'Criterion: The company is a software publisher  \n' +
+      'Initial Research: "TechCorp is a technology company founded in 2015. They have offices in San Francisco and employ about 50 people."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: tool_use\n' +
+      '<<perplexity_search: TechCorp software products services revenue model business>>\n' +
+      "The initial research doesn't provide enough detail about TechCorp's business model or whether they primarily sell software products. I need more specific information about their products and revenue sources.",
+    model: 'claude-sonnet-4-20250514',
+    maxTokens: 4000
+  }
+}
+[DEBUG] ClaudeClient making request to http://localhost:3000/api/claude
+[DEBUG] Request payload size: 7102 chars
+[DEBUG] Server received Claude API request - Messages: 1, System prompt: 3799 chars
+[DEBUG] Total request size: 7102 chars
+[DEBUG] Making request to Anthropic API...
+[DEBUG] Anthropic API response received: 200 OK
+[DEBUG] Response content length: 1447 chars
+[DEBUG] ClaudeClient received response: 200 OK
+[DEBUG] Claude API call successful - Response length: 1447 chars
+[COST_DEBUG] Claude API tokens: input=1456, output=262
+[COST_DEBUG] Claude calculated cost: $0.008298
+[SERVER] Research progress: {
+  type: 'claude_response',
+  content: 'TYPE: positive_result\n' +
+    'Yes\n' +
+    'Based on the initial research, FirstWatch clearly meets the criterion of being a company that primarily publishes and sells software products they own. The research shows that:\n' +
+    '\n' +
+    "1. **Primary Business Model**: FirstWatch's core business is providing a web-based, real-time data analysis and dashboard software system - these are proprietary software products they have developed and own.\n" +
+    '\n' +
+    '2. **Revenue Source**: Their primary revenue comes from licensing or subscription fees for their software platforms, not from providing services. This indicates they are selling their own software products rather than primarily offering development services.\n' +
+    '\n' +
+    '3. **Product Focus**: They offer specific software solutions (data visualization dashboards, analytics platforms) that are their own proprietary products, tailored for public safety, healthcare, and public health agencies.\n' +
+    '\n' +
+    '4. **Business Classification**: The research explicitly states that "FirstWatch primarily sells software products rather than software development services" and that they are "a software product company focusing on real-time, automated data analytics and visualization platforms."\n' +
+    '\n' +
+    'While they may provide some implementation and integration services to support their software products, the research clearly indicates that their main business and revenue source is from selling their own software products, not from providing services.\n' +
+    '\n' +
+    'Confidence: 3',
+  tokens: 262,
+  cost: {
+    input_tokens: 1456,
+    output_tokens: 262,
+    input_cost: 0.004368,
+    output_cost: 0.00393,
+    total_cost: 0.008298
+  }
+}
+[COST_DEBUG] Final investigation costs: {
+  "perplexity": {
+    "tool_name": "perplexity",
+    "calls": 3,
+    "cost": 0.03
+  },
+  "claude": {
+    "input_tokens": 1456,
+    "output_tokens": 262,
+    "input_cost": 0.004368,
+    "output_cost": 0.00393,
+    "total_cost": 0.008298
+  }
+}
+[COST_DEBUG] Aggregated total: $0.038298
+[COST_DEBUG] Storing costs to DB: claude=$0.008298, perplexity=$0.03, phantombuster=$0, total=$0.038298
+[SERVER] Research progress: {
+  type: 'final_result',
+  company: 'FirstWatch',
+  criterion: 'Software Publisher',
+  result: {
+    type: 'positive',
+    answer: 'Yes',
+    explanation: 'Based on the initial research, FirstWatch clearly meets the criterion of being a company that primarily publishes and sells software products they own. The research shows that:\n' +
+      '\n' +
+      "1. **Primary Business Model**: FirstWatch's core business is providing a web-based, real-time data analysis and dashboard software system - these are proprietary software products they have developed and own.\n" +
+      '\n' +
+      '2. **Revenue Source**: Their primary revenue comes from licensing or subscription fees for their software platforms, not from providing services. This indicates they are selling their own software products rather than primarily offering development services.\n' +
+      '\n' +
+      '3. **Product Focus**: They offer specific software solutions (data visualization dashboards, analytics platforms) that are their own proprietary products, tailored for public safety, healthcare, and public health agencies.\n' +
+      '\n' +
+      '4. **Business Classification**: The research explicitly states that "FirstWatch primarily sells software products rather than software development services" and that they are "a software product company focusing on real-time, automated data analytics and visualization platforms."\n' +
+      '\n' +
+      'While they may provide some implementation and integration services to support their software products, the research clearly indicates that their main business and revenue source is from selling their own software products, not from providing services.\n' +
+      '\n' +
+      'Confidence: 3',
+    confidence_score: 3
+  }
+}
+[SERVER] Research progress: {
+  type: 'company_start',
+  company: 'Bay Reprographic & Supply Inc',
+  index: 4,
+  criterion: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query',
+  query: 'Does Bay Reprographic & Supply Inc, headquartered in Redwood City, California, primarily sell software products or software development services? What is their main business model and revenue source?',
+  criterionName: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query_result',
+  result: 'Bay Reprographic & Supply Inc, headquartered in Redwood City, California, does not primarily sell software products or software development services. Their core business model is as a re-seller of large-format printers and related office equipment. They carry major brands such as HP, Xerox, and Epson, with a focus on printers, copiers, and scanners tailored for the Architectural, Engineering, and Construction (AEC) market, as well as the Sign and General Graphics industry[3][4][1].\n' +
+    '\n' +
+    'Their main revenue sources are:\n' +
+    '\n' +
+    '- Sales of large-format printers, copiers, and scanners\n' +
+    '- Sale of related supplies and consumables (e.g., ink, paper)\n' +
+    '- Equipment installation and technical training services\n' +
+    '- Service, maintenance, and technical support for the printing systems they provide\n' +
+    '\n' +
+    'While Bay Reprographic does offer software and installation services associated with their hardware products, these software offerings are ancillary and not their primary product or revenue source. Their business is fundamentally built on equipment sales and associated support services, not on software development or standalone software licensing[4][3][1].'
+}
+[SERVER] Research progress: {
+  type: 'prompt_sent',
+  prompt: 'Criterion: Determine if the company primarily publishes and sells software products they own. If the company primarily provides services, but also publishes products, that does not count.\n' +
+    '\n' +
+    'The company you are researching is:\n' +
+    'Company: Bay Reprographic & Supply Inc\n' +
+    'Website: http://www.bayplotter.com\n' +
+    'Location: Redwood City, California\n' +
+    '\n' +
+    'Initial Research Results:\n' +
+    'Bay Reprographic & Supply Inc, headquartered in Redwood City, California, does not primarily sell software products or software development services. Their core business model is as a re-seller of large-format printers and related office equipment. They carry major brands such as HP, Xerox, and Epson, with a focus on printers, copiers, and scanners tailored for the Architectural, Engineering, and Construction (AEC) market, as well as the Sign and General Graphics industry[3][4][1].\n' +
+    '\n' +
+    'Their main revenue sources are:\n' +
+    '\n' +
+    '- Sales of large-format printers, copiers, and scanners\n' +
+    '- Sale of related supplies and consumables (e.g., ink, paper)\n' +
+    '- Equipment installation and technical training services\n' +
+    '- Service, maintenance, and technical support for the printing systems they provide\n' +
+    '\n' +
+    'While Bay Reprographic does offer software and installation services associated with their hardware products, these software offerings are ancillary and not their primary product or revenue source. Their business is fundamentally built on equipment sales and associated support services, not on software development or standalone software licensing[4][3][1].\n' +
+    '\n' +
+    'Based on the initial research results and company information above, please determine your answer for the criterion: Software Publisher\n' +
+    '\n' +
+    'Expected answer format: yes-no'
+}
+[DEBUG] About to call Claude API - Conversation: 1720 chars, System Prompt: 3738 chars, Total messages: 1
+[SERVER] Research progress: {
+  type: 'claude_message_sent',
+  payload: {
+    messages: [ [Object] ],
+    systemPrompt: 'You are a business researcher. Your task is to research software development companies to determine whether they fit certain criteria to determine if the owner is likely to want to sell the company.\n' +
+      '\n' +
+      'You will be provided with initial research results from a web search about the company and criterion. Analyze these results first to determine your answer.\n' +
+      '\n' +
+      'You have the following tools at your disposal if you need additional information:\n' +
+      '\n' +
+      'Perplexity Web Search\n' +
+      'Perplexity is your general-purpose web search tool. It can be used to ask a question or for general web search via key terms.\n' +
+      'To use a perplexity search, use the following format:\n' +
+      '<<perplexity_search: {query}>>\n' +
+      '\n' +
+      'PhantomBuster LinkedIn Scraper\n' +
+      "PhantomBuster extracts detailed information from LinkedIn personal profiles. Some LinkedIn profiles contain data useful for approximating the person's age, like graduation dates.\n" +
+      'To use PhantomBuster, use the following format:\n' +
+      '<<phantombuster_linkedin: {linkedin_profile_url}>>\n' +
+      '\n' +
+      'Tool Costs and Usage Guidelines:\n' +
+      '- Perplexity search: $0.01 per search\n' +
+      '- PhantomBuster LinkedIn: $0.10 per profile (15x more expensive)\n' +
+      '\n' +
+      'Always try Perplexity search first. PhantomBuster should be used sparingly due to its high cost and long execution time.\n' +
+      '\n' +
+      'You should respond in one of four ways:\n' +
+      '1. With a tool use request if you need more information beyond what was initially provided\n' +
+      '2. With a positive answer to the criterion \n' +
+      '3. With a negative answer to the criterion\n' +
+      '4. With an unknown answer if insufficient information exists to make a determination\n' +
+      '\n' +
+      '\n' +
+      'Indicate the response type in the first line of your response:\n' +
+      '- "TYPE: tool_use" \n' +
+      '- "TYPE: positive_result"\n' +
+      '- "TYPE: negative_result"\n' +
+      '- "TYPE: unknown_result"\n' +
+      '\n' +
+      'Use unknown_result when:\n' +
+      '- Available information is insufficient, contradictory, or unclear\n' +
+      "- You've exhausted reasonable research avenues without finding definitive information\n" +
+      "- You're at the final iteration and still lack sufficient data for a confident answer\n" +
+      '\n' +
+      'The second line should be your answer, eg: "Yes", "No", "47", "San Francisco, California", etc\n' +
+      'The third line starts your analysis and explanation of your decision.\n' +
+      '\n' +
+      'Additionally, provide a confidence score from 1-3 indicating how certain you are about this assessment:\n' +
+      '- 1: Just a guess (0-60% chance this is true) - Limited or unclear information\n' +
+      '- 2: Probably correct (61-79% chance this is true) - Some evidence but gaps remain  \n' +
+      '- 3: Very likely correct (80-100% chance this is true) - Strong evidence supports conclusion\n' +
+      '\n' +
+      'Format your confidence as "Confidence: [1|2|3]" at the end of your response.\n' +
+      '\n' +
+      'Here are some examples:\n' +
+      '\n' +
+      'EXAMPLE #1 - Sufficient initial research\n' +
+      'Criterion: The company is a software publisher\n' +
+      'Initial Research: "Apple Inc. is primarily a hardware company that designs and manufactures consumer electronics including iPhones, iPads, and Mac computers. While they do develop software like iOS and macOS, their primary revenue comes from hardware sales."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: negative_result\n' +
+      'No\n' +
+      'Although Apple does develop and sell software, their main business is selling hardware in the form of consumer electronics. Their primary revenue source is hardware sales, not software publishing.\n' +
+      '\n' +
+      'Confidence: 3\n' +
+      '\n' +
+      'EXAMPLE #2 - Additional research needed\n' +
+      'Criterion: The company is a software publisher  \n' +
+      'Initial Research: "TechCorp is a technology company founded in 2015. They have offices in San Francisco and employ about 50 people."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: tool_use\n' +
+      '<<perplexity_search: TechCorp software products services revenue model business>>\n' +
+      "The initial research doesn't provide enough detail about TechCorp's business model or whether they primarily sell software products. I need more specific information about their products and revenue sources.",
+    model: 'claude-sonnet-4-20250514',
+    maxTokens: 4000
+  }
+}
+[DEBUG] ClaudeClient making request to http://localhost:3000/api/claude
+[DEBUG] Request payload size: 5696 chars
+[DEBUG] Server received Claude API request - Messages: 1, System prompt: 3799 chars
+[DEBUG] Total request size: 5696 chars
+[DEBUG] Making request to Anthropic API...
+[DEBUG] Anthropic API response received: 200 OK
+[DEBUG] Response content length: 995 chars
+[DEBUG] ClaudeClient received response: 200 OK
+[DEBUG] Claude API call successful - Response length: 995 chars
+[COST_DEBUG] Claude API tokens: input=1251, output=210
+[COST_DEBUG] Claude calculated cost: $0.006903
+[SERVER] Research progress: {
+  type: 'claude_response',
+  content: 'TYPE: negative_result\n' +
+    'No\n' +
+    '\n' +
+    'Based on the initial research, Bay Reprographic & Supply Inc is clearly not a software publisher. Their core business model is as a reseller of large-format printers and office equipment from major brands like HP, Xerox, and Epson. Their primary revenue sources are:\n' +
+    '\n' +
+    '1. Hardware sales (printers, copiers, scanners)\n' +
+    '2. Supplies and consumables (ink, paper)\n' +
+    '3. Installation and technical support services\n' +
+    '4. Equipment maintenance services\n' +
+    '\n' +
+    'While they may offer some software solutions that accompany their hardware products, these are ancillary services that support their main business of equipment sales. The research explicitly states that "their business is fundamentally built on equipment sales and associated support services, not on software development or standalone software licensing."\n' +
+    '\n' +
+    'This is a clear case of a hardware reseller/service provider rather than a software publisher. They do not develop, own, or primarily sell software products.\n' +
+    '\n' +
+    'Confidence: 3',
+  tokens: 210,
+  cost: {
+    input_tokens: 1251,
+    output_tokens: 210,
+    input_cost: 0.0037530000000000003,
+    output_cost: 0.00315,
+    total_cost: 0.006903
+  }
+}
+[COST_DEBUG] Final investigation costs: {
+  "perplexity": {
+    "tool_name": "perplexity",
+    "calls": 4,
+    "cost": 0.04
+  },
+  "claude": {
+    "input_tokens": 1251,
+    "output_tokens": 210,
+    "input_cost": 0.0037530000000000003,
+    "output_cost": 0.00315,
+    "total_cost": 0.006903
+  }
+}
+[COST_DEBUG] Aggregated total: $0.046903
+[COST_DEBUG] Storing costs to DB: claude=$0.006903, perplexity=$0.04, phantombuster=$0, total=$0.046903
+[SERVER] Research progress: {
+  type: 'final_result',
+  company: 'Bay Reprographic & Supply Inc',
+  criterion: 'Software Publisher',
+  result: {
+    type: 'negative',
+    answer: 'No',
+    explanation: 'Based on the initial research, Bay Reprographic & Supply Inc is clearly not a software publisher. Their core business model is as a reseller of large-format printers and office equipment from major brands like HP, Xerox, and Epson. Their primary revenue sources are:\n' +
+      '\n' +
+      '1. Hardware sales (printers, copiers, scanners)\n' +
+      '2. Supplies and consumables (ink, paper)\n' +
+      '3. Installation and technical support services\n' +
+      '4. Equipment maintenance services\n' +
+      '\n' +
+      'While they may offer some software solutions that accompany their hardware products, these are ancillary services that support their main business of equipment sales. The research explicitly states that "their business is fundamentally built on equipment sales and associated support services, not on software development or standalone software licensing."\n' +
+      '\n' +
+      'This is a clear case of a hardware reseller/service provider rather than a software publisher. They do not develop, own, or primarily sell software products.\n' +
+      '\n' +
+      'Confidence: 3',
+    confidence_score: 3
+  }
+}
+[SERVER] Research progress: { type: 'company_disqualified', reason: 'Software Publisher' }
+[SERVER] Research progress: {
+  type: 'company_start',
+  company: 'CipherEx',
+  index: 5,
+  criterion: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query',
+  query: 'Does CipherEx, headquartered in San Ramon, California, primarily sell software products or software development services? What is their main business model and revenue source?',
+  criterionName: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query_result',
+  result: 'CipherEx, headquartered in San Ramon, California, primarily provides managed IT services and IT consulting rather than selling off-the-shelf software products[1][2]. Their core offerings include:\n' +
+    '\n' +
+    '- Managed IT services: acting as a dedicated IT department for clients, handling daily operations, monitoring, maintenance, optimization, procurement, and strategic planning for business IT environments[1].\n' +
+    '- Managed infrastructure services: offering businesses network management, enterprise-level security, and protection with regular vulnerability assessments, employee training, and real-time threat monitoring[1].\n' +
+    '- Professional IT services: providing IT staff augmentation, cloud and data center migration, and technology integration, all focused on helping businesses manage, enhance, and secure their IT infrastructure[2].\n' +
+    '\n' +
+    'Their business model centers on selling ongoing managed IT and cybersecurity services, staff augmentation, project-based consulting, and infrastructure solutions to businesses, particularly SMBs and companies in the semiconductor sector. Their primary revenue source comes from service contracts, recurring fees for managed IT and security, and consulting engagements, not from licensing or selling proprietary software products[1][2].'
+}
+[SERVER] Research progress: {
+  type: 'prompt_sent',
+  prompt: 'Criterion: Determine if the company primarily publishes and sells software products they own. If the company primarily provides services, but also publishes products, that does not count.\n' +
+    '\n' +
+    'The company you are researching is:\n' +
+    'Company: CipherEx\n' +
+    'Website: http://www.cipherex.com\n' +
+    'Location: San Ramon, California\n' +
+    '\n' +
+    'Initial Research Results:\n' +
+    'CipherEx, headquartered in San Ramon, California, primarily provides managed IT services and IT consulting rather than selling off-the-shelf software products[1][2]. Their core offerings include:\n' +
+    '\n' +
+    '- Managed IT services: acting as a dedicated IT department for clients, handling daily operations, monitoring, maintenance, optimization, procurement, and strategic planning for business IT environments[1].\n' +
+    '- Managed infrastructure services: offering businesses network management, enterprise-level security, and protection with regular vulnerability assessments, employee training, and real-time threat monitoring[1].\n' +
+    '- Professional IT services: providing IT staff augmentation, cloud and data center migration, and technology integration, all focused on helping businesses manage, enhance, and secure their IT infrastructure[2].\n' +
+    '\n' +
+    'Their business model centers on selling ongoing managed IT and cybersecurity services, staff augmentation, project-based consulting, and infrastructure solutions to businesses, particularly SMBs and companies in the semiconductor sector. Their primary revenue source comes from service contracts, recurring fees for managed IT and security, and consulting engagements, not from licensing or selling proprietary software products[1][2].\n' +
+    '\n' +
+    'Based on the initial research results and company information above, please determine your answer for the criterion: Software Publisher\n' +
+    '\n' +
+    'Expected answer format: yes-no'
+}
+[DEBUG] About to call Claude API - Conversation: 1816 chars, System Prompt: 3738 chars, Total messages: 1
+[SERVER] Research progress: {
+  type: 'claude_message_sent',
+  payload: {
+    messages: [ [Object] ],
+    systemPrompt: 'You are a business researcher. Your task is to research software development companies to determine whether they fit certain criteria to determine if the owner is likely to want to sell the company.\n' +
+      '\n' +
+      'You will be provided with initial research results from a web search about the company and criterion. Analyze these results first to determine your answer.\n' +
+      '\n' +
+      'You have the following tools at your disposal if you need additional information:\n' +
+      '\n' +
+      'Perplexity Web Search\n' +
+      'Perplexity is your general-purpose web search tool. It can be used to ask a question or for general web search via key terms.\n' +
+      'To use a perplexity search, use the following format:\n' +
+      '<<perplexity_search: {query}>>\n' +
+      '\n' +
+      'PhantomBuster LinkedIn Scraper\n' +
+      "PhantomBuster extracts detailed information from LinkedIn personal profiles. Some LinkedIn profiles contain data useful for approximating the person's age, like graduation dates.\n" +
+      'To use PhantomBuster, use the following format:\n' +
+      '<<phantombuster_linkedin: {linkedin_profile_url}>>\n' +
+      '\n' +
+      'Tool Costs and Usage Guidelines:\n' +
+      '- Perplexity search: $0.01 per search\n' +
+      '- PhantomBuster LinkedIn: $0.10 per profile (15x more expensive)\n' +
+      '\n' +
+      'Always try Perplexity search first. PhantomBuster should be used sparingly due to its high cost and long execution time.\n' +
+      '\n' +
+      'You should respond in one of four ways:\n' +
+      '1. With a tool use request if you need more information beyond what was initially provided\n' +
+      '2. With a positive answer to the criterion \n' +
+      '3. With a negative answer to the criterion\n' +
+      '4. With an unknown answer if insufficient information exists to make a determination\n' +
+      '\n' +
+      '\n' +
+      'Indicate the response type in the first line of your response:\n' +
+      '- "TYPE: tool_use" \n' +
+      '- "TYPE: positive_result"\n' +
+      '- "TYPE: negative_result"\n' +
+      '- "TYPE: unknown_result"\n' +
+      '\n' +
+      'Use unknown_result when:\n' +
+      '- Available information is insufficient, contradictory, or unclear\n' +
+      "- You've exhausted reasonable research avenues without finding definitive information\n" +
+      "- You're at the final iteration and still lack sufficient data for a confident answer\n" +
+      '\n' +
+      'The second line should be your answer, eg: "Yes", "No", "47", "San Francisco, California", etc\n' +
+      'The third line starts your analysis and explanation of your decision.\n' +
+      '\n' +
+      'Additionally, provide a confidence score from 1-3 indicating how certain you are about this assessment:\n' +
+      '- 1: Just a guess (0-60% chance this is true) - Limited or unclear information\n' +
+      '- 2: Probably correct (61-79% chance this is true) - Some evidence but gaps remain  \n' +
+      '- 3: Very likely correct (80-100% chance this is true) - Strong evidence supports conclusion\n' +
+      '\n' +
+      'Format your confidence as "Confidence: [1|2|3]" at the end of your response.\n' +
+      '\n' +
+      'Here are some examples:\n' +
+      '\n' +
+      'EXAMPLE #1 - Sufficient initial research\n' +
+      'Criterion: The company is a software publisher\n' +
+      'Initial Research: "Apple Inc. is primarily a hardware company that designs and manufactures consumer electronics including iPhones, iPads, and Mac computers. While they do develop software like iOS and macOS, their primary revenue comes from hardware sales."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: negative_result\n' +
+      'No\n' +
+      'Although Apple does develop and sell software, their main business is selling hardware in the form of consumer electronics. Their primary revenue source is hardware sales, not software publishing.\n' +
+      '\n' +
+      'Confidence: 3\n' +
+      '\n' +
+      'EXAMPLE #2 - Additional research needed\n' +
+      'Criterion: The company is a software publisher  \n' +
+      'Initial Research: "TechCorp is a technology company founded in 2015. They have offices in San Francisco and employ about 50 people."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: tool_use\n' +
+      '<<perplexity_search: TechCorp software products services revenue model business>>\n' +
+      "The initial research doesn't provide enough detail about TechCorp's business model or whether they primarily sell software products. I need more specific information about their products and revenue sources.",
+    model: 'claude-sonnet-4-20250514',
+    maxTokens: 4000
+  }
+}
+[DEBUG] ClaudeClient making request to http://localhost:3000/api/claude
+[DEBUG] Request payload size: 5792 chars
+[DEBUG] Server received Claude API request - Messages: 1, System prompt: 3799 chars
+[DEBUG] Total request size: 5792 chars
+[DEBUG] Making request to Anthropic API...
+[DEBUG] Anthropic API response received: 200 OK
+[DEBUG] Response content length: 630 chars
+[DEBUG] ClaudeClient received response: 200 OK
+[DEBUG] Claude API call successful - Response length: 630 chars
+[COST_DEBUG] Claude API tokens: input=1238, output=122
+[COST_DEBUG] Claude calculated cost: $0.005544
+[SERVER] Research progress: {
+  type: 'claude_response',
+  content: 'TYPE: negative_result\n' +
+    'No\n' +
+    'Based on the initial research, CipherEx is clearly a managed IT services provider rather than a software publisher. Their business model is built around providing ongoing services such as managed IT operations, cybersecurity services, staff augmentation, and consulting. Their revenue comes from service contracts and recurring fees for these services, not from licensing or selling proprietary software products. While they may use various software tools to deliver their services, they do not develop, own, or sell software products as their primary business - they sell services instead.\n' +
+    '\n' +
+    'Confidence: 3',
+  tokens: 122,
+  cost: {
+    input_tokens: 1238,
+    output_tokens: 122,
+    input_cost: 0.0037140000000000003,
+    output_cost: 0.00183,
+    total_cost: 0.005544
+  }
+}
+[COST_DEBUG] Final investigation costs: {
+  "perplexity": {
+    "tool_name": "perplexity",
+    "calls": 5,
+    "cost": 0.05
+  },
+  "claude": {
+    "input_tokens": 1238,
+    "output_tokens": 122,
+    "input_cost": 0.0037140000000000003,
+    "output_cost": 0.00183,
+    "total_cost": 0.005544
+  }
+}
+[COST_DEBUG] Aggregated total: $0.055544
+[COST_DEBUG] Storing costs to DB: claude=$0.005544, perplexity=$0.05, phantombuster=$0, total=$0.055544
+[SERVER] Research progress: {
+  type: 'final_result',
+  company: 'CipherEx',
+  criterion: 'Software Publisher',
+  result: {
+    type: 'negative',
+    answer: 'No',
+    explanation: 'Based on the initial research, CipherEx is clearly a managed IT services provider rather than a software publisher. Their business model is built around providing ongoing services such as managed IT operations, cybersecurity services, staff augmentation, and consulting. Their revenue comes from service contracts and recurring fees for these services, not from licensing or selling proprietary software products. While they may use various software tools to deliver their services, they do not develop, own, or sell software products as their primary business - they sell services instead.\n' +
+      '\n' +
+      'Confidence: 3',
+    confidence_score: 3
+  }
+}
+[SERVER] Research progress: { type: 'company_disqualified', reason: 'Software Publisher' }
+[SERVER] Research progress: {
+  type: 'company_start',
+  company: 'MyCircles',
+  index: 6,
+  criterion: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query',
+  query: 'Does MyCircles, headquartered in , California, primarily sell software products or software development services? What is their main business model and revenue source?',
+  criterionName: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query_result',
+  result: 'Based on available information, there is limited detail regarding a company named "MyCircles" specifically headquartered in California and its primary business model. However, the only verifiable entity found is MYCIRCLES LLC, registered in Encinitas, California[4]. There is no direct evidence from the search results that specifies whether MyCircles primarily sells software products or software development services.\n' +
+    '\n' +
+    'No revenue model, product, or service descriptions are provided for MYCIRCLES LLC in the retrieved results[4]. There are also similarly named entities (such as "Circles" in San Francisco), but these are separate companies with different focuses—namely, digital platforms for mental health and social connections—and should not be confused with "MyCircles"[3][5].\n' +
+    '\n' +
+    'Without more specific information or direct statements from company materials, it cannot be determined with certainty whether MyCircles primarily sells software products or development services, nor what its main revenue source is. If you are seeking information about a specific "MyCircles" entity, providing additional context or clarifying details may help refine the search.'
+}
+[SERVER] Research progress: {
+  type: 'prompt_sent',
+  prompt: 'Criterion: Determine if the company primarily publishes and sells software products they own. If the company primarily provides services, but also publishes products, that does not count.\n' +
+    '\n' +
+    'The company you are researching is:\n' +
+    'Company: MyCircles\n' +
+    'Website: http://www.mycircles.ca\n' +
+    '\n' +
+    'Initial Research Results:\n' +
+    'Based on available information, there is limited detail regarding a company named "MyCircles" specifically headquartered in California and its primary business model. However, the only verifiable entity found is MYCIRCLES LLC, registered in Encinitas, California[4]. There is no direct evidence from the search results that specifies whether MyCircles primarily sells software products or software development services.\n' +
+    '\n' +
+    'No revenue model, product, or service descriptions are provided for MYCIRCLES LLC in the retrieved results[4]. There are also similarly named entities (such as "Circles" in San Francisco), but these are separate companies with different focuses—namely, digital platforms for mental health and social connections—and should not be confused with "MyCircles"[3][5].\n' +
+    '\n' +
+    'Without more specific information or direct statements from company materials, it cannot be determined with certainty whether MyCircles primarily sells software products or development services, nor what its main revenue source is. If you are seeking information about a specific "MyCircles" entity, providing additional context or clarifying details may help refine the search.\n' +
+    '\n' +
+    'Based on the initial research results and company information above, please determine your answer for the criterion: Software Publisher\n' +
+    '\n' +
+    'Expected answer format: yes-no'
+}
+[DEBUG] About to call Claude API - Conversation: 1689 chars, System Prompt: 3738 chars, Total messages: 1
+[SERVER] Research progress: {
+  type: 'claude_message_sent',
+  payload: {
+    messages: [ [Object] ],
+    systemPrompt: 'You are a business researcher. Your task is to research software development companies to determine whether they fit certain criteria to determine if the owner is likely to want to sell the company.\n' +
+      '\n' +
+      'You will be provided with initial research results from a web search about the company and criterion. Analyze these results first to determine your answer.\n' +
+      '\n' +
+      'You have the following tools at your disposal if you need additional information:\n' +
+      '\n' +
+      'Perplexity Web Search\n' +
+      'Perplexity is your general-purpose web search tool. It can be used to ask a question or for general web search via key terms.\n' +
+      'To use a perplexity search, use the following format:\n' +
+      '<<perplexity_search: {query}>>\n' +
+      '\n' +
+      'PhantomBuster LinkedIn Scraper\n' +
+      "PhantomBuster extracts detailed information from LinkedIn personal profiles. Some LinkedIn profiles contain data useful for approximating the person's age, like graduation dates.\n" +
+      'To use PhantomBuster, use the following format:\n' +
+      '<<phantombuster_linkedin: {linkedin_profile_url}>>\n' +
+      '\n' +
+      'Tool Costs and Usage Guidelines:\n' +
+      '- Perplexity search: $0.01 per search\n' +
+      '- PhantomBuster LinkedIn: $0.10 per profile (15x more expensive)\n' +
+      '\n' +
+      'Always try Perplexity search first. PhantomBuster should be used sparingly due to its high cost and long execution time.\n' +
+      '\n' +
+      'You should respond in one of four ways:\n' +
+      '1. With a tool use request if you need more information beyond what was initially provided\n' +
+      '2. With a positive answer to the criterion \n' +
+      '3. With a negative answer to the criterion\n' +
+      '4. With an unknown answer if insufficient information exists to make a determination\n' +
+      '\n' +
+      '\n' +
+      'Indicate the response type in the first line of your response:\n' +
+      '- "TYPE: tool_use" \n' +
+      '- "TYPE: positive_result"\n' +
+      '- "TYPE: negative_result"\n' +
+      '- "TYPE: unknown_result"\n' +
+      '\n' +
+      'Use unknown_result when:\n' +
+      '- Available information is insufficient, contradictory, or unclear\n' +
+      "- You've exhausted reasonable research avenues without finding definitive information\n" +
+      "- You're at the final iteration and still lack sufficient data for a confident answer\n" +
+      '\n' +
+      'The second line should be your answer, eg: "Yes", "No", "47", "San Francisco, California", etc\n' +
+      'The third line starts your analysis and explanation of your decision.\n' +
+      '\n' +
+      'Additionally, provide a confidence score from 1-3 indicating how certain you are about this assessment:\n' +
+      '- 1: Just a guess (0-60% chance this is true) - Limited or unclear information\n' +
+      '- 2: Probably correct (61-79% chance this is true) - Some evidence but gaps remain  \n' +
+      '- 3: Very likely correct (80-100% chance this is true) - Strong evidence supports conclusion\n' +
+      '\n' +
+      'Format your confidence as "Confidence: [1|2|3]" at the end of your response.\n' +
+      '\n' +
+      'Here are some examples:\n' +
+      '\n' +
+      'EXAMPLE #1 - Sufficient initial research\n' +
+      'Criterion: The company is a software publisher\n' +
+      'Initial Research: "Apple Inc. is primarily a hardware company that designs and manufactures consumer electronics including iPhones, iPads, and Mac computers. While they do develop software like iOS and macOS, their primary revenue comes from hardware sales."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: negative_result\n' +
+      'No\n' +
+      'Although Apple does develop and sell software, their main business is selling hardware in the form of consumer electronics. Their primary revenue source is hardware sales, not software publishing.\n' +
+      '\n' +
+      'Confidence: 3\n' +
+      '\n' +
+      'EXAMPLE #2 - Additional research needed\n' +
+      'Criterion: The company is a software publisher  \n' +
+      'Initial Research: "TechCorp is a technology company founded in 2015. They have offices in San Francisco and employ about 50 people."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: tool_use\n' +
+      '<<perplexity_search: TechCorp software products services revenue model business>>\n' +
+      "The initial research doesn't provide enough detail about TechCorp's business model or whether they primarily sell software products. I need more specific information about their products and revenue sources.",
+    model: 'claude-sonnet-4-20250514',
+    maxTokens: 4000
+  }
+}
+[DEBUG] ClaudeClient making request to http://localhost:3000/api/claude
+[DEBUG] Request payload size: 5665 chars
+[DEBUG] Server received Claude API request - Messages: 1, System prompt: 3799 chars
+[DEBUG] Total request size: 5665 chars
+[DEBUG] Making request to Anthropic API...
+[DEBUG] Anthropic API response received: 200 OK
+[DEBUG] Response content length: 517 chars
+[DEBUG] ClaudeClient received response: 200 OK
+[DEBUG] Claude API call successful - Response length: 517 chars
+[COST_DEBUG] Claude API tokens: input=1224, output=111
+[COST_DEBUG] Claude calculated cost: $0.005337
+[SERVER] Research progress: {
+  type: 'claude_response',
+  content: 'TYPE: tool_use\n' +
+    '<<perplexity_search: MyCircles software company Canada mycircles.ca products services business model>>\n' +
+    '\n' +
+    'The initial research shows very limited information about MyCircles and only mentions a California LLC, while the website provided is mycircles.ca (Canadian domain). I need to search more specifically for information about this Canadian company to determine if they primarily publish and sell software products versus providing services.\n' +
+    '\n' +
+    'Research Status: Iteration 1/5 - 4 more attempts remaining.',
+  tokens: 111,
+  cost: {
+    input_tokens: 1224,
+    output_tokens: 111,
+    input_cost: 0.003672,
+    output_cost: 0.001665,
+    total_cost: 0.005337
+  }
+}
+[SERVER] Research progress: {
+  type: 'tool_request',
+  toolName: 'perplexity_search',
+  query: 'MyCircles software company Canada mycircles.ca products services business model',
+  waitForApproval: false
+}
+[COST_DEBUG] Perplexity cost calculated: $0.01
+[DEBUG] Tool perplexity_search completed. Result length: 3074 chars
+[SERVER] Research progress: {
+  type: 'tool_result',
+  result: '## Overview of MyCircles (mycircles.ca) Software Company\n' +
+    '\n' +
+    '**MyCircles** appears to be a Canadian-based technology initiative catering to professional networking and contact management. The primary online presence is at mycircles.ca, though some broader references and customer-facing products are available through app marketplaces and privacy policy disclosures[1][2].\n' +
+    '\n' +
+    '## Products\n' +
+    '\n' +
+    '- **myCircle App**  \n' +
+    '  The core offering is the *myCircle* app, which is focused on helping professionals streamline their networking activities.  \n' +
+    '  - **Features:**  \n' +
+    '    - Organize and manage professional contacts into customizable *circles* (e.g., by industry, sector, role, event, or location).\n' +
+    '    - Enhanced filtering utilizing various levels of identity verification, aimed at reducing fake profiles and authenticating accounts.\n' +
+    '    - Multilingual support (including English, Dutch, French, German, Hindi, Italian, Portuguese, Spanish).\n' +
+    '    - Available across Apple platforms (iPhone, iPad, Mac, Apple Vision).\n' +
+    '  - **Use Cases:**  \n' +
+    '    - Ideal for business professionals who frequently attend conferences or networking events and need to structure their contacts in a meaningful way[2].\n' +
+    '\n' +
+    '## Services\n' +
+    '\n' +
+    '- **Contact Management:**  \n' +
+    '  Tools to help segment, sort, and retrieve contact information based on customizable categories.\n' +
+    '- **Identity Verification:**  \n' +
+    '  Feature sets designed to increase trust within the network by verifying user profiles.\n' +
+    '- **Networking Solutions:**  \n' +
+    '  Technology to simplify and enhance the process of building professional relationships.\n' +
+    '\n' +
+    '## Business Model\n' +
+    '\n' +
+    '- **Free App Download:**  \n' +
+    '  The myCircle app is available free of charge on the App Store[2].\n' +
+    '- **Data Privacy:**  \n' +
+    '  According to the app and its privacy policies, no user data is collected directly by the developer (WOW Innovation Corporation), aligning with privacy-focused service delivery[1][2].\n' +
+    '- **Developer Information:**  \n' +
+    '  The company behind myCircle is listed as **WOW Innovation Corporation**[2], suggesting MyCircles may be a product line or subsidiary within this larger firm.\n' +
+    '- **Monetization:**  \n' +
+    '  While the current offering is free, the reference to “looking forward to the rest of the products” in user reviews signals a roadmap that may include premium features, paid tiers, or expanded services in the future[2].\n' +
+    '\n' +
+    '## Company Position\n' +
+    '\n' +
+    'MyCircles is not listed among Canada’s largest or most prominent software development companies[3][4], which implies it is an emerging or niche player, mainly focused on the professional networking and productivity space.\n' +
+    '\n' +
+    '---\n' +
+    '\n' +
+    '**Summary:**  \n' +
+    'MyCircles (mycircles.ca) is a Canadian software initiative specializing in professional networking and contact management via its flagship myCircle app. The app offers advanced contact organization, segmentation features, and layered identity verification, all available at no cost to end users and with a strict data privacy policy. The business is operated by WOW Innovation Corporation, and while currently free, indications point toward future product expansions or additional services[1][2].',
+  userOverride: null
+}
+[DEBUG] Conversation size after tool result: 5405 chars, 3 messages
+[DEBUG] About to call Claude API - Conversation: 5405 chars, System Prompt: 3738 chars, Total messages: 3
+[SERVER] Research progress: {
+  type: 'claude_message_sent',
+  payload: {
+    messages: [ [Object], [Object], [Object] ],
+    systemPrompt: 'You are a business researcher. Your task is to research software development companies to determine whether they fit certain criteria to determine if the owner is likely to want to sell the company.\n' +
+      '\n' +
+      'You will be provided with initial research results from a web search about the company and criterion. Analyze these results first to determine your answer.\n' +
+      '\n' +
+      'You have the following tools at your disposal if you need additional information:\n' +
+      '\n' +
+      'Perplexity Web Search\n' +
+      'Perplexity is your general-purpose web search tool. It can be used to ask a question or for general web search via key terms.\n' +
+      'To use a perplexity search, use the following format:\n' +
+      '<<perplexity_search: {query}>>\n' +
+      '\n' +
+      'PhantomBuster LinkedIn Scraper\n' +
+      "PhantomBuster extracts detailed information from LinkedIn personal profiles. Some LinkedIn profiles contain data useful for approximating the person's age, like graduation dates.\n" +
+      'To use PhantomBuster, use the following format:\n' +
+      '<<phantombuster_linkedin: {linkedin_profile_url}>>\n' +
+      '\n' +
+      'Tool Costs and Usage Guidelines:\n' +
+      '- Perplexity search: $0.01 per search\n' +
+      '- PhantomBuster LinkedIn: $0.10 per profile (15x more expensive)\n' +
+      '\n' +
+      'Always try Perplexity search first. PhantomBuster should be used sparingly due to its high cost and long execution time.\n' +
+      '\n' +
+      'You should respond in one of four ways:\n' +
+      '1. With a tool use request if you need more information beyond what was initially provided\n' +
+      '2. With a positive answer to the criterion \n' +
+      '3. With a negative answer to the criterion\n' +
+      '4. With an unknown answer if insufficient information exists to make a determination\n' +
+      '\n' +
+      '\n' +
+      'Indicate the response type in the first line of your response:\n' +
+      '- "TYPE: tool_use" \n' +
+      '- "TYPE: positive_result"\n' +
+      '- "TYPE: negative_result"\n' +
+      '- "TYPE: unknown_result"\n' +
+      '\n' +
+      'Use unknown_result when:\n' +
+      '- Available information is insufficient, contradictory, or unclear\n' +
+      "- You've exhausted reasonable research avenues without finding definitive information\n" +
+      "- You're at the final iteration and still lack sufficient data for a confident answer\n" +
+      '\n' +
+      'The second line should be your answer, eg: "Yes", "No", "47", "San Francisco, California", etc\n' +
+      'The third line starts your analysis and explanation of your decision.\n' +
+      '\n' +
+      'Additionally, provide a confidence score from 1-3 indicating how certain you are about this assessment:\n' +
+      '- 1: Just a guess (0-60% chance this is true) - Limited or unclear information\n' +
+      '- 2: Probably correct (61-79% chance this is true) - Some evidence but gaps remain  \n' +
+      '- 3: Very likely correct (80-100% chance this is true) - Strong evidence supports conclusion\n' +
+      '\n' +
+      'Format your confidence as "Confidence: [1|2|3]" at the end of your response.\n' +
+      '\n' +
+      'Here are some examples:\n' +
+      '\n' +
+      'EXAMPLE #1 - Sufficient initial research\n' +
+      'Criterion: The company is a software publisher\n' +
+      'Initial Research: "Apple Inc. is primarily a hardware company that designs and manufactures consumer electronics including iPhones, iPads, and Mac computers. While they do develop software like iOS and macOS, their primary revenue comes from hardware sales."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: negative_result\n' +
+      'No\n' +
+      'Although Apple does develop and sell software, their main business is selling hardware in the form of consumer electronics. Their primary revenue source is hardware sales, not software publishing.\n' +
+      '\n' +
+      'Confidence: 3\n' +
+      '\n' +
+      'EXAMPLE #2 - Additional research needed\n' +
+      'Criterion: The company is a software publisher  \n' +
+      'Initial Research: "TechCorp is a technology company founded in 2015. They have offices in San Francisco and employ about 50 people."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: tool_use\n' +
+      '<<perplexity_search: TechCorp software products services revenue model business>>\n' +
+      "The initial research doesn't provide enough detail about TechCorp's business model or whether they primarily sell software products. I need more specific information about their products and revenue sources.",
+    model: 'claude-sonnet-4-20250514',
+    maxTokens: 4000
+  }
+}
+[DEBUG] ClaudeClient making request to http://localhost:3000/api/claude
+[DEBUG] Request payload size: 9381 chars
+[DEBUG] Server received Claude API request - Messages: 3, System prompt: 3799 chars
+[DEBUG] Total request size: 9381 chars
+[DEBUG] Making request to Anthropic API...
+[DEBUG] Anthropic API response received: 200 OK
+[DEBUG] Response content length: 1098 chars
+[DEBUG] ClaudeClient received response: 200 OK
+[DEBUG] Claude API call successful - Response length: 1098 chars
+[COST_DEBUG] Claude API tokens: input=2004, output=197
+[COST_DEBUG] Claude calculated cost: $0.008967
+[SERVER] Research progress: {
+  type: 'claude_response',
+  content: 'TYPE: positive_result\n' +
+    'Yes\n' +
+    'Based on the research, MyCircles (operated by WOW Innovation Corporation) primarily develops and publishes software products, specifically the myCircle app for professional networking and contact management. The company creates and owns software products that they distribute through app stores (available on Apple platforms including iPhone, iPad, Mac, and Apple Vision). While the app is currently free, this is still a software publishing business model where they own and distribute their proprietary software products rather than primarily providing services to clients.\n' +
+    '\n' +
+    'The key evidence supporting this classification:\n' +
+    '- They have developed and published the myCircle app with specific features and functionality\n' +
+    '- The app is distributed through official app stores under their ownership\n' +
+    '- They own the intellectual property of their software products\n' +
+    '- Their business model is centered around software product development rather than providing services to clients\n' +
+    '- References to future product roadmap suggest continued focus on software publishing\n' +
+    '\n' +
+    'Confidence: 3',
+  tokens: 197,
+  cost: {
+    input_tokens: 2004,
+    output_tokens: 197,
+    input_cost: 0.006012,
+    output_cost: 0.002955,
+    total_cost: 0.008967
+  }
+}
+[COST_DEBUG] Final investigation costs: {
+  "perplexity": {
+    "tool_name": "perplexity",
+    "calls": 1,
+    "cost": 0.01
+  },
+  "claude": {
+    "input_tokens": 2004,
+    "output_tokens": 197,
+    "input_cost": 0.006012,
+    "output_cost": 0.002955,
+    "total_cost": 0.008967
+  }
+}
+[COST_DEBUG] Aggregated total: $0.018966999999999998
+[COST_DEBUG] Storing costs to DB: claude=$0.008967, perplexity=$0.01, phantombuster=$0, total=$0.018966999999999998
+[SERVER] Research progress: {
+  type: 'final_result',
+  company: 'MyCircles',
+  criterion: 'Software Publisher',
+  result: {
+    type: 'positive',
+    answer: 'Yes',
+    explanation: 'Based on the research, MyCircles (operated by WOW Innovation Corporation) primarily develops and publishes software products, specifically the myCircle app for professional networking and contact management. The company creates and owns software products that they distribute through app stores (available on Apple platforms including iPhone, iPad, Mac, and Apple Vision). While the app is currently free, this is still a software publishing business model where they own and distribute their proprietary software products rather than primarily providing services to clients.\n' +
+      '\n' +
+      'The key evidence supporting this classification:\n' +
+      '- They have developed and published the myCircle app with specific features and functionality\n' +
+      '- The app is distributed through official app stores under their ownership\n' +
+      '- They own the intellectual property of their software products\n' +
+      '- Their business model is centered around software product development rather than providing services to clients\n' +
+      '- References to future product roadmap suggest continued focus on software publishing\n' +
+      '\n' +
+      'Confidence: 3',
+    confidence_score: 3
+  }
+}
+[SERVER] Research progress: {
+  type: 'company_start',
+  company: 'Demand.io',
+  index: 7,
+  criterion: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query',
+  query: 'Does Demand.io, headquartered in Los Angeles, California, primarily sell software products or software development services? What is their main business model and revenue source?',
+  criterionName: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query_result',
+  result: 'Demand.io, headquartered in Los Angeles, California, primarily develops and operates consumer-facing software products, specifically e-commerce platforms and applications, rather than providing software development services to external clients[1][2][3].\n' +
+    '\n' +
+    '## Main Business Model\n' +
+    '\n' +
+    'Demand.io’s core business model centers around building and managing a network of web3-driven e-commerce apps and communities. Their products—such as SimplyCodes, Knoji, and Favely—enable millions of consumers to shop more efficiently and are designed to facilitate e-commerce transactions at scale[2][3]. These platforms collectively drive over $1 billion in annual transaction volume, indicating a strong focus on transactional and product-driven revenue rather than service contracts[2][3].\n' +
+    '\n' +
+    '## Revenue Source\n' +
+    '\n' +
+    'The primary revenue sources for Demand.io stem from the operation of their digital shopping communities and platforms. Their business model likely includes:\n' +
+    '\n' +
+    '- Affiliate commissions and referral fees from facilitating sales via their platforms.\n' +
+    '- Partnerships with brands and retailers that leverage their technology to connect with consumers.\n' +
+    '- Potential utilization of web3 and NFT technologies to unlock new monetization streams within e-commerce communities[2][5].\n' +
+    '\n' +
+    '## Summary Table\n' +
+    '\n' +
+    '| Aspect                  | Details                                                                                   |\n' +
+    '|-------------------------|-------------------------------------------------------------------------------------------|\n' +
+    '| Primary Offerings       | E-commerce software platforms & consumer apps (e.g., SimplyCodes, Knoji, Favely)          |\n' +
+    '| Main Business Model     | Operates and monetizes its own shopping platforms and communities                         |\n' +
+    '| Revenue Sources         | Affiliate fees, brand partnerships, platform commercialization, possible web3/NFT models  |\n' +
+    '| Focus                   | Product-driven (not custom software development services for clients)                     |\n' +
+    '\n' +
+    'In summary, Demand.io does not primarily sell software development services. Instead, it generates revenue by building, operating, and monetizing a suite of e-commerce software products and communities that serve both consumers and business partners[1][2][3].'
+}
+[SERVER] Research progress: {
+  type: 'prompt_sent',
+  prompt: 'Criterion: Determine if the company primarily publishes and sells software products they own. If the company primarily provides services, but also publishes products, that does not count.\n' +
+    '\n' +
+    'The company you are researching is:\n' +
+    'Company: Demand.io\n' +
+    'Website: http://www.demand.io\n' +
+    'Location: Los Angeles, California\n' +
+    '\n' +
+    'Initial Research Results:\n' +
+    'Demand.io, headquartered in Los Angeles, California, primarily develops and operates consumer-facing software products, specifically e-commerce platforms and applications, rather than providing software development services to external clients[1][2][3].\n' +
+    '\n' +
+    '## Main Business Model\n' +
+    '\n' +
+    'Demand.io’s core business model centers around building and managing a network of web3-driven e-commerce apps and communities. Their products—such as SimplyCodes, Knoji, and Favely—enable millions of consumers to shop more efficiently and are designed to facilitate e-commerce transactions at scale[2][3]. These platforms collectively drive over $1 billion in annual transaction volume, indicating a strong focus on transactional and product-driven revenue rather than service contracts[2][3].\n' +
+    '\n' +
+    '## Revenue Source\n' +
+    '\n' +
+    'The primary revenue sources for Demand.io stem from the operation of their digital shopping communities and platforms. Their business model likely includes:\n' +
+    '\n' +
+    '- Affiliate commissions and referral fees from facilitating sales via their platforms.\n' +
+    '- Partnerships with brands and retailers that leverage their technology to connect with consumers.\n' +
+    '- Potential utilization of web3 and NFT technologies to unlock new monetization streams within e-commerce communities[2][5].\n' +
+    '\n' +
+    '## Summary Table\n' +
+    '\n' +
+    '| Aspect                  | Details                                                                                   |\n' +
+    '|-------------------------|-------------------------------------------------------------------------------------------|\n' +
+    '| Primary Offerings       | E-commerce software platforms & consumer apps (e.g., SimplyCodes, Knoji, Favely)          |\n' +
+    '| Main Business Model     | Operates and monetizes its own shopping platforms and communities                         |\n' +
+    '| Revenue Sources         | Affiliate fees, brand partnerships, platform commercialization, possible web3/NFT models  |\n' +
+    '| Focus                   | Product-driven (not custom software development services for clients)                     |\n' +
+    '\n' +
+    'In summary, Demand.io does not primarily sell software development services. Instead, it generates revenue by building, operating, and monetizing a suite of e-commerce software products and communities that serve both consumers and business partners[1][2][3].\n' +
+    '\n' +
+    'Based on the initial research results and company information above, please determine your answer for the criterion: Software Publisher\n' +
+    '\n' +
+    'Expected answer format: yes-no'
+}
+[DEBUG] About to call Claude API - Conversation: 2830 chars, System Prompt: 3738 chars, Total messages: 1
+[SERVER] Research progress: {
+  type: 'claude_message_sent',
+  payload: {
+    messages: [ [Object] ],
+    systemPrompt: 'You are a business researcher. Your task is to research software development companies to determine whether they fit certain criteria to determine if the owner is likely to want to sell the company.\n' +
+      '\n' +
+      'You will be provided with initial research results from a web search about the company and criterion. Analyze these results first to determine your answer.\n' +
+      '\n' +
+      'You have the following tools at your disposal if you need additional information:\n' +
+      '\n' +
+      'Perplexity Web Search\n' +
+      'Perplexity is your general-purpose web search tool. It can be used to ask a question or for general web search via key terms.\n' +
+      'To use a perplexity search, use the following format:\n' +
+      '<<perplexity_search: {query}>>\n' +
+      '\n' +
+      'PhantomBuster LinkedIn Scraper\n' +
+      "PhantomBuster extracts detailed information from LinkedIn personal profiles. Some LinkedIn profiles contain data useful for approximating the person's age, like graduation dates.\n" +
+      'To use PhantomBuster, use the following format:\n' +
+      '<<phantombuster_linkedin: {linkedin_profile_url}>>\n' +
+      '\n' +
+      'Tool Costs and Usage Guidelines:\n' +
+      '- Perplexity search: $0.01 per search\n' +
+      '- PhantomBuster LinkedIn: $0.10 per profile (15x more expensive)\n' +
+      '\n' +
+      'Always try Perplexity search first. PhantomBuster should be used sparingly due to its high cost and long execution time.\n' +
+      '\n' +
+      'You should respond in one of four ways:\n' +
+      '1. With a tool use request if you need more information beyond what was initially provided\n' +
+      '2. With a positive answer to the criterion \n' +
+      '3. With a negative answer to the criterion\n' +
+      '4. With an unknown answer if insufficient information exists to make a determination\n' +
+      '\n' +
+      '\n' +
+      'Indicate the response type in the first line of your response:\n' +
+      '- "TYPE: tool_use" \n' +
+      '- "TYPE: positive_result"\n' +
+      '- "TYPE: negative_result"\n' +
+      '- "TYPE: unknown_result"\n' +
+      '\n' +
+      'Use unknown_result when:\n' +
+      '- Available information is insufficient, contradictory, or unclear\n' +
+      "- You've exhausted reasonable research avenues without finding definitive information\n" +
+      "- You're at the final iteration and still lack sufficient data for a confident answer\n" +
+      '\n' +
+      'The second line should be your answer, eg: "Yes", "No", "47", "San Francisco, California", etc\n' +
+      'The third line starts your analysis and explanation of your decision.\n' +
+      '\n' +
+      'Additionally, provide a confidence score from 1-3 indicating how certain you are about this assessment:\n' +
+      '- 1: Just a guess (0-60% chance this is true) - Limited or unclear information\n' +
+      '- 2: Probably correct (61-79% chance this is true) - Some evidence but gaps remain  \n' +
+      '- 3: Very likely correct (80-100% chance this is true) - Strong evidence supports conclusion\n' +
+      '\n' +
+      'Format your confidence as "Confidence: [1|2|3]" at the end of your response.\n' +
+      '\n' +
+      'Here are some examples:\n' +
+      '\n' +
+      'EXAMPLE #1 - Sufficient initial research\n' +
+      'Criterion: The company is a software publisher\n' +
+      'Initial Research: "Apple Inc. is primarily a hardware company that designs and manufactures consumer electronics including iPhones, iPads, and Mac computers. While they do develop software like iOS and macOS, their primary revenue comes from hardware sales."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: negative_result\n' +
+      'No\n' +
+      'Although Apple does develop and sell software, their main business is selling hardware in the form of consumer electronics. Their primary revenue source is hardware sales, not software publishing.\n' +
+      '\n' +
+      'Confidence: 3\n' +
+      '\n' +
+      'EXAMPLE #2 - Additional research needed\n' +
+      'Criterion: The company is a software publisher  \n' +
+      'Initial Research: "TechCorp is a technology company founded in 2015. They have offices in San Francisco and employ about 50 people."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: tool_use\n' +
+      '<<perplexity_search: TechCorp software products services revenue model business>>\n' +
+      "The initial research doesn't provide enough detail about TechCorp's business model or whether they primarily sell software products. I need more specific information about their products and revenue sources.",
+    model: 'claude-sonnet-4-20250514',
+    maxTokens: 4000
+  }
+}
+[DEBUG] ClaudeClient making request to http://localhost:3000/api/claude
+[DEBUG] Request payload size: 6806 chars
+[DEBUG] Server received Claude API request - Messages: 1, System prompt: 3799 chars
+[DEBUG] Total request size: 6806 chars
+[DEBUG] Making request to Anthropic API...
+[DEBUG] Anthropic API response received: 200 OK
+[DEBUG] Response content length: 821 chars
+[DEBUG] ClaudeClient received response: 200 OK
+[DEBUG] Claude API call successful - Response length: 821 chars
+[COST_DEBUG] Claude API tokens: input=1441, output=157
+[COST_DEBUG] Claude calculated cost: $0.006678
+[SERVER] Research progress: {
+  type: 'claude_response',
+  content: 'TYPE: positive_result\n' +
+    'Yes\n' +
+    'Based on the initial research, Demand.io clearly fits the criterion of primarily publishing and selling software products they own. The company develops and operates consumer-facing software products including e-commerce platforms and applications like SimplyCodes, Knoji, and Favely. Their business model is product-driven rather than service-based - they generate revenue by building, operating, and monetizing their own suite of e-commerce software products and communities. The research explicitly states they do not primarily sell software development services to external clients, but instead focus on their own software platforms that facilitate over $1 billion in annual transaction volume through affiliate commissions, brand partnerships, and platform commercialization.\n' +
+    '\n' +
+    'Confidence: 3',
+  tokens: 157,
+  cost: {
+    input_tokens: 1441,
+    output_tokens: 157,
+    input_cost: 0.0043230000000000005,
+    output_cost: 0.002355,
+    total_cost: 0.006678
+  }
+}
+[COST_DEBUG] Final investigation costs: {
+  "perplexity": {
+    "tool_name": "perplexity",
+    "calls": 2,
+    "cost": 0.02
+  },
+  "claude": {
+    "input_tokens": 1441,
+    "output_tokens": 157,
+    "input_cost": 0.0043230000000000005,
+    "output_cost": 0.002355,
+    "total_cost": 0.006678
+  }
+}
+[COST_DEBUG] Aggregated total: $0.026678
+[COST_DEBUG] Storing costs to DB: claude=$0.006678, perplexity=$0.02, phantombuster=$0, total=$0.026678
+[SERVER] Research progress: {
+  type: 'final_result',
+  company: 'Demand.io',
+  criterion: 'Software Publisher',
+  result: {
+    type: 'positive',
+    answer: 'Yes',
+    explanation: 'Based on the initial research, Demand.io clearly fits the criterion of primarily publishing and selling software products they own. The company develops and operates consumer-facing software products including e-commerce platforms and applications like SimplyCodes, Knoji, and Favely. Their business model is product-driven rather than service-based - they generate revenue by building, operating, and monetizing their own suite of e-commerce software products and communities. The research explicitly states they do not primarily sell software development services to external clients, but instead focus on their own software platforms that facilitate over $1 billion in annual transaction volume through affiliate commissions, brand partnerships, and platform commercialization.\n' +
+      '\n' +
+      'Confidence: 3',
+    confidence_score: 3
+  }
+}
+[SERVER] Research progress: {
+  type: 'company_start',
+  company: 'Taurus Software',
+  index: 8,
+  criterion: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query',
+  query: 'Does Taurus Software, headquartered in Redwood City, California, primarily sell software products or software development services? What is their main business model and revenue source?',
+  criterionName: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query_result',
+  result: 'Taurus Software, headquartered in Redwood City, California, primarily sells software products focused on data management and business intelligence solutions. Their main offerings are no-code software solutions that handle data movement, transformation, integration, and preparation for analytics—enabling businesses to modernize infrastructure and fulfill data governance needs[1][2][3].\n' +
+    '\n' +
+    'The company’s business model is centered on delivering these user-friendly, ready-made software tools rather than custom software development services. Taurus Software’s revenue source is largely derived from the licensing and sale of these software products to businesses in need of data management and analysis capabilities[1][2][3].\n' +
+    '\n' +
+    'While Taurus Software may provide some support or consultation around product implementation, their core business is selling off-the-shelf software solutions rather than contract software development[1][2][3].'
+}
+[SERVER] Research progress: {
+  type: 'prompt_sent',
+  prompt: 'Criterion: Determine if the company primarily publishes and sells software products they own. If the company primarily provides services, but also publishes products, that does not count.\n' +
+    '\n' +
+    'The company you are researching is:\n' +
+    'Company: Taurus Software\n' +
+    'Website: http://www.taurus.com\n' +
+    'Location: Redwood City, California\n' +
+    '\n' +
+    'Initial Research Results:\n' +
+    'Taurus Software, headquartered in Redwood City, California, primarily sells software products focused on data management and business intelligence solutions. Their main offerings are no-code software solutions that handle data movement, transformation, integration, and preparation for analytics—enabling businesses to modernize infrastructure and fulfill data governance needs[1][2][3].\n' +
+    '\n' +
+    'The company’s business model is centered on delivering these user-friendly, ready-made software tools rather than custom software development services. Taurus Software’s revenue source is largely derived from the licensing and sale of these software products to businesses in need of data management and analysis capabilities[1][2][3].\n' +
+    '\n' +
+    'While Taurus Software may provide some support or consultation around product implementation, their core business is selling off-the-shelf software solutions rather than contract software development[1][2][3].\n' +
+    '\n' +
+    'Based on the initial research results and company information above, please determine your answer for the criterion: Software Publisher\n' +
+    '\n' +
+    'Expected answer format: yes-no'
+}
+[DEBUG] About to call Claude API - Conversation: 1493 chars, System Prompt: 3738 chars, Total messages: 1
+[SERVER] Research progress: {
+  type: 'claude_message_sent',
+  payload: {
+    messages: [ [Object] ],
+    systemPrompt: 'You are a business researcher. Your task is to research software development companies to determine whether they fit certain criteria to determine if the owner is likely to want to sell the company.\n' +
+      '\n' +
+      'You will be provided with initial research results from a web search about the company and criterion. Analyze these results first to determine your answer.\n' +
+      '\n' +
+      'You have the following tools at your disposal if you need additional information:\n' +
+      '\n' +
+      'Perplexity Web Search\n' +
+      'Perplexity is your general-purpose web search tool. It can be used to ask a question or for general web search via key terms.\n' +
+      'To use a perplexity search, use the following format:\n' +
+      '<<perplexity_search: {query}>>\n' +
+      '\n' +
+      'PhantomBuster LinkedIn Scraper\n' +
+      "PhantomBuster extracts detailed information from LinkedIn personal profiles. Some LinkedIn profiles contain data useful for approximating the person's age, like graduation dates.\n" +
+      'To use PhantomBuster, use the following format:\n' +
+      '<<phantombuster_linkedin: {linkedin_profile_url}>>\n' +
+      '\n' +
+      'Tool Costs and Usage Guidelines:\n' +
+      '- Perplexity search: $0.01 per search\n' +
+      '- PhantomBuster LinkedIn: $0.10 per profile (15x more expensive)\n' +
+      '\n' +
+      'Always try Perplexity search first. PhantomBuster should be used sparingly due to its high cost and long execution time.\n' +
+      '\n' +
+      'You should respond in one of four ways:\n' +
+      '1. With a tool use request if you need more information beyond what was initially provided\n' +
+      '2. With a positive answer to the criterion \n' +
+      '3. With a negative answer to the criterion\n' +
+      '4. With an unknown answer if insufficient information exists to make a determination\n' +
+      '\n' +
+      '\n' +
+      'Indicate the response type in the first line of your response:\n' +
+      '- "TYPE: tool_use" \n' +
+      '- "TYPE: positive_result"\n' +
+      '- "TYPE: negative_result"\n' +
+      '- "TYPE: unknown_result"\n' +
+      '\n' +
+      'Use unknown_result when:\n' +
+      '- Available information is insufficient, contradictory, or unclear\n' +
+      "- You've exhausted reasonable research avenues without finding definitive information\n" +
+      "- You're at the final iteration and still lack sufficient data for a confident answer\n" +
+      '\n' +
+      'The second line should be your answer, eg: "Yes", "No", "47", "San Francisco, California", etc\n' +
+      'The third line starts your analysis and explanation of your decision.\n' +
+      '\n' +
+      'Additionally, provide a confidence score from 1-3 indicating how certain you are about this assessment:\n' +
+      '- 1: Just a guess (0-60% chance this is true) - Limited or unclear information\n' +
+      '- 2: Probably correct (61-79% chance this is true) - Some evidence but gaps remain  \n' +
+      '- 3: Very likely correct (80-100% chance this is true) - Strong evidence supports conclusion\n' +
+      '\n' +
+      'Format your confidence as "Confidence: [1|2|3]" at the end of your response.\n' +
+      '\n' +
+      'Here are some examples:\n' +
+      '\n' +
+      'EXAMPLE #1 - Sufficient initial research\n' +
+      'Criterion: The company is a software publisher\n' +
+      'Initial Research: "Apple Inc. is primarily a hardware company that designs and manufactures consumer electronics including iPhones, iPads, and Mac computers. While they do develop software like iOS and macOS, their primary revenue comes from hardware sales."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: negative_result\n' +
+      'No\n' +
+      'Although Apple does develop and sell software, their main business is selling hardware in the form of consumer electronics. Their primary revenue source is hardware sales, not software publishing.\n' +
+      '\n' +
+      'Confidence: 3\n' +
+      '\n' +
+      'EXAMPLE #2 - Additional research needed\n' +
+      'Criterion: The company is a software publisher  \n' +
+      'Initial Research: "TechCorp is a technology company founded in 2015. They have offices in San Francisco and employ about 50 people."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: tool_use\n' +
+      '<<perplexity_search: TechCorp software products services revenue model business>>\n' +
+      "The initial research doesn't provide enough detail about TechCorp's business model or whether they primarily sell software products. I need more specific information about their products and revenue sources.",
+    model: 'claude-sonnet-4-20250514',
+    maxTokens: 4000
+  }
+}
+[DEBUG] ClaudeClient making request to http://localhost:3000/api/claude
+[DEBUG] Request payload size: 5469 chars
+[DEBUG] Server received Claude API request - Messages: 1, System prompt: 3799 chars
+[DEBUG] Total request size: 5469 chars
+[DEBUG] Making request to Anthropic API...
+[DEBUG] Anthropic API response received: 200 OK
+[DEBUG] Response content length: 596 chars
+[DEBUG] ClaudeClient received response: 200 OK
+[DEBUG] Claude API call successful - Response length: 596 chars
+[COST_DEBUG] Claude API tokens: input=1179, output=112
+[COST_DEBUG] Claude calculated cost: $0.005217
+[SERVER] Research progress: {
+  type: 'claude_response',
+  content: 'TYPE: positive_result\n' +
+    'Yes\n' +
+    "Based on the initial research, Taurus Software clearly meets the criterion of primarily publishing and selling software products they own. The company's core business model centers on selling no-code software solutions for data management and business intelligence. Their revenue is primarily derived from licensing and selling these off-the-shelf software products rather than providing custom development services. While they may offer some support or consultation services, these appear to be ancillary to their main business of software product sales.\n" +
+    '\n' +
+    'Confidence: 3',
+  tokens: 112,
+  cost: {
+    input_tokens: 1179,
+    output_tokens: 112,
+    input_cost: 0.003537,
+    output_cost: 0.00168,
+    total_cost: 0.005217
+  }
+}
+[COST_DEBUG] Final investigation costs: {
+  "perplexity": {
+    "tool_name": "perplexity",
+    "calls": 3,
+    "cost": 0.03
+  },
+  "claude": {
+    "input_tokens": 1179,
+    "output_tokens": 112,
+    "input_cost": 0.003537,
+    "output_cost": 0.00168,
+    "total_cost": 0.005217
+  }
+}
+[COST_DEBUG] Aggregated total: $0.035217
+[COST_DEBUG] Storing costs to DB: claude=$0.005217, perplexity=$0.03, phantombuster=$0, total=$0.035217
+[SERVER] Research progress: {
+  type: 'final_result',
+  company: 'Taurus Software',
+  criterion: 'Software Publisher',
+  result: {
+    type: 'positive',
+    answer: 'Yes',
+    explanation: "Based on the initial research, Taurus Software clearly meets the criterion of primarily publishing and selling software products they own. The company's core business model centers on selling no-code software solutions for data management and business intelligence. Their revenue is primarily derived from licensing and selling these off-the-shelf software products rather than providing custom development services. While they may offer some support or consultation services, these appear to be ancillary to their main business of software product sales.\n" +
+      '\n' +
+      'Confidence: 3',
+    confidence_score: 3
+  }
+}
+[SERVER] Research progress: {
+  type: 'company_start',
+  company: 'Matson & Isom Technology Consulting',
+  index: 9,
+  criterion: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query',
+  query: 'Does Matson & Isom Technology Consulting, headquartered in Chico, California, primarily sell software products or software development services? What is their main business model and revenue source?',
+  criterionName: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query_result',
+  result: 'Matson & Isom Technology Consulting, headquartered in Chico, California, primarily provides technology consulting and support services, rather than selling standalone software products. Their main business activities include:\n' +
+    '\n' +
+    '- **IT consulting and support:** They offer planning, building, and ongoing support for business technology infrastructure, helping clients achieve reliable, predictable technical operations[1][2].\n' +
+    '- **Network services and web design:** Their services include computer consulting, network setup, and web development, as well as comprehensive technology planning[1][5].\n' +
+    '- **Technology strategy and managed services:** Testimonials and business descriptions emphasize their role as a long-term technology partner, sometimes acting as a virtual CIO for clients[2].\n' +
+    '\n' +
+    'There is no direct mention of proprietary software products as a core offering; instead, their primary revenue comes from professional services, such as consulting, IT support, network management, web development, and security services[1][2][5]. Their business model is service-based, generating revenue through fees for ongoing support, project implementation, and managed IT services rather than through the sale of software licenses or products.\n' +
+    '\n' +
+    "In summary, Matson & Isom Technology Consulting's main business model centers on delivering software development and IT consulting services, making service provision—with ongoing support and consulting—their main source of revenue[1][2][5]."
+}
+[SERVER] Research progress: {
+  type: 'prompt_sent',
+  prompt: 'Criterion: Determine if the company primarily publishes and sells software products they own. If the company primarily provides services, but also publishes products, that does not count.\n' +
+    '\n' +
+    'The company you are researching is:\n' +
+    'Company: Matson & Isom Technology Consulting\n' +
+    'Website: http://www.mitcs.com\n' +
+    'Location: Chico, California\n' +
+    '\n' +
+    'Initial Research Results:\n' +
+    'Matson & Isom Technology Consulting, headquartered in Chico, California, primarily provides technology consulting and support services, rather than selling standalone software products. Their main business activities include:\n' +
+    '\n' +
+    '- **IT consulting and support:** They offer planning, building, and ongoing support for business technology infrastructure, helping clients achieve reliable, predictable technical operations[1][2].\n' +
+    '- **Network services and web design:** Their services include computer consulting, network setup, and web development, as well as comprehensive technology planning[1][5].\n' +
+    '- **Technology strategy and managed services:** Testimonials and business descriptions emphasize their role as a long-term technology partner, sometimes acting as a virtual CIO for clients[2].\n' +
+    '\n' +
+    'There is no direct mention of proprietary software products as a core offering; instead, their primary revenue comes from professional services, such as consulting, IT support, network management, web development, and security services[1][2][5]. Their business model is service-based, generating revenue through fees for ongoing support, project implementation, and managed IT services rather than through the sale of software licenses or products.\n' +
+    '\n' +
+    "In summary, Matson & Isom Technology Consulting's main business model centers on delivering software development and IT consulting services, making service provision—with ongoing support and consulting—their main source of revenue[1][2][5].\n" +
+    '\n' +
+    'Based on the initial research results and company information above, please determine your answer for the criterion: Software Publisher\n' +
+    '\n' +
+    'Expected answer format: yes-no'
+}
+[DEBUG] About to call Claude API - Conversation: 2054 chars, System Prompt: 3738 chars, Total messages: 1
+[SERVER] Research progress: {
+  type: 'claude_message_sent',
+  payload: {
+    messages: [ [Object] ],
+    systemPrompt: 'You are a business researcher. Your task is to research software development companies to determine whether they fit certain criteria to determine if the owner is likely to want to sell the company.\n' +
+      '\n' +
+      'You will be provided with initial research results from a web search about the company and criterion. Analyze these results first to determine your answer.\n' +
+      '\n' +
+      'You have the following tools at your disposal if you need additional information:\n' +
+      '\n' +
+      'Perplexity Web Search\n' +
+      'Perplexity is your general-purpose web search tool. It can be used to ask a question or for general web search via key terms.\n' +
+      'To use a perplexity search, use the following format:\n' +
+      '<<perplexity_search: {query}>>\n' +
+      '\n' +
+      'PhantomBuster LinkedIn Scraper\n' +
+      "PhantomBuster extracts detailed information from LinkedIn personal profiles. Some LinkedIn profiles contain data useful for approximating the person's age, like graduation dates.\n" +
+      'To use PhantomBuster, use the following format:\n' +
+      '<<phantombuster_linkedin: {linkedin_profile_url}>>\n' +
+      '\n' +
+      'Tool Costs and Usage Guidelines:\n' +
+      '- Perplexity search: $0.01 per search\n' +
+      '- PhantomBuster LinkedIn: $0.10 per profile (15x more expensive)\n' +
+      '\n' +
+      'Always try Perplexity search first. PhantomBuster should be used sparingly due to its high cost and long execution time.\n' +
+      '\n' +
+      'You should respond in one of four ways:\n' +
+      '1. With a tool use request if you need more information beyond what was initially provided\n' +
+      '2. With a positive answer to the criterion \n' +
+      '3. With a negative answer to the criterion\n' +
+      '4. With an unknown answer if insufficient information exists to make a determination\n' +
+      '\n' +
+      '\n' +
+      'Indicate the response type in the first line of your response:\n' +
+      '- "TYPE: tool_use" \n' +
+      '- "TYPE: positive_result"\n' +
+      '- "TYPE: negative_result"\n' +
+      '- "TYPE: unknown_result"\n' +
+      '\n' +
+      'Use unknown_result when:\n' +
+      '- Available information is insufficient, contradictory, or unclear\n' +
+      "- You've exhausted reasonable research avenues without finding definitive information\n" +
+      "- You're at the final iteration and still lack sufficient data for a confident answer\n" +
+      '\n' +
+      'The second line should be your answer, eg: "Yes", "No", "47", "San Francisco, California", etc\n' +
+      'The third line starts your analysis and explanation of your decision.\n' +
+      '\n' +
+      'Additionally, provide a confidence score from 1-3 indicating how certain you are about this assessment:\n' +
+      '- 1: Just a guess (0-60% chance this is true) - Limited or unclear information\n' +
+      '- 2: Probably correct (61-79% chance this is true) - Some evidence but gaps remain  \n' +
+      '- 3: Very likely correct (80-100% chance this is true) - Strong evidence supports conclusion\n' +
+      '\n' +
+      'Format your confidence as "Confidence: [1|2|3]" at the end of your response.\n' +
+      '\n' +
+      'Here are some examples:\n' +
+      '\n' +
+      'EXAMPLE #1 - Sufficient initial research\n' +
+      'Criterion: The company is a software publisher\n' +
+      'Initial Research: "Apple Inc. is primarily a hardware company that designs and manufactures consumer electronics including iPhones, iPads, and Mac computers. While they do develop software like iOS and macOS, their primary revenue comes from hardware sales."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: negative_result\n' +
+      'No\n' +
+      'Although Apple does develop and sell software, their main business is selling hardware in the form of consumer electronics. Their primary revenue source is hardware sales, not software publishing.\n' +
+      '\n' +
+      'Confidence: 3\n' +
+      '\n' +
+      'EXAMPLE #2 - Additional research needed\n' +
+      'Criterion: The company is a software publisher  \n' +
+      'Initial Research: "TechCorp is a technology company founded in 2015. They have offices in San Francisco and employ about 50 people."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: tool_use\n' +
+      '<<perplexity_search: TechCorp software products services revenue model business>>\n' +
+      "The initial research doesn't provide enough detail about TechCorp's business model or whether they primarily sell software products. I need more specific information about their products and revenue sources.",
+    model: 'claude-sonnet-4-20250514',
+    maxTokens: 4000
+  }
+}
+[DEBUG] ClaudeClient making request to http://localhost:3000/api/claude
+[DEBUG] Request payload size: 6030 chars
+[DEBUG] Server received Claude API request - Messages: 1, System prompt: 3799 chars
+[DEBUG] Total request size: 6030 chars
+[DEBUG] Making request to Anthropic API...
+[DEBUG] Anthropic API response received: 200 OK
+[DEBUG] Response content length: 583 chars
+[DEBUG] ClaudeClient received response: 200 OK
+[DEBUG] Claude API call successful - Response length: 583 chars
+[COST_DEBUG] Claude API tokens: input=1294, output=116
+[COST_DEBUG] Claude calculated cost: $0.005622
+[SERVER] Research progress: {
+  type: 'claude_response',
+  content: 'TYPE: negative_result\n' +
+    'No\n' +
+    'Based on the initial research, Matson & Isom Technology Consulting is clearly a service-based company that provides IT consulting, support, network services, and web development. Their primary revenue comes from professional services such as consulting fees, ongoing support contracts, project implementation, and managed IT services. There is no mention of proprietary software products that they develop, own, and sell as their primary business model. They operate as technology consultants and service providers, not as software publishers.\n' +
+    '\n' +
+    'Confidence: 3',
+  tokens: 116,
+  cost: {
+    input_tokens: 1294,
+    output_tokens: 116,
+    input_cost: 0.003882,
+    output_cost: 0.00174,
+    total_cost: 0.005622
+  }
+}
+[COST_DEBUG] Final investigation costs: {
+  "perplexity": {
+    "tool_name": "perplexity",
+    "calls": 4,
+    "cost": 0.04
+  },
+  "claude": {
+    "input_tokens": 1294,
+    "output_tokens": 116,
+    "input_cost": 0.003882,
+    "output_cost": 0.00174,
+    "total_cost": 0.005622
+  }
+}
+[COST_DEBUG] Aggregated total: $0.045622
+[COST_DEBUG] Storing costs to DB: claude=$0.005622, perplexity=$0.04, phantombuster=$0, total=$0.045622
+[SERVER] Research progress: {
+  type: 'final_result',
+  company: 'Matson & Isom Technology Consulting',
+  criterion: 'Software Publisher',
+  result: {
+    type: 'negative',
+    answer: 'No',
+    explanation: 'Based on the initial research, Matson & Isom Technology Consulting is clearly a service-based company that provides IT consulting, support, network services, and web development. Their primary revenue comes from professional services such as consulting fees, ongoing support contracts, project implementation, and managed IT services. There is no mention of proprietary software products that they develop, own, and sell as their primary business model. They operate as technology consultants and service providers, not as software publishers.\n' +
+      '\n' +
+      'Confidence: 3',
+    confidence_score: 3
+  }
+}
+[SERVER] Research progress: { type: 'company_disqualified', reason: 'Software Publisher' }
+[SERVER] Research progress: {
+  type: 'company_start',
+  company: 'Cloudious LLC',
+  index: 10,
+  criterion: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query',
+  query: 'Does Cloudious LLC, headquartered in San Jose, California, primarily sell software products or software development services? What is their main business model and revenue source?',
+  criterionName: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query_result',
+  result: "Cloudious LLC, headquartered in San Jose, California, primarily operates as an IT business consultancy and managed services provider rather than a company that sells off-the-shelf software products[1][2][3][5]. Their core business model revolves around delivering information technology and business consulting services, including managed services, personalized staffing, and operational support for clients' IT needs[2][3][4][5]. \n" +
+    '\n' +
+    'Their main revenue source comes from providing IT consultancy, business services, and managed services, such as helping clients with technology strategy, execution, and operational solutions. This includes offering staffing solutions and tailored IT guidance to ensure business success in a competitive, globalized market[3][4][5]. There is no evidence indicating that Cloudious LLC focuses on developing or selling proprietary software products; instead, their business is centered on service delivery and consultancy[1][2][3][4][5].'
+}
+[SERVER] Research progress: {
+  type: 'prompt_sent',
+  prompt: 'Criterion: Determine if the company primarily publishes and sells software products they own. If the company primarily provides services, but also publishes products, that does not count.\n' +
+    '\n' +
+    'The company you are researching is:\n' +
+    'Company: Cloudious LLC\n' +
+    'Website: http://www.cloudious.com\n' +
+    'Location: San Jose, California\n' +
+    '\n' +
+    'Initial Research Results:\n' +
+    "Cloudious LLC, headquartered in San Jose, California, primarily operates as an IT business consultancy and managed services provider rather than a company that sells off-the-shelf software products[1][2][3][5]. Their core business model revolves around delivering information technology and business consulting services, including managed services, personalized staffing, and operational support for clients' IT needs[2][3][4][5]. \n" +
+    '\n' +
+    'Their main revenue source comes from providing IT consultancy, business services, and managed services, such as helping clients with technology strategy, execution, and operational solutions. This includes offering staffing solutions and tailored IT guidance to ensure business success in a competitive, globalized market[3][4][5]. There is no evidence indicating that Cloudious LLC focuses on developing or selling proprietary software products; instead, their business is centered on service delivery and consultancy[1][2][3][4][5].\n' +
+    '\n' +
+    'Based on the initial research results and company information above, please determine your answer for the criterion: Software Publisher\n' +
+    '\n' +
+    'Expected answer format: yes-no'
+}
+[DEBUG] About to call Claude API - Conversation: 1520 chars, System Prompt: 3738 chars, Total messages: 1
+[SERVER] Research progress: {
+  type: 'claude_message_sent',
+  payload: {
+    messages: [ [Object] ],
+    systemPrompt: 'You are a business researcher. Your task is to research software development companies to determine whether they fit certain criteria to determine if the owner is likely to want to sell the company.\n' +
+      '\n' +
+      'You will be provided with initial research results from a web search about the company and criterion. Analyze these results first to determine your answer.\n' +
+      '\n' +
+      'You have the following tools at your disposal if you need additional information:\n' +
+      '\n' +
+      'Perplexity Web Search\n' +
+      'Perplexity is your general-purpose web search tool. It can be used to ask a question or for general web search via key terms.\n' +
+      'To use a perplexity search, use the following format:\n' +
+      '<<perplexity_search: {query}>>\n' +
+      '\n' +
+      'PhantomBuster LinkedIn Scraper\n' +
+      "PhantomBuster extracts detailed information from LinkedIn personal profiles. Some LinkedIn profiles contain data useful for approximating the person's age, like graduation dates.\n" +
+      'To use PhantomBuster, use the following format:\n' +
+      '<<phantombuster_linkedin: {linkedin_profile_url}>>\n' +
+      '\n' +
+      'Tool Costs and Usage Guidelines:\n' +
+      '- Perplexity search: $0.01 per search\n' +
+      '- PhantomBuster LinkedIn: $0.10 per profile (15x more expensive)\n' +
+      '\n' +
+      'Always try Perplexity search first. PhantomBuster should be used sparingly due to its high cost and long execution time.\n' +
+      '\n' +
+      'You should respond in one of four ways:\n' +
+      '1. With a tool use request if you need more information beyond what was initially provided\n' +
+      '2. With a positive answer to the criterion \n' +
+      '3. With a negative answer to the criterion\n' +
+      '4. With an unknown answer if insufficient information exists to make a determination\n' +
+      '\n' +
+      '\n' +
+      'Indicate the response type in the first line of your response:\n' +
+      '- "TYPE: tool_use" \n' +
+      '- "TYPE: positive_result"\n' +
+      '- "TYPE: negative_result"\n' +
+      '- "TYPE: unknown_result"\n' +
+      '\n' +
+      'Use unknown_result when:\n' +
+      '- Available information is insufficient, contradictory, or unclear\n' +
+      "- You've exhausted reasonable research avenues without finding definitive information\n" +
+      "- You're at the final iteration and still lack sufficient data for a confident answer\n" +
+      '\n' +
+      'The second line should be your answer, eg: "Yes", "No", "47", "San Francisco, California", etc\n' +
+      'The third line starts your analysis and explanation of your decision.\n' +
+      '\n' +
+      'Additionally, provide a confidence score from 1-3 indicating how certain you are about this assessment:\n' +
+      '- 1: Just a guess (0-60% chance this is true) - Limited or unclear information\n' +
+      '- 2: Probably correct (61-79% chance this is true) - Some evidence but gaps remain  \n' +
+      '- 3: Very likely correct (80-100% chance this is true) - Strong evidence supports conclusion\n' +
+      '\n' +
+      'Format your confidence as "Confidence: [1|2|3]" at the end of your response.\n' +
+      '\n' +
+      'Here are some examples:\n' +
+      '\n' +
+      'EXAMPLE #1 - Sufficient initial research\n' +
+      'Criterion: The company is a software publisher\n' +
+      'Initial Research: "Apple Inc. is primarily a hardware company that designs and manufactures consumer electronics including iPhones, iPads, and Mac computers. While they do develop software like iOS and macOS, their primary revenue comes from hardware sales."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: negative_result\n' +
+      'No\n' +
+      'Although Apple does develop and sell software, their main business is selling hardware in the form of consumer electronics. Their primary revenue source is hardware sales, not software publishing.\n' +
+      '\n' +
+      'Confidence: 3\n' +
+      '\n' +
+      'EXAMPLE #2 - Additional research needed\n' +
+      'Criterion: The company is a software publisher  \n' +
+      'Initial Research: "TechCorp is a technology company founded in 2015. They have offices in San Francisco and employ about 50 people."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: tool_use\n' +
+      '<<perplexity_search: TechCorp software products services revenue model business>>\n' +
+      "The initial research doesn't provide enough detail about TechCorp's business model or whether they primarily sell software products. I need more specific information about their products and revenue sources.",
+    model: 'claude-sonnet-4-20250514',
+    maxTokens: 4000
+  }
+}
+[DEBUG] ClaudeClient making request to http://localhost:3000/api/claude
+[DEBUG] Request payload size: 5496 chars
+[DEBUG] Server received Claude API request - Messages: 1, System prompt: 3799 chars
+[DEBUG] Total request size: 5496 chars
+[DEBUG] Making request to Anthropic API...
+[DEBUG] Anthropic API response received: 200 OK
+[DEBUG] Response content length: 699 chars
+[DEBUG] ClaudeClient received response: 200 OK
+[DEBUG] Claude API call successful - Response length: 699 chars
+[COST_DEBUG] Claude API tokens: input=1199, output=131
+[COST_DEBUG] Claude calculated cost: $0.005562
+[SERVER] Research progress: {
+  type: 'claude_response',
+  content: 'TYPE: negative_result\n' +
+    'No\n' +
+    'Based on the initial research, Cloudious LLC is clearly positioned as an IT business consultancy and managed services provider, not a software publisher. Their core business model revolves around delivering consulting services, managed IT services, staffing solutions, and operational support - all service-based offerings rather than software products they own and sell. There is no evidence in the research indicating they develop or sell proprietary software products. Their revenue comes from providing services to clients, which directly contradicts the criterion requirement for a company that "primarily publishes and sells software products they own."\n' +
+    '\n' +
+    'Confidence: 3',
+  tokens: 131,
+  cost: {
+    input_tokens: 1199,
+    output_tokens: 131,
+    input_cost: 0.003597,
+    output_cost: 0.001965,
+    total_cost: 0.005562
+  }
+}
+[COST_DEBUG] Final investigation costs: {
+  "perplexity": {
+    "tool_name": "perplexity",
+    "calls": 5,
+    "cost": 0.05
+  },
+  "claude": {
+    "input_tokens": 1199,
+    "output_tokens": 131,
+    "input_cost": 0.003597,
+    "output_cost": 0.001965,
+    "total_cost": 0.005562
+  }
+}
+[COST_DEBUG] Aggregated total: $0.055562
+[COST_DEBUG] Storing costs to DB: claude=$0.005562, perplexity=$0.05, phantombuster=$0, total=$0.055562
+[SERVER] Research progress: {
+  type: 'final_result',
+  company: 'Cloudious LLC',
+  criterion: 'Software Publisher',
+  result: {
+    type: 'negative',
+    answer: 'No',
+    explanation: 'Based on the initial research, Cloudious LLC is clearly positioned as an IT business consultancy and managed services provider, not a software publisher. Their core business model revolves around delivering consulting services, managed IT services, staffing solutions, and operational support - all service-based offerings rather than software products they own and sell. There is no evidence in the research indicating they develop or sell proprietary software products. Their revenue comes from providing services to clients, which directly contradicts the criterion requirement for a company that "primarily publishes and sells software products they own."\n' +
+      '\n' +
+      'Confidence: 3',
+    confidence_score: 3
+  }
+}
+[SERVER] Research progress: { type: 'company_disqualified', reason: 'Software Publisher' }
+[SERVER] Research progress: {
+  type: 'company_start',
+  company: 'dotSolved Systems Inc.',
+  index: 11,
+  criterion: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query',
+  query: 'Does dotSolved Systems Inc., headquartered in Pleasanton, California, primarily sell software products or software development services? What is their main business model and revenue source?',
+  criterionName: 'Software Publisher'
+}
+[SERVER] Research progress: {
+  type: 'automatic_query_result',
+  result: 'dotSolved Systems Inc., headquartered in Pleasanton, California, primarily provides software development and consulting services rather than selling off-the-shelf software products. Their main business model revolves around delivering digital transformation solutions through services such as business process automation, modern application engineering, cloud infrastructure consulting, data analytics, AI, and intelligent automation[1][4][5].\n' +
+    '\n' +
+    '**Key Aspects of Their Business Model:**\n' +
+    '\n' +
+    '- dotSolved positions itself as a global digital transformation service provider, focusing on enabling clients to automate and optimize complex business processes and engineer data-driven applications[1][4][5].\n' +
+    '- Their revenue is generated primarily through professional services engagement, including consulting, implementation, and managed services, rather than proprietary software licensing or subscriptions[2][3][4].\n' +
+    '- The company adopts a business process-centric approach, assisting clients with defining and transforming their operations using technologies such as ERP, cloud, and analytics platforms[1][5].\n' +
+    '- dotSolved’s engagement models include consulting, project-based development, and ongoing managed services, reflecting a service-oriented revenue structure[3].\n' +
+    '\n' +
+    '**Summary Table:**\n' +
+    '\n' +
+    '| Aspect          | dotSolved Systems Inc.                             |\n' +
+    '|-----------------|---------------------------------------------------|\n' +
+    '| Headquarters    | Pleasanton, CA                                    |\n' +
+    '| Primary Focus   | Software development & consulting services        |\n' +
+    '| Main Offerings  | Digital transformation, automation, application engineering, cloud, analytics, AI[1][5] |\n' +
+    '| Revenue Source  | Professional services (consulting, development, managed services) [2][3][4]  |\n' +
+    '| Software Products | Not a primary business, focus is on services    |\n' +
+    '\n' +
+    'In conclusion, dotSolved Systems Inc. primarily sells software development and consulting services as its core business, with its main revenue streams coming from project-based and managed service engagements, not from proprietary software products[1][4][5].'
+}
+[SERVER] Research progress: {
+  type: 'prompt_sent',
+  prompt: 'Criterion: Determine if the company primarily publishes and sells software products they own. If the company primarily provides services, but also publishes products, that does not count.\n' +
+    '\n' +
+    'The company you are researching is:\n' +
+    'Company: dotSolved Systems Inc.\n' +
+    'Website: http://www.dotsolved.com\n' +
+    'Location: Pleasanton, California\n' +
+    '\n' +
+    'Initial Research Results:\n' +
+    'dotSolved Systems Inc., headquartered in Pleasanton, California, primarily provides software development and consulting services rather than selling off-the-shelf software products. Their main business model revolves around delivering digital transformation solutions through services such as business process automation, modern application engineering, cloud infrastructure consulting, data analytics, AI, and intelligent automation[1][4][5].\n' +
+    '\n' +
+    '**Key Aspects of Their Business Model:**\n' +
+    '\n' +
+    '- dotSolved positions itself as a global digital transformation service provider, focusing on enabling clients to automate and optimize complex business processes and engineer data-driven applications[1][4][5].\n' +
+    '- Their revenue is generated primarily through professional services engagement, including consulting, implementation, and managed services, rather than proprietary software licensing or subscriptions[2][3][4].\n' +
+    '- The company adopts a business process-centric approach, assisting clients with defining and transforming their operations using technologies such as ERP, cloud, and analytics platforms[1][5].\n' +
+    '- dotSolved’s engagement models include consulting, project-based development, and ongoing managed services, reflecting a service-oriented revenue structure[3].\n' +
+    '\n' +
+    '**Summary Table:**\n' +
+    '\n' +
+    '| Aspect          | dotSolved Systems Inc.                             |\n' +
+    '|-----------------|---------------------------------------------------|\n' +
+    '| Headquarters    | Pleasanton, CA                                    |\n' +
+    '| Primary Focus   | Software development & consulting services        |\n' +
+    '| Main Offerings  | Digital transformation, automation, application engineering, cloud, analytics, AI[1][5] |\n' +
+    '| Revenue Source  | Professional services (consulting, development, managed services) [2][3][4]  |\n' +
+    '| Software Products | Not a primary business, focus is on services    |\n' +
+    '\n' +
+    'In conclusion, dotSolved Systems Inc. primarily sells software development and consulting services as its core business, with its main revenue streams coming from project-based and managed service engagements, not from proprietary software products[1][4][5].\n' +
+    '\n' +
+    'Based on the initial research results and company information above, please determine your answer for the criterion: Software Publisher\n' +
+    '\n' +
+    'Expected answer format: yes-no'
+}
+[DEBUG] About to call Claude API - Conversation: 2695 chars, System Prompt: 3738 chars, Total messages: 1
+[SERVER] Research progress: {
+  type: 'claude_message_sent',
+  payload: {
+    messages: [ [Object] ],
+    systemPrompt: 'You are a business researcher. Your task is to research software development companies to determine whether they fit certain criteria to determine if the owner is likely to want to sell the company.\n' +
+      '\n' +
+      'You will be provided with initial research results from a web search about the company and criterion. Analyze these results first to determine your answer.\n' +
+      '\n' +
+      'You have the following tools at your disposal if you need additional information:\n' +
+      '\n' +
+      'Perplexity Web Search\n' +
+      'Perplexity is your general-purpose web search tool. It can be used to ask a question or for general web search via key terms.\n' +
+      'To use a perplexity search, use the following format:\n' +
+      '<<perplexity_search: {query}>>\n' +
+      '\n' +
+      'PhantomBuster LinkedIn Scraper\n' +
+      "PhantomBuster extracts detailed information from LinkedIn personal profiles. Some LinkedIn profiles contain data useful for approximating the person's age, like graduation dates.\n" +
+      'To use PhantomBuster, use the following format:\n' +
+      '<<phantombuster_linkedin: {linkedin_profile_url}>>\n' +
+      '\n' +
+      'Tool Costs and Usage Guidelines:\n' +
+      '- Perplexity search: $0.01 per search\n' +
+      '- PhantomBuster LinkedIn: $0.10 per profile (15x more expensive)\n' +
+      '\n' +
+      'Always try Perplexity search first. PhantomBuster should be used sparingly due to its high cost and long execution time.\n' +
+      '\n' +
+      'You should respond in one of four ways:\n' +
+      '1. With a tool use request if you need more information beyond what was initially provided\n' +
+      '2. With a positive answer to the criterion \n' +
+      '3. With a negative answer to the criterion\n' +
+      '4. With an unknown answer if insufficient information exists to make a determination\n' +
+      '\n' +
+      '\n' +
+      'Indicate the response type in the first line of your response:\n' +
+      '- "TYPE: tool_use" \n' +
+      '- "TYPE: positive_result"\n' +
+      '- "TYPE: negative_result"\n' +
+      '- "TYPE: unknown_result"\n' +
+      '\n' +
+      'Use unknown_result when:\n' +
+      '- Available information is insufficient, contradictory, or unclear\n' +
+      "- You've exhausted reasonable research avenues without finding definitive information\n" +
+      "- You're at the final iteration and still lack sufficient data for a confident answer\n" +
+      '\n' +
+      'The second line should be your answer, eg: "Yes", "No", "47", "San Francisco, California", etc\n' +
+      'The third line starts your analysis and explanation of your decision.\n' +
+      '\n' +
+      'Additionally, provide a confidence score from 1-3 indicating how certain you are about this assessment:\n' +
+      '- 1: Just a guess (0-60% chance this is true) - Limited or unclear information\n' +
+      '- 2: Probably correct (61-79% chance this is true) - Some evidence but gaps remain  \n' +
+      '- 3: Very likely correct (80-100% chance this is true) - Strong evidence supports conclusion\n' +
+      '\n' +
+      'Format your confidence as "Confidence: [1|2|3]" at the end of your response.\n' +
+      '\n' +
+      'Here are some examples:\n' +
+      '\n' +
+      'EXAMPLE #1 - Sufficient initial research\n' +
+      'Criterion: The company is a software publisher\n' +
+      'Initial Research: "Apple Inc. is primarily a hardware company that designs and manufactures consumer electronics including iPhones, iPads, and Mac computers. While they do develop software like iOS and macOS, their primary revenue comes from hardware sales."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: negative_result\n' +
+      'No\n' +
+      'Although Apple does develop and sell software, their main business is selling hardware in the form of consumer electronics. Their primary revenue source is hardware sales, not software publishing.\n' +
+      '\n' +
+      'Confidence: 3\n' +
+      '\n' +
+      'EXAMPLE #2 - Additional research needed\n' +
+      'Criterion: The company is a software publisher  \n' +
+      'Initial Research: "TechCorp is a technology company founded in 2015. They have offices in San Francisco and employ about 50 people."\n' +
+      '\n' +
+      'RESPONSE:\n' +
+      'TYPE: tool_use\n' +
+      '<<perplexity_search: TechCorp software products services revenue model business>>\n' +
+      "The initial research doesn't provide enough detail about TechCorp's business model or whether they primarily sell software products. I need more specific information about their products and revenue sources.",
+    model: 'claude-sonnet-4-20250514',
+    maxTokens: 4000
+  }
+}
+[DEBUG] ClaudeClient making request to http://localhost:3000/api/claude
+[DEBUG] Request payload size: 6671 chars
+[DEBUG] Server received Claude API request - Messages: 1, System prompt: 3799 chars
+[DEBUG] Total request size: 6671 chars
+[DEBUG] Making request to Anthropic API...
+[SERVER] Stop research request received
+[SERVER] Research stop flag set to true
+[DEBUG] Anthropic API response received: 200 OK
+[DEBUG] Response content length: 1176 chars
+[DEBUG] ClaudeClient received response: 200 OK
+[DEBUG] Claude API call successful - Response length: 1176 chars
+[COST_DEBUG] Claude API tokens: input=1416, output=208
+[COST_DEBUG] Claude calculated cost: $0.0073679999999999995
+[SERVER] Research progress: {
+  type: 'claude_response',
+  content: 'TYPE: negative_result\n' +
+    'No\n' +
+    'Based on the initial research, dotSolved Systems Inc. is clearly a software development and consulting services company, not a software publisher. The research explicitly states that their "main business model revolves around delivering digital transformation solutions through services" and that "their revenue is generated primarily through professional services engagement, including consulting, implementation, and managed services, rather than proprietary software licensing or subscriptions."\n' +
+    '\n' +
+    `The company positions itself as a "global digital transformation service provider" with engagement models that include "consulting, project-based development, and ongoing managed services." This directly aligns with the criterion's exclusion clause - they are a company that "primarily provides services" rather than publishing and selling software products they own.\n` +
+    '\n' +
+    'The research summary clearly concludes that dotSolved "primarily sells software development and consulting services as its core business, with its main revenue streams coming from project-based and managed service engagements, not from proprietary software products."\n' +
+    '\n' +
+    'Confidence: 3',
+  tokens: 208,
+  cost: {
+    input_tokens: 1416,
+    output_tokens: 208,
+    input_cost: 0.004248,
+    output_cost: 0.00312,
+    total_cost: 0.0073679999999999995
+  }
+}
+[COST_DEBUG] Final investigation costs: {
+  "perplexity": {
+    "tool_name": "perplexity",
+    "calls": 6,
+    "cost": 0.060000000000000005
+  },
+  "claude": {
+    "input_tokens": 1416,
+    "output_tokens": 208,
+    "input_cost": 0.004248,
+    "output_cost": 0.00312,
+    "total_cost": 0.0073679999999999995
+  }
+}
+[COST_DEBUG] Aggregated total: $0.06736800000000001
+[COST_DEBUG] Storing costs to DB: claude=$0.0073679999999999995, perplexity=$0.060000000000000005, phantombuster=$0, total=$0.06736800000000001
+[SERVER] Research progress: {
+  type: 'final_result',
+  company: 'dotSolved Systems Inc.',
+  criterion: 'Software Publisher',
+  result: {
+    type: 'negative',
+    answer: 'No',
+    explanation: 'Based on the initial research, dotSolved Systems Inc. is clearly a software development and consulting services company, not a software publisher. The research explicitly states that their "main business model revolves around delivering digital transformation solutions through services" and that "their revenue is generated primarily through professional services engagement, including consulting, implementation, and managed services, rather than proprietary software licensing or subscriptions."\n' +
+      '\n' +
+      `The company positions itself as a "global digital transformation service provider" with engagement models that include "consulting, project-based development, and ongoing managed services." This directly aligns with the criterion's exclusion clause - they are a company that "primarily provides services" rather than publishing and selling software products they own.\n` +
+      '\n' +
+      'The research summary clearly concludes that dotSolved "primarily sells software development and consulting services as its core business, with its main revenue streams coming from project-based and managed service engagements, not from proprietary software products."\n' +
+      '\n' +
+      'Confidence: 3',
+    confidence_score: 3
+  }
+}
+[SERVER] Research progress: { type: 'company_disqualified', reason: 'Software Publisher' }
+[SERVER] Research error: Error: Research stopped by user
+    at ResearchEngine.checkIfStopped (C:\Users\jeffr\OneDrive\Documents\smartbroker\v3\src\research-engine.js:45:13)
+    at ResearchEngine.researchCompanyRange (C:\Users\jeffr\OneDrive\Documents\smartbroker\v3\src\research-engine.js:201:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\jeffr\OneDrive\Documents\smartbroker\v3\server\server.js:992:5
+[SERVER] Research was stopped by user
+[SERVER] SSE request error: Error: aborted
+    at connResetException (node:internal/errors:717:14)
+    at abortIncoming (node:_http_server:759:17)
+    at socketOnClose (node:_http_server:753:3)
+    at Socket.emit (node:events:523:35)
+    at TCP.<anonymous> (node:net:334:12) {
+  code: 'ECONNRESET'
+}
+[SERVER] SSE client disconnected
+[COST_DEBUG] Cost summary from DB: total=$0.432522, investigations=11, claude=$0.072522, perplexity=$0.36, phantombuster=$0

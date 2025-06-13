@@ -24,14 +24,47 @@ body {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title-section {
+    flex: 1;
+}
+
 .header h1 {
     font-size: 2.5em;
     font-weight: 300;
+    margin: 0;
 }
 
 .header p {
     opacity: 0.9;
     margin-top: 5px;
+}
+
+.utility-links {
+    flex-shrink: 0;
+}
+
+.bug-report-link {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.bug-report-link:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .main-window {

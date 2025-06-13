@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBroker - Error Notification Mockup</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Notification Container */
+        #notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            max-width: 420px;
+        }
+        
+        /* Notification Animations */
+        @keyframes slideInRight {
+            from { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from { 
+                transform: translateX(0); 
+                opacity: 1; 
+            }
+            to { 
+                transform: translateX(100%); 
+                opacity: 0; 
+            }
+        }
+        
+        .notification {
+            animation: slideInRight 0.3s ease-out;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            border: none;
+        }
+        
+        .notification.slide-out {
+            animation: slideOutRight 0.3s ease-in;
+        }
+        
+        /* Error notification specific styling */
+        .alert-error {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            border: 1px solid #bd2130;
+        }
+        
+        /* Warning notification styling */
+        .alert-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+            color: #212529;
+            border: 1px solid #d39e00;
+        }
+        
+        /* Success notification styling */
+        .alert-success {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+            color: white;
+            border: 1px solid #1c7430;
+        }
+        
+        /* Info notification styling */
+        .alert-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            border: 1px solid #117a8b;
+        }
+        
+        .notification .btn-outline-light {
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .notification .btn-outline-light:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: white;
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .notification .btn-close {
+            filter: invert(1);
+            opacity: 0.8;
+        }
+        
+        .notification .btn-close:hover {
+            opacity: 1;
+        }
+        
+        /* Demo Controls */
+        .demo-controls {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .demo-controls h4 {
+            margin-bottom: 15px;
+            color: #495057;
+        }
+        
+        /* CSV Import Area Styling */
+        .csv-import-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            background-color: #f8f9fa;
+            margin: 20px 0;
+        }
+        
+        .csv-import-area:hover {
+            border-color: #adb5bd;
+            background-color: #e9ecef;
+        }
+        
+        /* Progress indicator for notifications */
+        .notification-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 0 0 8px 8px;
+            animation: progressShrink 10s linear;
+        }
+        
+        @keyframes progressShrink {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification Container (positioned fixed) -->
+    <div id="notification-container"></div>
+    
+    <!-- Main Application Content -->
+    <div class="main-content">
+        <h1>SmartBroker v3 - Error Notification Demo</h1>
+        <p class="lead">This mockup shows how error notifications will appear to users.</p>
+        
+        <!-- Demo Controls -->
+        <div class="demo-controls">
+            <h4>🎛️ Demo Controls</h4>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-danger" onclick="showCSVError()">CSV Error</button>
+                <button type="button" class="btn btn-warning" onclick="showAPIWarning()">API Warning</button>
+                <button type="button" class="btn btn-info" onclick="showNetworkRetry()">Network Retry</button>
+                <button type="button" class="btn btn-success" onclick="showSuccess()">Success</button>
+            </div>
+            <button type="button" class="btn btn-secondary ms-3" onclick="clearAll()">Clear All</button>
+        </div>
+        
+        <!-- CSV Import Section (to provide context) -->
+        <div class="csv-import-section">
+            <h3>📊 CSV Import</h3>
+            <div class="csv-import-area">
+                <h5>Upload Company Data</h5>
+                <p class="text-muted">Click the demo buttons above to see different error notifications</p>
+                <input type="file" class="form-control" style="max-width: 300px; margin: 0 auto;" accept=".csv">
+                <button class="btn btn-primary mt-3" onclick="showCSVError()">Import CSV (Demo Error)</button>
+            </div>
+        </div>
+        
+        <!-- Research Section -->
+        <div class="research-section mt-4">
+            <h3>🔬 Research Progress</h3>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Has Offices</th>
+                            <th>Revenue Size</th>
+                            <th>Tech Stack</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1. Acme Corp</td>
+                            <td>+</td>
+                            <td>?</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>2. Beta Industries</td>
+                            <td>-</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>3. Gamma Solutions</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn btn-warning" onclick="showAPIWarning()">Test API Error</button>
+            <button class="btn btn-info" onclick="showNetworkRetry()">Test Network Issue</button>
+        </div>
+    </div>
+
+    <script>
+        // Notification counter for unique IDs
+        let notificationId = 0;
+        
+        // CSV Error Example
+        function showCSVError() {
+            const notification = createNotification({
+                type: 'error',
+                title: 'CSV Import Error',
+                message: 'CSV file is missing column headers.',
+                helpText: 'The first row of your CSV should contain column names like "Company", "Website", etc.',
+                actions: [
+                    { label: 'Fix and Try Again', action: 'retry' },
+                    { label: 'See CSV Format Guide', action: 'help' }
+                ],
+                autoClose: false // Errors don't auto-close
+            });
+            showNotification(notification);
+        }
+        
+        // API Warning Example (with retry)
+        function showAPIWarning() {
+            const notification = createNotification({
+                type: 'warning',
+                title: 'API Rate Limit',
+                message: 'Too many requests to Claude API. Automatically retrying in 30 seconds...',
+                helpText: 'This is temporary. Research will continue automatically.',
+                actions: [
+                    { label: 'Cancel Retry', action: 'cancel' },
+                    { label: 'Check API Status', action: 'status' }
+                ],
+                autoClose: 30000 // Auto-close after 30 seconds
+            });
+            showNotification(notification);
+        }
+        
+        // Network Retry Example
+        function showNetworkRetry() {
+            const notification = createNotification({
+                type: 'info',
+                title: 'Connection Issue',
+                message: 'Network connection lost. Retrying... (2/3)',
+                helpText: 'Please check your internet connection.',
+                actions: [
+                    { label: 'Retry Now', action: 'retry' },
+                    { label: 'Cancel', action: 'cancel' }
+                ],
+                autoClose: 5000
+            });
+            showNotification(notification);
+        }
+        
+        // Success Example
+        function showSuccess() {
+            const notification = createNotification({
+                type: 'success',
+                title: 'Import Successful',
+                message: 'Successfully imported 150 companies from your CSV file.',
+                helpText: 'You can now start research on your company data.',
+                actions: [],
+                autoClose: 5000
+            });
+            showNotification(notification);
+        }
+        
+        // Create notification HTML
+        function createNotification(config) {
+            const id = `notification-${++notificationId}`;
+            const notification = document.createElement('div');
+            notification.id = id;
+            notification.className = `alert alert-${config.type} alert-dismissible notification`;
+            
+            // Create action buttons
+            const actionsHtml = config.actions.map(action => 
+                `<button class="btn btn-sm btn-outline-light me-2" onclick="handleNotificationAction('${action.action}', '${id}')">${action.label}</button>`
+            ).join('');
+            
+            // Create progress bar for auto-closing notifications
+            const progressBar = config.autoClose ? 
+                `<div class="notification-progress" style="animation-duration: ${config.autoClose}ms;"></div>` : '';
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: flex-start; position: relative;">
+                    <div style="flex: 1;">
+                        <strong>${getTypeIcon(config.type)} ${config.title}</strong>
+                        <div style="margin-top: 5px;">${config.message}</div>
+                        ${config.helpText ? `<div style="margin-top: 5px; font-size: 0.9em; opacity: 0.8;">${config.helpText}</div>` : ''}
+                        ${actionsHtml ? `<div style="margin-top: 10px;">${actionsHtml}</div>` : ''}
+                    </div>
+                    <button type="button" class="btn-close" onclick="closeNotification('${id}')"></button>
+                    ${progressBar}
+                </div>
+            `;
+            
+            return { element: notification, config: config };
+        }
+        
+        // Show notification with auto-close
+        function showNotification(notification) {
+            const container = document.getElementById('notification-container');
+            container.appendChild(notification.element);
+            
+            // Auto-close if specified
+            if (notification.config.autoClose) {
+                setTimeout(() => {
+                    closeNotification(notification.element.id);
+                }, notification.config.autoClose);
+            }
+        }
+        
+        // Handle notification action clicks
+        function handleNotificationAction(action, notificationId) {
+            console.log(`Action clicked: ${action} on notification ${notificationId}`);
+            
+            switch (action) {
+                case 'retry':
+                    alert('🔄 Retry action triggered!\n\nIn the real app, this would:\n• Reset the file input\n• Open file dialog again\n• Or retry the failed operation');
+                    closeNotification(notificationId);
+                    break;
+                case 'help':
+                    alert('📖 Help action triggered!\n\nIn the real app, this would:\n• Open CSV format guide\n• Show inline help tooltip\n• Navigate to documentation');
+                    break;
+                case 'cancel':
+                    alert('❌ Cancel action triggered!\n\nIn the real app, this would:\n• Stop the retry operation\n• Cancel the current process');
+                    closeNotification(notificationId);
+                    break;
+                case 'status':
+                    alert('📊 Status action triggered!\n\nIn the real app, this would:\n• Open API provider status page\n• Check service availability');
+                    break;
+                default:
+                    console.log(`Unknown action: ${action}`);
+            }
+        }
+        
+        // Close notification with animation
+        function closeNotification(notificationId) {
+            const notification = document.getElementById(notificationId);
+            if (notification) {
+                notification.classList.add('slide-out');
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 300);
+            }
+        }
+        
+        // Clear all notifications
+        function clearAll() {
+            const container = document.getElementById('notification-container');
+            const notifications = container.querySelectorAll('.notification');
+            notifications.forEach(notification => {
+                closeNotification(notification.id);
+            });
+        }
+        
+        // Get icon for notification type
+        function getTypeIcon(type) {
+            const icons = {
+                'error': '❌',
+                'warning': '⚠️',
+                'success': '✅',
+                'info': 'ℹ️'
+            };
+            return icons[type] || 'ℹ️';
+        }
+        
+        // Demo: Show initial error after page loads
+        setTimeout(() => {
+            showCSVError();
+        }, 1000);
+    </script>
+</body>
+</html>

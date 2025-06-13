@@ -393,6 +393,8 @@ class ResearchEngine {
           response.usage.input_tokens,
           response.usage.output_tokens
         );
+        console.log(`[COST_DEBUG] Claude API tokens: input=${response.usage.input_tokens}, output=${response.usage.output_tokens}`);
+        console.log(`[COST_DEBUG] Claude calculated cost: $${claudeCost.total_cost}`);
         this.investigationCosts.claude = claudeCost;
         
         if (progressCallback) {
@@ -490,6 +492,8 @@ class ResearchEngine {
             // Include cost data when saving result
             const totalCost = this.costCalculator.aggregateCosts(this.investigationCosts);
             const costsData = { ...this.investigationCosts, total: totalCost.grand_total };
+            console.log(`[COST_DEBUG] Final investigation costs:`, JSON.stringify(this.investigationCosts, null, 2));
+            console.log(`[COST_DEBUG] Aggregated total: $${totalCost.grand_total}`);
             
             await this.research.saveResult(company.name, criterion.id, result, companyData, costsData);
           } catch (error) {
@@ -720,8 +724,15 @@ class ResearchEngine {
           return `Error executing ${toolName}: ${perplexityResult.error}`;
         }
         
-        // Track Perplexity cost
-        const perplexityCost = this.costCalculator.calculateToolCost('perplexity', 1);
+        // Track Perplexity cost using actual token usage
+        const perplexityUsage = perplexityResult.data.usage || { prompt_tokens: 0, completion_tokens: 0 };
+        const perplexityCost = this.costCalculator.calculatePerplexityCost(
+          perplexityUsage.prompt_tokens || 0,
+          perplexityUsage.completion_tokens || 0,
+          1
+        );
+        console.log(`[COST_DEBUG] Perplexity tokens: input=${perplexityUsage.prompt_tokens}, output=${perplexityUsage.completion_tokens}`);
+        console.log(`[COST_DEBUG] Perplexity cost calculated: $${perplexityCost.cost}`);
         this.investigationCosts.perplexity = perplexityCost;
         return perplexityResult.data.content;
         
@@ -740,6 +751,7 @@ class ResearchEngine {
         
         // Track PhantomBuster cost
         const phantombusterCost = this.costCalculator.calculateToolCost('phantombuster', 1);
+        console.log(`[COST_DEBUG] PhantomBuster cost calculated: $${phantombusterCost.cost}`);
         this.investigationCosts.phantombuster = phantombusterCost;
         return phantomResult.data.content;
         

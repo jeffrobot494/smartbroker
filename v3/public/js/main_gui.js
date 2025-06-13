@@ -1,5 +1,14 @@
 class SmartBrokerApp {
   constructor() {
+    // Create shared error handling services
+    this.logger = new Logger();
+    this.notificationService = new NotificationService();
+    this.errorHandler = new ErrorHandler(this.notificationService, this.logger);
+    
+    // Create domain services with shared dependencies
+    this.csvImportService = new CSVImportService(this.errorHandler);
+    
+    // Existing properties
     this.template = null;
     this.companies = [];
     this.isResearching = false;
@@ -15,8 +24,8 @@ class SmartBrokerApp {
   async init() {
     console.log('Initializing SmartBroker GUI...');
     
-    // Initialize tab controllers
-    this.researchGUI = new ResearchGUI(this);
+    // Initialize tab controllers - pass CSV service to ResearchGUI
+    this.researchGUI = new ResearchGUI(this, this.csvImportService);
     this.outputGUI = new OutputGUI(this);
     this.optionsGUI = new OptionsGUI(this);
     this.apiKeysGUI = new ApiKeysGUI(this);

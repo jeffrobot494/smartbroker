@@ -9,8 +9,17 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>SmartBroker</h1>
-            <p>Intelligent Company Compatibility Research</p>
+            <div class="header-content">
+                <div class="title-section">
+                    <h1>SmartBroker</h1>
+                    <p>Intelligent Company Compatibility Research</p>
+                </div>
+                <div class="utility-links">
+                    <a href="https://docs.google.com/forms/d/1kQfFdDBnuRQEIqSNfWFGGkY490eEyP-DJq3NKK81wyw/viewform" target="_blank" class="bug-report-link">
+                        🐛 Report Bug
+                    </a>
+                </div>
+            </div>
         </div>
         
         <div class="main-window">
@@ -306,6 +315,14 @@
         </div>
     </div>
 
+    <!-- CSV Import Services -->
+    <script src="js/services/CSVValidator.js"></script>
+    <script src="js/services/Logger.js"></script>
+    <script src="js/services/ErrorHandler.js"></script>
+    <script src="js/services/NotificationService.js"></script>
+    <script src="js/services/CSVImportService.js"></script>
+    
+    <!-- Main Application -->
     <script src="js/csv-exporter.js"></script>
     <script src="js/main_gui.js"></script>
     <script src="js/research_gui.js"></script>

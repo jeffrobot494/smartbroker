@@ -134,6 +134,8 @@ class ResearchDAO {
       costs.total || 0
     ]);
 
+    console.log(`[COST_DEBUG] Storing costs to DB: claude=$${costs.claude?.total_cost || 0}, perplexity=$${costs.perplexity?.cost || 0} (${costs.perplexity?.input_tokens || 0}+${costs.perplexity?.output_tokens || 0} tokens), phantombuster=$${costs.phantombuster?.cost || 0}, total=$${costs.total || 0}`);
+
     return insertResult.id;
   }
 
@@ -660,9 +662,13 @@ class ResearchDAO {
       FROM research_results ${whereClause}
     `;
     
-    return templateId ? 
+    const result = templateId ? 
       await this.db.get(query, [templateId]) : 
       await this.db.get(query);
+    
+    console.log(`[COST_DEBUG] Cost summary from DB: total=$${result.total || 0}, investigations=${result.investigations || 0}, claude=$${result.claude || 0}, perplexity=$${result.perplexity || 0}, phantombuster=$${result.phantombuster || 0}`);
+    
+    return result;
   }
 
   /**

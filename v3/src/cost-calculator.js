@@ -5,7 +5,11 @@ class CostCalculator {
                 input: 3.0 / 1_000_000,    // $3 per million input tokens
                 output: 15.0 / 1_000_000   // $15 per million output tokens
             },
-            perplexity: 0.01,              // $0.01 per call
+            perplexity: {
+                input: 3.0 / 1_000_000,    // $3 per million input tokens
+                output: 15.0 / 1_000_000,  // $15 per million output tokens
+                request: 0.01              // $0.01 per request (average of $6-14 per 1000)
+            },
             phantombuster: 0.15            // $0.15 per call
         };
     }
@@ -30,8 +34,31 @@ class CostCalculator {
     }
 
     /**
-     * Calculate cost for tool API usage (Perplexity, PhantomBuster)
-     * @param {string} toolName - Name of the tool (perplexity, phantombuster)
+     * Calculate cost for Perplexity API usage (token-based)
+     * @param {number} inputTokens - Number of input tokens
+     * @param {number} outputTokens - Number of output tokens
+     * @param {number} requestCount - Number of requests made
+     * @returns {Object} Cost breakdown for Perplexity
+     */
+    calculatePerplexityCost(inputTokens, outputTokens, requestCount = 1) {
+        const inputCost = inputTokens * this.pricing.perplexity.input;
+        const outputCost = outputTokens * this.pricing.perplexity.output;
+        const requestCost = requestCount * this.pricing.perplexity.request;
+        
+        return {
+            input_tokens: inputTokens,
+            output_tokens: outputTokens,
+            input_cost: inputCost,
+            output_cost: outputCost,
+            request_cost: requestCost,
+            calls: requestCount,
+            cost: inputCost + outputCost + requestCost
+        };
+    }
+
+    /**
+     * Calculate cost for tool API usage (PhantomBuster, etc.)
+     * @param {string} toolName - Name of the tool (phantombuster)
      * @param {number} callCount - Number of API calls made
      * @returns {Object} Cost breakdown for tool
      */

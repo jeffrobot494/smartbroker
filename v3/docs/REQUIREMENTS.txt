@@ -1,5 +1,123 @@
-Anthropic credits failure message: Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.
+TESTING
+Sections to test:
+1) CSV Importing
+2) Checkboxes
+3) Research start/stopping
+4) Research results
 
-Well, the research stopped successfully, although it didn't tell us why...
+BUGS
+1) Reordering criteria is a little fucked up.
+2) Using his API keys?
+4) Empty research results, refresh page filled them in.
+5) Came to error "Research Failed"
+6) GUI thought research had stopped, but it continued.
+7) Tidokan.com got a "?" because it basically is a non-existent company. 
+8) API cost calculator appears to be estimating much greater costs than actually incurred. - CONFIRMED
+9) After a failed phantombuster (bad api key) call for Todd Stoud, I reset the server and started the same search. Got this error:
+	localhost:3000 says "Unexpected token '<', "<!DOCTYPE "... is not valid JSON"
+	No server messages, no browser messages
+	The problem was I wasn't logged in/authorized. That should have had a proper error message.
 
-The little dialogue window that pops up needs to mention the reason (credits) AND it needs to show up in the terminal. 
+10) PhantomBuster is not returning good results. Not sure if it's on their end or our end.
+11) 750 companies, researched 130+, table scrolling becoming laggy/unresponsive. Need to implement pagination.
+12) When it falls asleep, and it wakes up, it starts going on, but the research was officially stopped, which leads to further strange behavior.
+13) The program got dozens of fatal API errors, but because the research was already stopped, it didn't try to stop again(?), that should change.
+
+Today
+1) Make sure API keys are set up - CHECK
+2) Running 1-724 test.... disabled PhantomBuster
+
+ADDITIONS
+1) When the connection is lost, the app needs to stop gracefully. 
+2) The terminal needs to have a big declaration of when research stops and starts. 
+3) ALL the errors need to feed into the terminal. 
+4) If the authorization is broken, tell the user "You need to login again" and then take them to the login page.
+5) CSV Importer - WHICH LINE(S) of the file are causing problems, and what are the problems?
+6) 
+
+MID-SESSION
+> Alright, I want you to read "./docs/errorhandling/csv_import_service.md" and prepare for implementation. Let me know if you're ready, or if you have any questions, then wait for my approval to begin.
+
+● Read(docs/errorhandling/csv_import_service.md)
+  ⎿  Read 681 lines (ctrl+r to expand)
+
+● I've read the implementation guide thoroughly. I'm ready to implement Stage 1: Basic Skeleton of the CSV import service architecture.
+
+  Implementation Plan
+
+  I understand we need to:
+
+  1. Create 5 service files in a new directory structure
+  2. Modify main_gui.js to create shared services and pass them to ResearchGUI
+  3. Modify research_gui.js to use the CSV import service for validation
+  4. Test with the single validation rule: missing headers
+
+  Questions before implementation:
+
+  1. File location: Should I create the service files in public/js/services/ or a different directory?
+  2. Module system: The documentation shows module.exports but the frontend uses ES6 modules. Should I:
+    - Use ES6 export/import syntax for frontend compatibility?
+    - Or keep CommonJS since this might be used in both frontend and backend?
+  3. NotificationService: For Stage 1, should I implement the full notification system as documented, or start with simple alert() calls as mentioned in the staging notes?
+  4. Process.env check: The Logger references process.env.NODE_ENV which won't exist in browser. Should I handle this differently for frontend?
+
+  I'm ready to proceed once you clarify these details, or I can make reasonable assumptions and begin implementation.
+
+> 1) js/services is fine. 2) Please elaborate on this. Do our frontend and backend use different approaches? 3) For stage 1, just use alerts. 4) Please elaborate on this.
+
+● Let me clarify those questions by examining the current codebase:
+
+● Search(pattern: "import|export|require\(|module\.exports", path: "public", include: "*.js")
+  ⎿  Found 3 files (ctrl+r to expand)
+
+● Read(public/js/csv-exporter.js)
+  ⎿  Read 10 lines (ctrl+r to expand)
+
+● Read(src/main.js)
+  ⎿  Read 10 lines (ctrl+r to expand)
+
+● Read(public/index.html)
+  ⎿  Read 50 lines (ctrl+r to expand)
+
+● Bash(grep -n "script src\|<script" /mnt/c/Users/jeffr/OneDrive/Documents/smartbroker/v3/public/index.html)
+  ⎿  Error: Error
+
+● Read(public/index.html)
+  ⎿  Read 30 lines (ctrl+r to expand)
+
+● Bash(tail -20 /mnt/c/Users/jeffr/OneDrive/Documents/smartbroker/v3/public/index.html)
+  ⎿              </div>
+
+                 <!-- Instructions Tab -->
+                 <div class="tab-content" id="instructions-tab">
+     … +16 lines (ctrl+r to expand)
+
+● Now I understand the module systems:
+
+  2) Module System Analysis
+
+  Frontend (public/ directory):
+  - Uses no module system - just regular <script> tags
+  - Classes are defined globally (e.g., class CSVExporter)
+  - No import/export or require/module.exports
+
+  Backend (src/, server/ directories):
+  - Uses CommonJS - require() and module.exports
+
+  For our implementation: I'll use no module system for the frontend services since they need to be loaded via <script> tags.
+
+  4) Process.env Issue
+
+  In the browser, process.env.NODE_ENV doesn't exist. I'll need to:
+  - Check if process exists before accessing it
+  - Or use a different approach like checking window.location.hostname for dev vs production
+
+  Ready to Implement
+
+  I'll create the services with:
+  1. No module system (global classes) for frontend compatibility
+  2. Simple alerts for Stage 1 notifications
+  3. Browser-safe environment detection
+  4. Files in public/js/services/
+
+  Should I proceed with implementation?

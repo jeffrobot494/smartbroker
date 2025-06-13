@@ -1,6 +1,7 @@
 class ResearchGUI {
-  constructor(app) {
+  constructor(app, csvImportService) {
     this.app = app;
+    this.csvImportService = csvImportService; // Injected service
     this.selectedCriteria = []; // Track selected criteria names
     this.eventSource = null; // SSE connection
     this.wakeLock = null; // Wake lock to prevent sleep during research
@@ -94,6 +95,14 @@ class ResearchGUI {
       templateName: this.app.template.name
     });
 
+    // NEW: Validate with CSV service before sending to server
+    const validation = await this.csvImportService.validateCSV(file);
+    if (!validation.isValid) {
+      console.log('ResearchGUI: CSV validation failed:', validation.error);
+      return; // Error already shown by service
+    }
+
+    // EXISTING: Continue with server upload (unchanged)
     const formData = new FormData();
     formData.append('csvFile', file);
 
